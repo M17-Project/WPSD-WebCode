@@ -87,7 +87,7 @@ if(empty($_POST['func'])) {
             $('#radioInfo').toggle(localStorage.getItem('radioinfo_visible') === 'true');
           });
           function clear_activity() {
-            if ( 'true' === localStorage.getItem('filter_activity') ) {
+            if ( 'true' === localStorage.getItem('filter_activity') || jQuery( '.filter-activity-max-wrap' ).length > 0 ) {
               max = localStorage.getItem( 'filter_activity_max') || 1;
               jQuery('.filter-activity-max').attr('value',max);
               jQuery('.activity-duration').each( function(i,el) {

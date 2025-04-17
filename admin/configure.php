@@ -2308,17 +2308,6 @@ if (!empty($_POST)):
 	$rollRepeaterPort1 = 'sudo sed -i "/repeaterPort1=/c\\repeaterPort1=20011" /etc/ircddbgateway';
 	$configmmdvm['Modem']['UARTSpeed'] = $confHardwareSpeed;
 
-	  if ( $confHardware == 'idrp2c' ) {
-	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=1" /etc/ircddbgateway';
-	    $rollRepeaterAddress1 = 'sudo sed -i "/repeaterAddress1=/c\\repeaterAddress1=172.16.0.1" /etc/ircddbgateway';
-	    $rollRepeaterPort1 = 'sudo sed -i "/repeaterPort1=/c\\repeaterPort1=20000" /etc/ircddbgateway';
-	    system($rollRepeaterType1);
-	    $testNetworkConfig = exec('grep "eth0:1" /etc/network/interfaces | wc -l');
-	    if (substr($testNetworkConfig, 0, 1) === '0') {
-	      system('sudo sed -i "$ a\ \\nauto eth0:1\\nallow-hotplug eth0:1\\niface eth0:1 inet static\\n    address 172.16.0.20\\n    netmask 255.255.255.0" /etc/network/interfaces');
-	    }
-	  }
-
 	  if ( $confHardware == 'dvmpis' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
@@ -2675,6 +2664,11 @@ if (!empty($_POST)):
 	    system($rollRepeaterType1);
 	    $configmmdvm['General']['Duplex'] = 0;
 	    $configmmdvm['DMR Network']['Slot1'] = 0;
+	  }
+
+	  if ( $confHardware == 'genericmmdvm' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
 	  }
 
 	  // Set the Service start delay
@@ -4720,6 +4714,7 @@ else:
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'nanodv') {		echo ' selected="selected"';}?> value="nanodv">MMDVM_NANO_DV (BG4TGO) for NanoPi AIR (GPIO)</option>
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'nanodvusb') {		echo ' selected="selected"';}?> value="nanodvusb">MMDVM_NANO_DV (BG4TGO) for NanoPi AIR (USB)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'opengd77') {		echo ' selected="selected"';}?> value="opengd77">OpenGD77 DMR hotspot (USB)</option>
+		<option<?php if ($configModem['Modem']['Hardware'] === 'genericmmdvm') {	echo ' selected="selected"';}?> value="genericmmdvm">Generic MMDVM Hotspot Board (GPIO)</option>
 		<?php } // End DVMega Cast logic ?>
     </select></td>
     </tr>

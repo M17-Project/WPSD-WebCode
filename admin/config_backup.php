@@ -233,7 +233,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				$ircRemotePassword = exec('grep remotePassword /etc/ircddbgateway | awk -F\'=\' \'{print $2}\'');
 				exec('sudo sed -i "/password=/c\\password='.$ircRemotePassword.'" /root/.Remote\ Control');
 				
-				exec('sudo /usr/local/sbin/nextion-driver-helper > /dev/null');  // Run the Nextion driver helper based on selected MMDVMHost display type
+				exec('sudo /usr/local/sbin/.wpsd-display-driver-helper > /dev/null');  // Run the display driver helper based on selected MMDVMHost display type
 
 				// Reset the GPIO Pins on Pi4, Pi5 etc. only
 				exec('sudo /usr/local/sbin/wpsd-modemreset boot > /dev/null');

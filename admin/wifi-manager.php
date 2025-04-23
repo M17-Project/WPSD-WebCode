@@ -255,13 +255,13 @@ if (isset($_POST['action'])) {
                 echo "Error: SSID and passphrase are required for adding a connection.";
             }
             break;
-        case 'delete':
+	case 'delete':
             if (isset($_POST['connection'])) {
                 $connection = $_POST['connection'];
 
-		$connection = escapeshellarg($connection);
+                $escaped_connection_name = escapeshellarg(trim($connection));
 
-		executeCommand("sudo nmcli connection delete " . $escapedConnection . "; sleep 1");
+                executeCommand("sudo nmcli connection delete " . $escaped_connection_name . "; sleep 1");
             } else {
                 echo "Error: Connection name is required for deletion.";
             }

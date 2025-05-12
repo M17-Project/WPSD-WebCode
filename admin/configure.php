@@ -813,22 +813,6 @@ if (!is_dir($config_dir) || count(glob("$config_dir/*")) < 1) { // no saved conf
     }
 }
 ?>
-<?php
-$bmAPIkeyFile = '/etc/bmapi.key';
-if (file_exists($bmAPIkeyFile) && fopen($bmAPIkeyFile,'r')) {
-  $configBMapi = parse_ini_file($bmAPIkeyFile, true);
-  $bmAPIkey = $configBMapi['key']['apikey'];
-  // Check the BM API Key
-  if ( strlen($bmAPIkey) <= 200 ) {
-?>
-<div>
-  <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
-    <tr>
-    <td align="center" valign="top" style="background-color: #ffff90; color: #906000; word-wrap: break-all;padding:20px;">Notice! You have a legacy Brandmeister API Key, which will not work any longer. Read the announcement on how to migrate: <a href="https://news.brandmeister.network/introducing-user-api-keys/" target="new" alt="BM API Keys">BM API Key Announcement and Migration Instructions</a>; and then <a href="/admin/advanced/fulledit_bmapikey.php">Update your API Key</a> to delete this message and to ensure BM Manager continues to work properly..</td>
-    </tr>
-  </table>
-</div>
-<?php } } ?>
 <div class="container">
 <div class="header">
 <div class="SmallHeader shLeft noMob">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>

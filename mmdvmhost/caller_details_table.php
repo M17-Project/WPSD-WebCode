@@ -185,7 +185,7 @@ for ($i = 0;  ($i <= 0); $i++) { //Last 20  calls
 		}
 
 		// Check if it's a private call or TG
-		if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false && is_numeric($target)) {
+		if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false) {
 		    $target = "Private Call to $target";  // Private call detected
 		} else {
 		    $target = preg_replace('/TG /', '', $target);  // Clean up "TG" from the target
@@ -207,7 +207,7 @@ for ($i = 0;  ($i <= 0); $i++) { //Last 20  calls
 		    $target = trim($target);  // Trim to avoid extra spaces
 
 		    // Check if it's a private call or TG
-		    if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false && is_numeric($target)) {
+		    if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false) {
 			$target = "Private Call to $target";  // Private call detected
 		    }
 		}

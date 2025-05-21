@@ -137,6 +137,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
       <div class="container">
 	  <div class="header">
 	      <div class="SmallHeader shLeft">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+		  <div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div>
               <div class="SmallHeader shRight">
                 <div id="CheckUpdate">
                 <?php

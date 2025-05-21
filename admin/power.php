@@ -71,6 +71,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/power.php") {
 	    <div class="container">
 		<div class="header">
 		    <div class="SmallHeader shLeft noMob">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+		    <div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div>
 		    <div class="SmallHeader shRight noMob">
                       <div id="CheckUpdate">
                       <?php

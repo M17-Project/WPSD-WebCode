@@ -816,6 +816,7 @@ if (!is_dir($config_dir) || count(glob("$config_dir/*")) < 1) { // no saved conf
 <div class="container">
 <div class="header">
 <div class="SmallHeader shLeft noMob">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+<div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div>
 <div class="SmallHeader shRight noMob">
   <div id="CheckUpdate">
   <?php

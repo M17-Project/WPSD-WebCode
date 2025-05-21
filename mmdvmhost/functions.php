@@ -34,6 +34,18 @@ function checkSessionValidity() {
 	}
     }
 
+	// get the name of the current profile
+	$profile_dir = '/etc/WPSD_config_mgr';
+	if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
+		if (is_dir("$profile_dir" . "/" ."$current_profile") != false ) {
+			$_SESSION['CURRENT_PROFILE'] = trim(file_get_contents('/etc/.WPSD_config'));
+		} else {
+			$_SESSION['CURRENT_PROFILE'] = '(N/A)';
+		}
+	} else {
+		$_SESSION['CURRENT_PROFILE'] = '(N/A)';
+	}
+
     if ( ! isset( $_SESSION['BMAPIKey'] ) || ( is_countable( $_SESSION['BMAPIKey'] ) && count( $_SESSION['BMAPIKey'], COUNT_RECURSIVE) < 1 ) && @file_exists( '/etc/bmapi.key' ) ) {
 	$configBMapi = @parse_ini_file('/etc/bmapi.key', true);
 	if (isset($configBMapi['key']['apikey']) && !empty($configBMapi['key']['apikey'])) {

@@ -40,10 +40,10 @@ function checkSessionValidity() {
 		if (is_dir("$profile_dir" . "/" ."$current_profile") != false ) {
 			$_SESSION['CURRENT_PROFILE'] = trim(file_get_contents('/etc/.WPSD_config'));
 		} else {
-			$_SESSION['CURRENT_PROFILE'] = '(N/A)';
+			$_SESSION['CURRENT_PROFILE'] = false;
 		}
 	} else {
-		$_SESSION['CURRENT_PROFILE'] = '(N/A)';
+		$_SESSION['CURRENT_PROFILE'] = false;
 	}
 
     if ( ! isset( $_SESSION['BMAPIKey'] ) || ( is_countable( $_SESSION['BMAPIKey'] ) && count( $_SESSION['BMAPIKey'], COUNT_RECURSIVE) < 1 ) && @file_exists( '/etc/bmapi.key' ) ) {

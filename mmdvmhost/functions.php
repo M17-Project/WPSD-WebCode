@@ -1394,9 +1394,13 @@ function getActualMode($metaLastHeard, &$configs) {
 
 // returns link-states of all D-Star-modules
 function getDSTARLinks() {
+    // Get our current configured callsign / module
+    $dstarCallsign = str_pad(getConfigItem("General", "Callsign", $_SESSION['MMDVMHostConfigs']), 7, " ", STR_PAD_RIGHT).getConfigItem("D-Star", "Module", $_SESSION['MMDVMHostConfigs']);
+
     if (filesize(LINKLOGPATH."/Links.log") == 0) {
 	return "Not Linked";
     }
+
     if ($linkLog = fopen(LINKLOGPATH."/Links.log",'r')) {
 	while ($linkLine = fgets($linkLog)) {
 	    $linkDate	= "&nbsp;";
@@ -1405,6 +1409,7 @@ function getDSTARLinks() {
 	    $linkSource	= "&nbsp;";
 	    $linkDest	= "&nbsp;";
 	    $linkDir	= "&nbsp;";
+
 	    // Reflector-Link, sample:
 	    // 2011-09-22 02:15:06: DExtra link - Type: Repeater Rptr: DB0LJ	B Refl: XRF023 A Dir: Outgoing
 	    // 2012-04-03 08:40:07: DPlus link - Type: Dongle Rptr: DB0ERK B Refl: REF006 D Dir: Outgoing
@@ -1416,7 +1421,16 @@ function getDSTARLinks() {
 		$linkSource	= $linx[4][0];
 		$linkDest	= $linx[5][0];
 		$linkDir	= $linx[6][0];
+		if ($linkSource != $dstarCallsign) {
+		    $linkDate	= "&nbsp;";
+		    $protocol	= "&nbsp;";
+		    $linkType	= "&nbsp;";
+		    $linkSource	= "&nbsp;";
+		    $linkDest	= "&nbsp;";
+		    $linkDir	= "&nbsp;";
+		}
 	    }
+
 	    // CCS-Link, sample:
 	    // 2013-03-30 23:21:53: CCS link - Rptr: PE1AGO C Remote: PE1KZU	Dir: Incoming
 	    if(preg_match_all('/^(.{19}).*(CC[A-Za-z]*).*Rptr: (.{8}).*Remote: (.{8}).*Dir: (.{8})/',$linkLine,$linx) > 0){
@@ -1427,6 +1441,7 @@ function getDSTARLinks() {
 		$linkDest	= $linx[4][0];
 		$linkDir	= $linx[5][0];
 	    }
+
 	    // Dongle-Link, sample: 
 	    // 2011-09-24 07:26:59: DPlus link - Type: Dongle User: DC1PIA	Dir: Incoming
 	    // 2012-03-14 21:32:18: DPlus link - Type: Dongle User: DC1PIA Dir: Incoming
@@ -1438,9 +1453,11 @@ function getDSTARLinks() {
 		$linkDest	= $linx[4][0];
 		$linkDir	= $linx[5][0];
 	    }
+
 	    if (strtolower(substr($linkDir, 0, 2)) == "in") { $linkDir = "Incoming"; }
 	    if (strtolower(substr($linkDir, 0, 3)) == "out") { $linkDir = "Outgoing"; }
 	    $out = $linkDest. " (" .$protocol ."/" .$linkDir. ")";
+
 	}
     }
     fclose($linkLog);

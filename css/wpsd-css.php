@@ -102,6 +102,12 @@ h2.ConfSec {
     padding-bottom: 1rem;
 }
 
+h3.ConfSec {
+    font-size: 1.4em;
+    text-align: left;
+}
+
+
 .left {
     text-align: left;
 }

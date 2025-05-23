@@ -800,6 +800,9 @@ foreach ($themes as $theme_key => $theme_data) {
                 ?>
                 <table>
                     <tr>
+                        <th class="larger" colspan="3">Themes</th> 
+                    </tr>
+                    <tr>
                         <td align="right" style='padding-left:10em;width:150px;'>Select Theme:</td>
                         <td align="left">
                             <select id="themeSelector">
@@ -840,11 +843,12 @@ foreach ($themes as $theme_key => $theme_data) {
                     <tr>
                         <td></td> 
                         <td align="left" colspan="2" style="padding-top: 10px;">
-                            <?php echo '<input type="submit" value="'.__( 'Apply Changes' ).'" />'."\n"; ?>
+                            <?php echo '<input type="submit" value="'.__( 'Apply Themne' ).'" />'."\n"; ?>
                         </td>
                     </tr>
                 </table>
-                <br /> 
+
+                <h3 class="ConfSec">Customize Theme</h3>
 
                 <?php
                 echo '<div style="position: fixed; pointer-events: none; transform: translateX(230%);" >'."\n";

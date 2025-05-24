@@ -843,7 +843,7 @@ foreach ($themes as $theme_key => $theme_data) {
                     <tr>
                         <td></td> 
                         <td align="left" colspan="2" style="padding-top: 10px;">
-                            <?php echo '<input type="submit" value="'.__( 'Apply Themne' ).'" />'."\n"; ?>
+                            <?php echo '<input type="submit" value="'.__( 'Apply Theme' ).'" />'."\n"; ?>
                         </td>
                     </tr>
                 </table>

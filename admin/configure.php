@@ -371,6 +371,7 @@ if (isDVmegaCast() == 1) {
     $configmmdvm['Transparent Data']['Enable'] = "1";
 }
 
+/*
 // New MMDVMHost uart stuff
 if (!isset($configmmdvm['Modem']['Protocol']) ||
 !isset($configmmdvm['Modem']['UARTPort']) ||
@@ -379,6 +380,7 @@ if (!isset($configmmdvm['Modem']['Protocol']) ||
     $configmmdvm['Modem']['UARTPort'] = $configmmdvm['Modem']['Port'];
     $configmmdvm['Modem']['UARTSpeed'] = 115200;
 }
+*/
 
 // Convert [aprs.fi] sections to new [APRS] format
 function clearAprsDotFi(&$cfgFile, $suffix) {

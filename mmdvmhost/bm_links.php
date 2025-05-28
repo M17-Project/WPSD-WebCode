@@ -138,15 +138,21 @@ if ( $testMMDVModeDMR == 1 ) {
                 }
 
                 if ($linkedAtSlot !== false) {
+                    $switchId = "sw-unlink-tg-" . $staticTG->talkgroup;
+                    $switchJsFunc = "toggleBMUnlinkTG({$staticTG->talkgroup}, {$staticTG->slot})";
+                    $switchHtml = "<div class=\"switch\">" . 
+                        "<input id=\"$switchId\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"$switchId\" value=\"ON\" checked=\"checked\" tabindex=\"-1\" onclick=\"$switchJsFunc\" />" .
+                        "<label id=\"$switchId\" role=\"checkbox\" tabindex=\"0\" aria-label=\"Unlink static TG" . $staticTG->talkgroup . "\" aria-checked=\"true\" onKeyPress=\"$switchJsFunc\" onclick=\"$switchJsFunc\" for=\"$switchId\"></div>";
                     $bmStaticTGname = exec("grep -w \"$staticTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
                     $bmStaticTGList .= "<tr>" .
                         "<td align='left' style='padding-left: 8px;'>TG " . $staticTG->talkgroup . "</td>" .
+                        "<td align='center'>$switchHtml</td>" .
                         "<td align='left' style='padding-left: 8px;'>$bmStaticTGname</td>" .
-                        "<td align='left' style='padding-left: 8px;'>$linkedAtSlot</td>" .
-                        "</tr>";
+                        "<td align='left' style='padding-left: 8px;'>TS$linkedAtSlot</td>" .
+                        "</tr>\n";
                 }
             }
-            $bmStaticTGList = wordwrap($bmStaticTGList, 135, "\n");
+            // $bmStaticTGList = wordwrap($bmStaticTGList, 135, "\n");
             if (preg_match('/TG/', $bmStaticTGList) == false) { $bmStaticTGList = "<tr><td colspan='4'>No Talkgroups Linked</td></tr>"; }
         }
         else { $bmStaticTGList = "<tr><td colspan='4'>No Talkgroups Linked</td></tr>"; }
@@ -170,7 +176,7 @@ if ( $testMMDVModeDMR == 1 ) {
                     $bmDynamicTGList .= "<tr>" .
                         "<td align='left' style='padding-left: 8px;'>TG ".$dynamicTG->talkgroup."</td>" .
                         "<td align='left' style='padding-left: 8px;'>$bmDynamicTGname</td>" .
-                        "<td align='left' style='padding-left: 8px;'>$linkedAtSlot</td>" .
+                        "<td align='left' style='padding-left: 8px;'>TS$linkedAtSlot</td>" .
                         "<td align='left' style='padding-left: 8px;'>".date("$local_time", substr($dynamicTG->timeout, 0, 10))." ".date('T')." ($bmDynamicTGexpire remaining)</td>" .
                         "</tr>";
                 }
@@ -189,6 +195,7 @@ if ( $testMMDVModeDMR == 1 ) {
         echo "     <table style='padding:0;margin:0;border:none;'>";
         echo "     <tr style='padding:0;margin:0;border:none;font-size:0.85em;'>";
         echo "       <th align='left' style='padding-left: 8px;'>Talkgroup #</th>";
+        echo "       <th align='left' style='padding-left: 8px;'>Unlink</th>";
         echo "       <th align='left' style='padding-left: 8px;'>Name</th>";
         echo "       <th align='left' style='padding-left: 8px;'>Timeslot</th>";
         echo "     </tr>";

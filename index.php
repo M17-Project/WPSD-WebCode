@@ -447,12 +447,14 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 			     </table>
 			   </div>
 		    <?php
-		    	} else { // Yay! good API key!
-		    	    include 'mmdvmhost/bm_common.php';
-		    	    echo '<div id="bmConnects">'."\n";
-		    	    include 'mmdvmhost/bm_links.php';                   // BM Links
-		    	    echo '</div>'."\n";
-		    	    include 'mmdvmhost/bm_manager.php';                 // BM DMR Link Manager
+		        } else { // Yay! good API key!
+		            if (!isset($_POST["tgSubmit"])) {
+		                include 'mmdvmhost/bm_common.php'; // BM Common func
+		                echo '<div id="bmConnects">'."\n";
+		                include 'mmdvmhost/bm_links.php';  // BM Links
+		                echo '</div>'."\n";
+		            }
+		            include 'mmdvmhost/bm_manager.php';    // BM DMR Link Manager
 		        }
 		    }
 		}

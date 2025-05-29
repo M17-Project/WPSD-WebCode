@@ -86,129 +86,133 @@ if ( $testMMDVModeDMR == 1 ) {
     //setup BM API Key
     $bmAPIkeyFile = '/etc/bmapi.key';
     if (file_exists($bmAPIkeyFile) && fopen($bmAPIkeyFile,'r')) {
-	$configBMapi = parse_ini_file($bmAPIkeyFile, true);
-	$bmAPIkey = $configBMapi['key']['apikey'];
+        $configBMapi = parse_ini_file($bmAPIkeyFile, true);
+        $bmAPIkey = $configBMapi['key']['apikey'];
     }
 
     // Get the current DMR Master from the config
     $dmrMasterHost = getConfigItem("DMR Network", "Address", $_SESSION['MMDVMHostConfigs']);
     if ( $dmrMasterHost == '127.0.0.1' ) {
-	$dmrMasterHost = $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Address'];
-	$bmEnabled = ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] != "0" ? true : false);
-	if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Id'])) { $dmrID = $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Id']; }
+        $dmrMasterHost = $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Address'];
+        $bmEnabled = ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] != "0" ? true : false);
+        if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Id'])) { $dmrID = $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Id']; }
     }
     else if (getConfigItem("DMR", "Id", $_SESSION['MMDVMHostConfigs'])) {
-	$dmrID = getConfigItem("DMR", "Id", $_SESSION['MMDVMHostConfigs']);
+        $dmrID = getConfigItem("DMR", "Id", $_SESSION['MMDVMHostConfigs']);
     }
     else {
-	$dmrID = getConfigItem("General", "Id", $_SESSION['MMDVMHostConfigs']);
+        $dmrID = getConfigItem("General", "Id", $_SESSION['MMDVMHostConfigs']);
     }
     
     // Make sure the master is a BrandMeister Master
     if (($dmrMasterFile = fopen("/usr/local/etc/DMR_Hosts.txt", "r")) != FALSE) {
-	while (!feof($dmrMasterFile)) {
+        while (!feof($dmrMasterFile)) {
             $dmrMasterLine = fgets($dmrMasterFile);
             $dmrMasterHostF = preg_split('/\s+/', $dmrMasterLine);
             if ((strpos($dmrMasterHostF[0], '#') === FALSE) && ($dmrMasterHostF[0] != '')) {
-		if ($dmrMasterHost == $dmrMasterHostF[2]) { $dmrMasterHost = str_replace('_', ' ', $dmrMasterHostF[0]); }
+                if ($dmrMasterHost == $dmrMasterHostF[2]) { $dmrMasterHost = str_replace('_', ' ', $dmrMasterHostF[0]); }
             }
-	}
-	fclose($dmrMasterFile);
+        }
+        fclose($dmrMasterFile);
     }
 
     if ((substr($dmrMasterHost, 0, 3) == "BM ") && ($bmEnabled == true) && isset($_SESSION['BMAPIKey'])) { 
         $bmAPIkey = $_SESSION['BMAPIKey'];
-	// Use BM API to get information about current TGs
-	$jsonContext = stream_context_create(array('http'=>array('timeout' => 10, 'header' => 'User-Agent: WPSD Software for '.$dmrID) )); // Add Timout and User Agent to include DMRID
-	$json = json_decode(@file_get_contents("https://api.brandmeister.network/v2/device/$dmrID/profile", true, $jsonContext));
-	// Set some vars
-	$bmStaticTGList = "";
-	$bmDynamicTGList = "";
+        // Use BM API to get information about current TGs
+        $jsonContext = stream_context_create(array('http'=>array('timeout' => 10, 'header' => 'User-Agent: WPSD Software for '.$dmrID) )); // Add Timout and User Agent to include DMRID
+        $json = json_decode(@file_get_contents("https://api.brandmeister.network/v2/device/$dmrID/profile", true, $jsonContext));
+        // Set some vars
+        $bmStaticTGList = "";
+        $bmDynamicTGList = "";
         $bmDynamicTGname = "";
         $bmDynamicTGexpire = "";
-	// Pull the information from JSON
-	if (isset($json->staticSubscriptions)) { $bmStaticTGListJson = $json->staticSubscriptions;
+        // Pull the information from JSON
+        if (isset($json->staticSubscriptions)) { $bmStaticTGListJson = $json->staticSubscriptions;
             foreach($bmStaticTGListJson as $staticTG) {
-                if (getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) && $staticTG->slot == "1") {
-                    $bmStaticTGname = exec("grep -w \"$staticTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
-                    $bmStaticTGList .= "<tr><td align='left' style='padding-left: 8px;'>TG ".$staticTG->talkgroup."</td><td align='left' style='padding-left: 8px;'>$bmStaticTGname</td><td align='left' style='padding-left: 8px;'>".$staticTG->slot."</td></tr>";
+                $linkedAtSlot = false;
+                if ((getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) && $staticTG->slot == "1") ||
+                    (getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $staticTG->slot == "2")) {
+                        $linkedAtSlot = $staticTG->slot;
+                } else if (getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) == "0" && getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $staticTG->slot == "0") {
+                    $linkedAtSlot = "2";
                 }
-                else if (getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $staticTG->slot == "2") {
+
+                if ($linkedAtSlot !== false) {
+                    $switchId = "sw-unlink-tg-" . $staticTG->talkgroup;
+                    $switchJsFunc = "toggleBMUnlinkTG({$staticTG->talkgroup}, {$staticTG->slot})";
+                    $switchHtml = "<span style=\"float: right;\"><a href='#' onclick=\"$switchJsFunc\">Unlink</a></span>";
                     $bmStaticTGname = exec("grep -w \"$staticTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
-                    $bmStaticTGList .= "<tr><td align='left' style='padding-left: 8px;'>TG ".$staticTG->talkgroup."</td><td align='left' style='padding-left: 8px;'>$bmStaticTGname</td><td align='left' style='padding-left: 8px;'>".$staticTG->slot."</td></tr>";
-                }
-                else if (getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) == "0" && getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $staticTG->slot == "0") {
-                    $bmStaticTGname = exec("grep -w \"$staticTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
-                    $bmStaticTGList .= "<tr><td align='left' style='padding-left: 8px;'>TG ".$staticTG->talkgroup."</td><td align='left' style='padding-left: 8px;'>$bmStaticTGname</td><td align='left' style='padding-left: 8px;'>2</td></tr>";
+                    $bmStaticTGList .= "<tr>" .
+                        "<td align='left' style='padding-left: 8px;'>TG " . $staticTG->talkgroup . " $switchHtml</td>" .
+                        "<td align='left' style='padding-left: 8px;'>$bmStaticTGname</td>" .
+                        "<td align='left' style='padding-left: 8px;'>TS$linkedAtSlot</td>" .
+                        "</tr>\n";
                 }
             }
-            $bmStaticTGList = wordwrap($bmStaticTGList, 135, "\n");
             if (preg_match('/TG/', $bmStaticTGList) == false) { $bmStaticTGList = "<tr><td colspan='4'>No Talkgroups Linked</td></tr>"; }
         }
-	else { $bmStaticTGList = "<tr><td colspan='4'>No Talkgroups Linked</td></tr>"; }
-	if (isset($json->dynamicSubscriptions)) { $bmDynamicTGListJson = $json->dynamicSubscriptions;
+        else { $bmStaticTGList = "<tr><td colspan='4'>No Talkgroups Linked</td></tr>"; }
+        if (isset($json->dynamicSubscriptions)) { $bmDynamicTGListJson = $json->dynamicSubscriptions;
             foreach($bmDynamicTGListJson as $dynamicTG) {
-                if (getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) && $dynamicTG->slot == "1") {
-		    $now = new DateTime();
-		    $then = new DateTime( "@" . $dynamicTG->timeout);
-		    $diff = $then->diff($now);
-		    $bmDynamicTGexpire = $diff->format('%i:%S mins');
-		    $bmDynamicTGname = exec("grep -w \"$dynamicTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
-		    $bmDynamicTGList .= "<tr><td align='left' style='padding-left: 8px;'>TG ".$dynamicTG->talkgroup."</td><td align='left' style='padding-left: 8px;'>$bmDynamicTGname</td><td align='left' style='padding-left: 8px;'>".$dynamicTG->slot."</td><td align='left' style='padding-left: 8px;' id='tgTimeout'>".date("$local_time", substr($dynamicTG->timeout, 0, 10))." ".date('T'). " ($bmDynamicTGexpire remaining)</td></tr>";
-                }
-                else if (getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $dynamicTG->slot == "2") {
-		    $now = new DateTime();
-		    $then = new DateTime( "@" . $dynamicTG->timeout);
-		    $diff = $then->diff($now);
-		    $bmDynamicTGexpire = $diff->format('%i:%S mins');
-		    $bmDynamicTGname = exec("grep -w \"$dynamicTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
-		    $bmDynamicTGList .= "<tr><td align='left' style='padding-left: 8px;'>TG ".$dynamicTG->talkgroup."</td><td align='left' style='padding-left: 8px;'>$bmDynamicTGname</td><td align='left' style='padding-left: 8px;'>".$dynamicTG->slot."</td><td align='left' style='padding-left: 8px;'>".date("$local_time", substr($dynamicTG->timeout, 0, 10))." ".date('T')." ($bmDynamicTGexpire remaining)</td></tr>";
+                $linkedAtSlot = false;
+                if ((getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) && $dynamicTG->slot == "1") ||
+                    (getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $dynamicTG->slot == "2")) {
+                        $linkedAtSlot = $dynamicTG->slot;
                 }
                 else if (getConfigItem("DMR Network", "Slot1", $_SESSION['MMDVMHostConfigs']) == "0" && getConfigItem("DMR Network", "Slot2", $_SESSION['MMDVMHostConfigs']) && $dynamicTG->slot == "0") {
+                    $linkedAtSlot = "2";
+                }
+
+                if ($linkedAtSlot !== false) {
                     $now = new DateTime();
-                    $then = new DateTime( "@" . $dynamicTG->timeout);
+                    $then = new DateTime("@" . $dynamicTG->timeout);
                     $diff = $then->diff($now);
                     $bmDynamicTGexpire = $diff->format('%i:%S mins');
                     $bmDynamicTGname = exec("grep -w \"$dynamicTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
-		    $bmDynamicTGList .= "<tr><td align='left' style='padding-left: 8px;'>TG ".$dynamicTG->talkgroup."</td><td align='left' style='padding-left: 8px;'>$bmDynamicTGname</td><td align='left' style='padding-left: 8px;'>2</td><td align='left' style='padding-left: 8px;'>".date("$local_time", substr($dynamicTG->timeout, 0, 10))." ".date('T')." ($bmDynamicTGexpire remaining)</td></tr>";
+                    $bmDynamicTGList .= "<tr>" .
+                        "<td align='left' style='padding-left: 8px;'>TG ".$dynamicTG->talkgroup."</td>" .
+                        "<td align='left' style='padding-left: 8px;'>$bmDynamicTGname</td>" .
+                        "<td align='left' style='padding-left: 8px;'>TS$linkedAtSlot</td>" .
+                        "<td align='left' style='padding-left: 8px;'>".date("$local_time", substr($dynamicTG->timeout, 0, 10))." ".date('T')." ($bmDynamicTGexpire remaining)</td>" .
+                        "</tr>";
                 }
             }
             $bmDynamicTGList = wordwrap($bmDynamicTGList, 135, "\n");
             if (preg_match('/TG/', $bmDynamicTGList) == false) { $bmDynamicTGList = "<tr><td colspan='5'>No Talkgroups Linked</td></tr>"; }
         } else { $bmDynamicTGList = "<tr><td colspan='5'>No Talkgroups Linked</td></tr>"; }
-	    echo '<div style="text-align:left;font-weight:bold;" class="larger">Linked Talkgroups</div>
+            echo '<div style="text-align:left;font-weight:bold;" class="larger">Linked Talkgroups</div>
   <table id="bmLinks">
     <tr style="font-size:1.1em;">
       <th><a class=tooltip href="#">Static Talkgroups<span><b>Statically linked talkgroups</b></span></a></th>
       <th><a class=tooltip href="#">Dynamic Talkgroups<span><b>Dynamically linked talkgroups</b></span></a></th>
     </tr>'."\n";
-	echo '    <tr>'."\n";
-	echo '     <td align="left" style="background:'.$tableRowOddBg.';vertical-align:top;padding:0;margin:0;border:none;">';
-	echo "     <table style='padding:0;margin:0;border:none;'>";
-	echo "     <tr style='padding:0;margin:0;border:none;font-size:0.85em;'>";
-	echo "       <th align='left' style='padding-left: 8px;'>Talkgroup #</th>";
-	echo "       <th align='left' style='padding-left: 8px;'>Name</th>";
-	echo "       <th align='left' style='padding-left: 8px;'>Timeslot</th>";
-	echo "     </tr>";
-	echo "     $bmStaticTGList";
-	echo "     </table>";
-	echo '     </td>';
-	echo '     <td align="left" style="background:'.$tableRowOddBg.';vertical-align:top;padding:0;margin:0;border:none;">';
-	echo "     <table style='padding:0;margin:0;border:none;'>";
-	echo "     <tr style='padding:0;margin:0;border:none;font-size:0.85em;'>";
-	echo "       <th align='left' style='padding-left: 8px;'>Talkgroup #</th>";
-	echo "       <th align='left' style='padding-left: 8px;'>Name</th>";
-	echo "       <th align='left' style='padding-left: 8px;'>Timeslot</th>";
-	echo "       <th align='left' style='padding-left: 8px;'>Idle Timeout</th>";
-	echo "     </tr>";
-	echo "     $bmDynamicTGList";
-	echo "     </table>";
-	echo '     </td>';
-	echo '    </tr>'."\n";
-	echo '    <tr>'."\n";
-	echo '      <td colspan="3" style="white-space:normal;padding: 3px;background:'.$tableRowEvenBg.'">Your Hotspot/Repeater ID: <a href="https://brandmeister.network/?page=hotspot&amp;id='.$dmrID.'" target="_new" title="Click to view your hotspot info on BrandMeister">'.$dmrID.'</a> &bull; Connected To: '.$dmrMasterHost.' &bull; <a href="https://w0chp.radio/brandmeister-talkgroups/" target="_blank">List of All BrandMeister Talkgroups</a></td>'."\n";
-	echo '    </tr>'."\n";
-	echo '  </table>'."\n";
+        echo '    <tr>'."\n";
+        echo '     <td align="left" style="background:'.$tableRowOddBg.';vertical-align:top;padding:0;margin:0;border:none;">';
+        echo "     <table style='padding:0;margin:0;border:none;'>";
+        echo "     <tr style='padding:0;margin:0;border:none;font-size:0.85em;'>";
+        echo "       <th align='left' style='padding-left: 8px;'>Talkgroup #</th>";
+        echo "       <th align='left' style='padding-left: 8px;'>Name</th>";
+        echo "       <th align='left' style='padding-left: 8px;'>Timeslot</th>";
+        echo "     </tr>";
+        echo "     $bmStaticTGList";
+        echo "     </table>";
+        echo '     </td>';
+        echo '     <td align="left" style="background:'.$tableRowOddBg.';vertical-align:top;padding:0;margin:0;border:none;">';
+        echo "     <table style='padding:0;margin:0;border:none;'>";
+        echo "     <tr style='padding:0;margin:0;border:none;font-size:0.85em;'>";
+        echo "       <th align='left' style='padding-left: 8px;'>Talkgroup #</th>";
+        echo "       <th align='left' style='padding-left: 8px;'>Name</th>";
+        echo "       <th align='left' style='padding-left: 8px;'>Timeslot</th>";
+        echo "       <th align='left' style='padding-left: 8px;'>Idle Timeout</th>";
+        echo "     </tr>";
+        echo "     $bmDynamicTGList";
+        echo "     </table>";
+        echo '     </td>';
+        echo '    </tr>'."\n";
+        echo '    <tr>'."\n";
+        echo '      <td colspan="3" style="white-space:normal;padding: 3px;background:'.$tableRowEvenBg.'">Your Hotspot/Repeater ID: <a href="https://brandmeister.network/?page=hotspot&amp;id='.$dmrID.'" target="_new" title="Click to view your hotspot info on BrandMeister">'.$dmrID.'</a> &bull; Connected To: '.$dmrMasterHost.' &bull; <a href="https://w0chp.radio/brandmeister-talkgroups/" target="_blank">List of All BrandMeister Talkgroups</a></td>'."\n";
+        echo '    </tr>'."\n";
+        echo '  </table>'."\n";
     }
 }
 ?>

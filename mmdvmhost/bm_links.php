@@ -140,9 +140,10 @@ if ( $testMMDVModeDMR == 1 ) {
                 if ($linkedAtSlot !== false) {
                     $switchId = "sw-unlink-tg-" . $staticTG->talkgroup;
                     $switchJsFunc = "toggleBMUnlinkTG({$staticTG->talkgroup}, {$staticTG->slot})";
-                    $switchHtml = "<div class=\"switch\">" . 
-                        "<input id=\"$switchId\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"$switchId\" value=\"ON\" checked=\"checked\" tabindex=\"-1\" onclick=\"$switchJsFunc\" />" .
-                        "<label id=\"$switchId\" role=\"checkbox\" tabindex=\"0\" aria-label=\"Unlink static TG" . $staticTG->talkgroup . "\" aria-checked=\"true\" onKeyPress=\"$switchJsFunc\" onclick=\"$switchJsFunc\" for=\"$switchId\"></div>";
+                    // $switchHtml = "<div class=\"switch\">" . 
+                    //     "<input id=\"$switchId\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"$switchId\" value=\"ON\" checked=\"checked\" tabindex=\"-1\" onclick=\"$switchJsFunc\" />" .
+                    //     "<label id=\"$switchId\" role=\"checkbox\" tabindex=\"0\" aria-label=\"Unlink static TG" . $staticTG->talkgroup . "\" aria-checked=\"true\" onKeyPress=\"$switchJsFunc\" onclick=\"$switchJsFunc\" for=\"$switchId\"></div>";
+                    $switchHtml = "<input type=\"button\" name=\"\" value=\"Unlink\" onclick=\"$switchJsFunc\">";
                     $bmStaticTGname = exec("grep -w \"$staticTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
                     $bmStaticTGList .= "<tr>" .
                         "<td align='left' style='padding-left: 8px;'>TG " . $staticTG->talkgroup . "</td>" .

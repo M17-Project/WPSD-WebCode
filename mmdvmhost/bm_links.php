@@ -140,7 +140,7 @@ if ( $testMMDVModeDMR == 1 ) {
                 if ($linkedAtSlot !== false) {
                     $switchId = "sw-unlink-tg-" . $staticTG->talkgroup;
                     $switchJsFunc = "toggleBMUnlinkTG({$staticTG->talkgroup}, {$staticTG->slot})";
-                    $switchHtml = "<span style=\"float: right;\"><a href='#' onclick=\"$switchJsFunc\">Unlink</a></span>";
+                    $switchHtml = "<span style=\"float: right; padding-right: 8px;\"><a href='#' onclick=\"$switchJsFunc\">Unlink</a></span>";
                     $bmStaticTGname = exec("grep -w \"$staticTG->talkgroup\" /usr/local/etc/BM_TGs.json | cut -d\":\" -f2- | tr -cd \"'[:alnum:]\/ -\"");
                     $bmStaticTGList .= "<tr>" .
                         "<td align='left' style='padding-left: 8px;'>TG " . $staticTG->talkgroup . " $switchHtml</td>" .

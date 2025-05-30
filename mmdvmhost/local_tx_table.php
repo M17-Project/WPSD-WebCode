@@ -128,7 +128,7 @@ for ($i = 0; $i < $TXListLim; $i++) {
                 }
 
                 // Check if it's a private call or TG
-                if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false && is_numeric($target)) {
+                if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false) {
                     $target = "Private Call to $target";  // Private call detected
                 } else {
                     $target = preg_replace('/TG /', '', $target);  // Clean up "TG" from the target
@@ -152,7 +152,7 @@ for ($i = 0; $i < $TXListLim; $i++) {
                     $listElem[4] = trim($listElem[4]);  // Trim to avoid extra spaces
 
                     // Check if it's a private call or TG
-                    if (strpos($listElem[1], "DMR") !== false && strpos($listElem[4], "TG") === false && is_numeric($listElem[4])) {
+                    if (strpos($listElem[1], "DMR") !== false && strpos($listElem[4], "TG") === false) {
                         $listElem[4] = "Private Call to $listElem[4]";  // Private call detected
                     }
 

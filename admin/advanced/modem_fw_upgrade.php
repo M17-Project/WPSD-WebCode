@@ -3,7 +3,7 @@
 if (!isset($_SESSION) || !is_array($_SESSION)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -43,27 +43,27 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/modem_fw_upgrade.php") {
 	    $_SESSION['update_offset'] = 0;
 	}
     }
-    
+
     if (isset($_GET['ajax'])) {
 	if (!file_exists('/var/log/pi-star/WPSD-modemflash.log')) {
 	    exit();
 	}
-	
+
 	if (($handle = fopen('/var/log/pi-star/WPSD-modemflash.log', 'rb')) != false) {
 	    if (isset($_SESSION['update_offset'])) {
 		fseek($handle, 0, SEEK_END);
 		if ($_SESSION['update_offset'] > ftell($handle)) { //log rotated/truncated
 		    $_SESSION['update_offset'] = 0; //continue at beginning of the new log
 		}
-		
+
 		$data = stream_get_contents($handle, -1, $_SESSION['update_offset']);
-		
+
 		$upgradeIsRunning = shell_exec('ps ax | grep "/usr/local/sbin/wpsd-modemupgrade" | grep -v grep') != null ? "YES" : "NO";
 		$oldOffset = $_SESSION['update_offset'];
-		
+
 		$_SESSION['update_offset'] += strlen($data);
 		echo "<pre>$data</pre>";
-		
+
 		// we reached the end of the cmd
 		if (($oldOffset == $_SESSION['update_offset']) && (isset($_SESSION['modemupgrade-isrunning']) && ($_SESSION['modemupgrade-isrunning'] == 1)) && ($upgradeIsRunning == "NO"))
 		{
@@ -243,7 +243,5 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/modem_fw_upgrade.php") {
   </div>
   </body>
   </html>
-<?php } 
+<?php }
 }
-?>
-

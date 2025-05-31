@@ -51,5 +51,3 @@ if (file_exists($config_file)) {
 
     $DashLanguage = !empty($config['WPSD']['DashLanguage']) ? $config['WPSD']['DashLanguage'] : 'english_us';
 }
-?>
-

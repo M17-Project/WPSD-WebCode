@@ -7,4 +7,3 @@ if (constant("AUTO_UPDATE_CHECK") == "true") {
 } else {
     echo $version;
 }
-?>

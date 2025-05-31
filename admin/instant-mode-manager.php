@@ -93,7 +93,7 @@ if (!empty($_POST["submit_mode"]) && empty($_POST["mode_sel"])) { //handler for 
 	echo "  </tr>\n";
 	echo "  <tr>\n";
 	echo "    <td><p>$mode mode already paused! Did you mean to \"resume\" $mode mode?<br />Page Reloading...</p></td>\n";
-	echo "  </tr>\n"; 
+	echo "  </tr>\n";
 	echo "</table>\n";
 	// Clean up...
 	unset($_POST);
@@ -206,5 +206,3 @@ if (!empty($_POST["submit_mode"]) && empty($_POST["mode_sel"])) { //handler for 
       </table>
 ';
 }
-
-?>

@@ -278,4 +278,3 @@ for ($i = 0;  ($i <= $lastHeardRows - 1); $i++) {
 ?>
   </table>
   <script>clear_activity();</script>
-

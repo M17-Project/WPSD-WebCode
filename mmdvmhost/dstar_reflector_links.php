@@ -233,6 +233,6 @@ if (isset($_SESSION['CSSConfigs']['Background'])) {
 	}
     }
     ?>
-    
+   
 </table>
 <br />

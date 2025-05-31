@@ -299,4 +299,3 @@ if(getDMRnetStatus("xlx") == "disabled") {
 	}
     }
 }
-?>

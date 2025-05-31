@@ -1298,7 +1298,7 @@ function getLastHeard($logLines) {
     $lastHeard = array();
     $heardCalls = array();
     $heardList = getHeardList($logLines);
-    foreach ($heardList as $listElem) {
+	foreach ($heardList as $listElem) {
 	if ( ($listElem[1] == "D-Star") || ($listElem[1] == "YSF") || ($listElem[1] == "P25") || ($listElem[1] == "NXDN") || ($listElem[1] == "M17") || ($listElem[1] == "POCSAG") || (startsWith($listElem[1], "DMR")) ) {
 
 	    $callUuid = $listElem[2]."#".$listElem[1].$listElem[3].$listElem[5];
@@ -2031,4 +2031,3 @@ if (!in_array($_SERVER["PHP_SELF"],array('/mmdvmhost/bm_links.php','/mmdvmhost/b
 	$logLinesDAPNETGateway = getDAPNETGatewayLog(($origin == "admin" ? (isset($_SESSION['DAPNETAPIKeyConfigs']) ? getConfigItem("DAPNETAPI", "MY_RIC", $_SESSION['DAPNETAPIKeyConfigs']) : null) : null));
     }
 }
-

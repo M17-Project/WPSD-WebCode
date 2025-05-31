@@ -3,7 +3,7 @@
 if (!isset($_SESSION) || !is_array($_SESSION)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -17,7 +17,7 @@ $tempfile = '/tmp/eXNmZ2F0ZXdheQ.tmp';
 // this is the function going to update your ini file
 function update_ini_file($data, $filepath) {
     $content = "";
-    
+
     // Read the INI file contents
     $ini_content = file_get_contents($filepath);
     // Set the INI scanner option to treat values as literal strings
@@ -34,25 +34,23 @@ function update_ini_file($data, $filepath) {
 	}
 	$content .= "\n";
     }
-    
+
     // write it into file
     if (!$handle = fopen($filepath, 'w')) {
 	return false;
     }
-    
+
     $success = fwrite($handle, $content);
     fclose($handle);
-    
+
     // Updates complete - copy the working file back to the proper location
     exec('sudo cp /tmp/eXNmZ2F0ZXdheQ.tmp /etc/ysfgateway');	// Move the file back
     exec('sudo chmod 644 /etc/ysfgateway');				// Set the correct runtime permissions
     exec('sudo chown root:root /etc/ysfgateway');			// Set the owner
-    
+
     // Reload the affected daemon
     exec('sudo systemctl restart ysfgateway.service');		// Reload the daemon
     return $success;
 }
 
 require_once('edit_template.php');
-
-?>

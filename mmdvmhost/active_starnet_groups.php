@@ -155,5 +155,3 @@ if ($active >= 1) {
     }
     echo "</table>\n<br />\n";
 }
-
-?>

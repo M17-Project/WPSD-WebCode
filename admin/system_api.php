@@ -98,5 +98,3 @@ if ($format === 'json') {
         echo $result['exit_status'];
     }
 }
-
-?>

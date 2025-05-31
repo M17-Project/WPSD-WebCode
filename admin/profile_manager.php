@@ -3,7 +3,7 @@
 if (!isset($_SESSION) || !is_array($_SESSION)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -189,7 +189,7 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
 				    if (isDVmegaCast() == 1) {
 					exec("sudo mkdir -p /usr/local/cast/etc  > /dev/null");
 					exec("sudo sh -c 'cp -a $profileDir/cast-settings/* /usr/local/cast/etc/' > /dev/null");
-					exec('sudo chmod 775 /usr/local/cast/etc ; sudo chown -R www-data:pi-star /usr/local/cast/etc ; sudo chmod 664 /usr/local/cast/etc/*');	
+					exec('sudo chmod 775 /usr/local/cast/etc ; sudo chown -R www-data:pi-star /usr/local/cast/etc ; sudo chmod 664 /usr/local/cast/etc/*');
 					exec('sudo /usr/local/cast/sbin/RSET.sh  > /dev/null 2>&1 &');
 					exec('sudo /usr/local/cast/bin/cast-reset ; sleep 2 > /dev/null 2>/dev/null');
 				    }
@@ -317,7 +317,7 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
 			</tr>
 		    </table>
 		</form>
-		
+
 		<p>
 		<br />
 		<table align="center" style="width:60%;max-width:65%;">
@@ -364,4 +364,3 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
 </html>
 <?php
 }
-?>

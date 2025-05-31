@@ -78,4 +78,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/ssh_access.php") {
 
 <?php
 }
-?>

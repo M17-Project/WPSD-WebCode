@@ -27,7 +27,6 @@ if (isset($_SESSION['CSSConfigs']['Background']['TableRowBgEvenColor'])) {
 }
 
 ?>
-
 <div class="divTable">
   <div class="divTableBody">
     <div class="divTableRow center">
@@ -172,4 +171,3 @@ if (isset($_SESSION['CSSConfigs']['Background']['TableRowBgEvenColor'])) {
     </div>
   </div>
 </div>
-

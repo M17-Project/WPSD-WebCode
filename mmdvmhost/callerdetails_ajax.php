@@ -8,5 +8,3 @@ if($_POST['action'] == 'disable') {
     exec('sudo rm -rf /etc/.CALLERDETAILS');
     exec('sudo rm -rf /tmp/Callsign_Name*');
 }
-
-?>

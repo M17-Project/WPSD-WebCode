@@ -58,4 +58,3 @@ class xGeoLookup {
       return array(strtolower($Image), $Name);
    }
 } 
-?>

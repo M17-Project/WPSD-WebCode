@@ -156,15 +156,15 @@ if (isset($configmmdvm['Mobile GPS'])) {
 	$configmmdvm['GPSD']['Enable'] = $configmmdvm['Mobile GPS']['Enable'];
 	unset($configmmdvm['Mobile GPS']['Enable']);
     }
-    
+
     if (isset($configmmdvm['Mobile GPS']['Address'])) {
 	unset($configmmdvm['Mobile GPS']['Address']);
     }
-    
+
     if (isset($configmmdvm['Mobile GPS']['Port'])) {
 	unset($configmmdvm['Mobile GPS']['Port']);
     }
-    
+
     unset($configmmdvm['Mobile GPS']);
 }
 
@@ -173,15 +173,15 @@ if (isset($configysfgateway['Mobile GPS'])) {
     if (isset($configysfgateway['Mobile GPS']['Enable'])) {
 	unset($configysfgateway['Mobile GPS']['Enable']);
     }
-    
+
     if (isset($configysfgateway['Mobile GPS']['Address'])) {
 	unset($configysfgateway['Mobile GPS']['Address']);
     }
-    
+
     if (isset($configysfgateway['Mobile GPS']['Port'])) {
 	unset($configysfgateway['Mobile GPS']['Port']);
     }
-    
+
     unset($configysfgateway['Mobile GPS']);
 }
 // NXDN Gateway config file
@@ -189,15 +189,15 @@ if (isset($confignxdngateway['Mobile GPS'])) {
     if (isset($confignxdngateway['Mobile GPS']['Enable'])) {
 	unset($confignxdngateway['Mobile GPS']['Enable']);
     }
-    
+
     if (isset($confignxdngateway['Mobile GPS']['Address'])) {
 	unset($confignxdngateway['Mobile GPS']['Address']);
     }
-    
+
     if (isset($confignxdngateway['Mobile GPS']['Port'])) {
 	unset($confignxdngateway['Mobile GPS']['Port']);
     }
-    
+
     unset($confignxdngateway['Mobile GPS']);
 }
 
@@ -212,7 +212,7 @@ if ($configdmrgateway['GPSD']['Enable'] == 1) {
     if (isset($configdmrgateway['GPSD']['Address']) != TRUE) {
 	$configdmrgateway['GPSD']['Address'] = "127.0.0.1";
     }
-    
+
     if (isset($configdmrgateway['GPSD']['Port']) != TRUE) {
 	$configdmrgateway['GPSD']['Port'] = "2947";
     }
@@ -225,15 +225,15 @@ if (isset($configmmdvm['GPSD'])) {
     if (isset($configmmdvm['GPSD']['Enable'])) {
 	unset($configmmdvm['GPSD']['Enable']);
     }
-    
+
     if (isset($configmmdvm['GPSD']['Address'])) {
 	unset($configmmdvm['GPSD']['Address']);
     }
-    
+
     if (isset($configmmdvm['GPSD']['Port'])) {
 	unset($configmmdvm['GPSD']['Port']);
     }
-    
+
     unset($configmmdvm['GPSD']);
 }
 
@@ -387,7 +387,7 @@ function clearAprsDotFi(&$cfgFile, $suffix) {
     $cfgAprsEnabled = 0;
     $cfgAprsSuffix = $suffix;
     $cfgAprsDescription = (isset($configysfgateway['APRS']['Description']) && !empty($configysfgateway['APRS']['Description'])) ? $configysfgateway['APRS']['Description'] : "APRS Description";
-    
+
     // Old config if present, get rid of it
     if (isset($cfgFile['aprs.fi']))
     {
@@ -399,7 +399,7 @@ function clearAprsDotFi(&$cfgFile, $suffix) {
 	$cfgAprsDescription = $cfgFile['aprs.fi']['Description'];
 	unset($cfgFile['aprs.fi']);
     }
-    
+
     // Add default APRS config
     $cfgFile['APRS']['Enable'] = "0";
     $cfgFile['APRS']['Address'] = "127.0.0.1";
@@ -477,7 +477,7 @@ $MYCALL=strtoupper($callsign);
     <script src="/js/jquery.min.js?version=<?php echo $versionCmd; ?>"></script>
     <link href="/js/select2/css/select2.min.css?version=<?php echo $versionCmd; ?>" rel="stylesheet" />
     <script src="/js/select2/js/select2.full.min.js?version=<?php echo $versionCmd; ?>"></script>
-    <script src="/js/select2/js/select2-searchInputPlaceholder.js?version=<?php echo $versionCmd; ?>"></script>  
+    <script src="/js/select2/js/select2-searchInputPlaceholder.js?version=<?php echo $versionCmd; ?>"></script>
     <script>
         window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
         function disableSubmitButtons() {
@@ -516,10 +516,10 @@ $MYCALL=strtoupper($callsign);
 	function resizeIframe(obj) {
     	    var heightBuffer = 10;
     	    var widthBuffer = 5;
-    
+
     	    var height = obj.contentWindow.document.body.scrollHeight + heightBuffer;
     	    var width = obj.contentWindow.document.body.scrollWidth + widthBuffer;
-    
+
     	    obj.style.height = height + 'px';
     	    obj.style.width = width + 'px';
 	}
@@ -802,7 +802,7 @@ input[type=number] {
 $config_dir = "/etc/WPSD_config_mgr";
 if (!is_dir($config_dir) || count(glob("$config_dir/*")) < 1) { // no saved configs
     if (file_exists('/etc/dstar-radio.mmdvmhost') && !in_array($MYCALL, $skipped_calls)) { // NOT a new installation , so display message..
-?> 
+?>
 <div>
   <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
     <tr>
@@ -865,7 +865,7 @@ if (!empty($is_paused)) {
     echo '		<form method="post" action="/admin/.resume_all_modes.php">';
     echo '		  <h1>IMPORTANT:</h1>';
     echo '		  <p><b>One or more modes have been detected to be "paused"</b>:</p>';
-    
+
     foreach ($paused_modes as $mode) {
         echo "<h2>$mode</h2>";
     }
@@ -876,7 +876,7 @@ if (!empty($is_paused)) {
 
     echo '<input type="submit" name="unpause_modes" value="Resume All Modes">';
     echo '</form>';
-    
+
     echo '<br />'."\n";
     echo '        </div>
               </div>
@@ -1858,7 +1858,7 @@ if (!empty($_POST)):
 	      unset($confignxdngateway['Network']['Static']);
 	    } else {
 	      $confignxdngateway['Network']['Startup'] = escapeshellcmd($_POST['ysf2nxdnStartupDstId']);
-	    }		  
+	    }
 	  }
 	}
 
@@ -1974,10 +1974,10 @@ if (!empty($_POST)):
 		if ($dmrMasterHostArr[0] != '127.0.0.1') {
 		    $configmmdvm['DMR Network']['Password'] = '"'.$_POST['bmHSSecurity_YSF'].'"';
 		}
-	    } else { 
+	    } else {
 		unset($configModem['BrandMeister']['Password']);
 	    }
-	
+
 	    if (empty($_POST['tgifHSSecurity']) != TRUE ) {
 		$configModem['TGIF']['Password'] = '"'.$_POST['tgifHSSecurity'].'"';
 		if ($dmrMasterHostArr[0] != '127.0.0.1') {
@@ -2225,7 +2225,7 @@ if (!empty($_POST)):
 	  $configmmdvm['DMR Network']['ModeHang'] = preg_replace('/[^0-9]/', '', $_POST['dmrNetHangTime']);
 	  $configdmrgateway['General']['NetTimeout'] = preg_replace('/[^0-9]/', '', $_POST['dmrNetHangTime']);
 	}
-  
+
 	// Set D-Star Hang Timers
 	if (empty($_POST['dstarRfHangTime']) != TRUE ) {
 	  $configmmdvm['D-Star']['ModeHang'] = preg_replace('/[^0-9]/', '', $_POST['dstarRfHangTime']);
@@ -2643,7 +2643,7 @@ if (!empty($_POST)):
 		$rollCastMode = 'sudo /usr/local/cast/sbin/RMHS.sh conf_page dual';
 	    }
 	  }
-	  
+
 	  if ( $confHardware == 'opengd77' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
@@ -2875,7 +2875,7 @@ if (!empty($_POST)):
 		    	$configdmrgateway['DMR Network 4']['Password'] = '"'.$_POST['tgifHSSecurity'].'"';
 			} else {
 		    	$configdmrgateway['DMR Network 4']['Password'] = "passw0rd";
-			} 
+			}
 			$configdmrgateway['DMR Network 4']['Id'] = $configdmrgateway['DMR Network 4']['Id'];
 			$dmrMastersUpdateRqd = TRUE;
 	    }
@@ -2938,7 +2938,7 @@ if (!empty($_POST)):
             $configdmrgateway['DMR Network 1']['PCRewrite0'] = "2,24000,2,4000,1001";
             $configdmrgateway['DMR Network 1']['PCRewrite1'] = "1,2009990,1,9990,1";
             $configdmrgateway['DMR Network 1']['PCRewrite2'] = "2,2009990,2,9990,1";
-            $configdmrgateway['DMR Network 1']['PCRewrite3'] = "1,2000001,1,1,999999"; 
+            $configdmrgateway['DMR Network 1']['PCRewrite3'] = "1,2000001,1,1,999999";
             $configdmrgateway['DMR Network 1']['PCRewrite4'] = "2,2000001,2,1,999999";
             $configdmrgateway['DMR Network 1']['TypeRewrite1'] = "1,2009990,1,9990";
             $configdmrgateway['DMR Network 1']['TypeRewrite2'] = "2,2009990,2,9990";
@@ -2990,7 +2990,7 @@ if (!empty($_POST)):
             $configdmrgateway['DMR Network 2']['PCRewrite0'] = "2,84000,2,4000,1001";
             $configdmrgateway['DMR Network 2']['PCRewrite1'] = "1,8009990,1,9990,1";
             $configdmrgateway['DMR Network 2']['PCRewrite2'] = "2,8009990,2,9990,1";
-            $configdmrgateway['DMR Network 2']['PCRewrite3'] = "1,8000001,1,1,999999"; 
+            $configdmrgateway['DMR Network 2']['PCRewrite3'] = "1,8000001,1,1,999999";
             $configdmrgateway['DMR Network 2']['PCRewrite4'] = "2,8000001,2,1,999999";
             $configdmrgateway['DMR Network 2']['TypeRewrite1'] = "1,8009990,1,9990";
             $configdmrgateway['DMR Network 2']['TypeRewrite2'] = "2,8009990,2,9990";
@@ -3502,7 +3502,7 @@ if (!empty($_POST)):
  		$fix2ndIRCHost = "sudo sed -i '/^ircddbEnabled=/a ircddbEnabled2=0' /etc/ircddbgateway";
  		system($fix2ndIRCHost);
  	}
-	
+
 	// Add missing options to DMR2YSF
 	if (!isset($configdmr2ysf['YSF Network']['FCSRooms'])) { $configdmr2ysf['YSF Network']['FCSRooms'] = "/usr/local/etc/FCSHosts.txt"; }
 	if (!isset($configdmr2ysf['DMR Network']['DefaultDstTG'])) { $configdmr2ysf['DMR Network']['DefaultDstTG'] = "9"; }
@@ -3620,7 +3620,7 @@ if (!empty($_POST)):
 	$configdgidgateway['General']['Daemon'] = "1";
 	$configdgidgateway['General']['Debug'] = "0";
 	$configdgidgateway['General']['Bleep'] = "1";
-	$configdgidgateway['Log']['DisplayLevel'] = "0"; 
+	$configdgidgateway['Log']['DisplayLevel'] = "0";
 	$configdgidgateway['Log']['FileLevel'] = "2";
 	$configdgidgateway['Log']['FilePath'] = "/var/log/pi-star";
 	$configdgidgateway['Log']['FileRoot'] = "DGIdGateway";
@@ -3895,7 +3895,7 @@ if (!empty($_POST)):
 				system('sudo sed -i "/BeaconInterval=.*/d" /tmp/bW1kdm1ob3N0DQo.tmp');
 			} else {
 				if (!strpos(file_get_contents("/etc/mmdvmhost"),"BeaconInterval=") !== false) {
-					system('sudo sed -i "/BeaconDuration=.*/i BeaconInterval=60" /tmp/bW1kdm1ob3N0DQo.tmp');                                                                             
+					system('sudo sed -i "/BeaconDuration=.*/i BeaconInterval=60" /tmp/bW1kdm1ob3N0DQo.tmp');
 				}
 			}
 			exec('sudo mv /tmp/bW1kdm1ob3N0DQo.tmp /etc/mmdvmhost');		// Move the file back
@@ -4447,7 +4447,7 @@ if (!empty($_POST)):
 	// Set the system timezone
 	if (!empty($_POST['systemTimezone'])) {
 	    $newTimezone = escapeshellcmd($_POST['systemTimezone']);
-    
+
 	    $rollTimeZone = "sudo timedatectl set-timezone $newTimezone";
 	    system($rollTimeZone);
 
@@ -4458,7 +4458,7 @@ if (!empty($_POST)):
 	// 12 or 24 hour time?
 	if (!empty($_POST['systemTimeFormat'])) {
 	    $newTimeFormat = escapeshellcmd($_POST['systemTimeFormat']);
-    
+
 	    $rollTimeFormatConfig = "sudo sed -i \"/TimeFormat = /c\\TimeFormat = $newTimeFormat\" $config_file";
 	    system($rollTimeFormatConfig);
 	}
@@ -4466,7 +4466,7 @@ if (!empty($_POST)):
 	// Auto-update check?
 	if (!empty($_POST['autoUpdateCheck'])) {
 	    $newUpdateCheck = escapeshellcmd($_POST['autoUpdateCheck']);
-    
+
 	    $rollUpdateCheckConfig = "sudo sed -i \"/UpdateNotifier = /c\\UpdateNotifier = $newUpdateCheck\" $config_file";
 	    system($rollUpdateCheckConfig);
 	}
@@ -4474,7 +4474,7 @@ if (!empty($_POST)):
 	// User map opt-in
 	if (!empty($_POST['mapOpted'])) {
 	    $newMapOpted = escapeshellcmd($_POST['mapOpted']);
-    
+
 	    $rollMapOpted = "sudo sed -i \"/OptIntoUserMap = /c\\OptIntoUserMap = $newMapOpted\" $config_file";
 	    system($rollMapOpted);
 	}
@@ -4482,7 +4482,7 @@ if (!empty($_POST)):
 	// Diags/Updates opt-out
 	if (!empty($_POST['diagsOpted'])) {
 	    $newDiagsOpted = escapeshellcmd($_POST['diagsOpted']);
-    
+
 	    $rollDiagsOpted = "sudo sed -i \"/OptIntoDiags = /c\\OptIntoDiags = $newDiagsOpted\" $config_file";
 	    system($rollDiagsOpted);
 
@@ -4712,7 +4712,7 @@ else:
 	<tr id="modem_speed">
 	    <td align="left"><a class="tooltip2" href="#">Modem Baud Rate:<span><b>Baudrate</b>Serial speed (most HATS use 115200)</span></a></td>
 	    <td align="left" colspan="3"><select name="confHardwareSpeed">
-		<?php 
+		<?php
 		$modemSpeeds = [500000, 460800, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1200];
 		foreach($modemSpeeds as $modemSpeed) {
 		    if ($configmmdvm['Modem']['UARTSpeed'] == $modemSpeed) {
@@ -4723,7 +4723,7 @@ else:
 			} else {
 			    echo " <option value=\"$modemSpeed\">$modemSpeed</option>\n";
 			}
-		    } 
+		    }
 		}
 		?>
 		</select>
@@ -4749,7 +4749,7 @@ else:
     }
 ?>
     </select></td>
-    <td align="left" colspan="2">Dashboard Time Format: 
+    <td align="left" colspan="2">Dashboard Time Format:
     <input type="radio" name="systemTimeFormat" value="24" <?php if (constant("TIME_FORMAT") == "24") {  echo 'checked="checked"'; } ?> />24 Hour
     <input type="radio" name="systemTimeFormat" value="12" <?php if (constant("TIME_FORMAT") == "12") { echo 'checked="checked"'; } ?> />12 Hour
     </tr>
@@ -4787,14 +4787,14 @@ else:
 <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Latitude' );?>:<span><b>Node Latitude</b>This is the latitude where the node is located (positive number for North, negative number for South) - Set to 0 to diable</span></a></td>
     <td align="left" colspan="3">
-        <input type="number" 
-               id="confLatitude" 
-               name="confLatitude" 
-               size="15" 
+        <input type="number"
+               id="confLatitude"
+               name="confLatitude"
+               size="15"
                step="0.000001"
-               min="-90" 
-               max="90" 
-               value="<?php echo $configmmdvm['Info']['Latitude']; ?>" 
+               min="-90"
+               max="90"
+               value="<?php echo $configmmdvm['Info']['Latitude']; ?>"
                onchange="validateDecimalDegrees(this, 'latitude')"
                required
         /> degrees (positive value for North, negative for South)
@@ -4804,14 +4804,14 @@ else:
 <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Longitude' );?>:<span><b>Node Longitude</b>This is the longitude where the node is located (positive number for East, negative number for West) - Set to 0 to disable</span></a></td>
     <td align="left" colspan="3">
-        <input type="number" 
-               id="confLongitude" 
-               name="confLongitude" 
-               size="15" 
+        <input type="number"
+               id="confLongitude"
+               name="confLongitude"
+               size="15"
                step="0.000001"
-               min="-180" 
-               max="180" 
-               value="<?php echo $configmmdvm['Info']['Longitude']; ?>" 
+               min="-180"
+               max="180"
+               value="<?php echo $configmmdvm['Info']['Longitude']; ?>"
                onchange="validateDecimalDegrees(this, 'longitude')"
                required
         /> degrees (positive value for East, negative for West)
@@ -4823,7 +4823,7 @@ else:
 function validateDecimalDegrees(input, type) {
     const value = parseFloat(input.value);
     const errorElement = document.getElementById(type + 'Error');
-    
+
     // Check if it's a valid number
     if (isNaN(value)) {
         errorElement.textContent = "Please enter a valid decimal number";
@@ -4831,13 +4831,13 @@ function validateDecimalDegrees(input, type) {
         input.value = "";
         return false;
     }
-    
+
     // Validate range based on type
     const ranges = {
         latitude: { min: -90, max: 90 },
         longitude: { min: -180, max: 180 }
     };
-    
+
     const range = ranges[type];
     if (value < range.min || value > range.max) {
         errorElement.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} must be between ${range.min} and ${range.max} degrees`;
@@ -4845,13 +4845,13 @@ function validateDecimalDegrees(input, type) {
         input.value = "";
         return false;
     }
-    
+
     // Special case for value 0 (hiding location)
     if (value === 0) {
         errorElement.style.display = "none";
         return true;
     }
-    
+
     // Validate decimal places (maximum 6 decimal places)
     const decimalPlaces = (input.value.split('.')[1] || '').length;
     if (decimalPlaces > 6) {
@@ -4860,7 +4860,7 @@ function validateDecimalDegrees(input, type) {
         input.value = value.toFixed(6);
         return false;
     }
-    
+
     // Clear error message if validation passes
     errorElement.style.display = "none";
     return true;
@@ -4870,7 +4870,7 @@ function validateDecimalDegrees(input, type) {
 document.querySelector('form').addEventListener('submit', function(e) {
     const latValid = validateDecimalDegrees(document.getElementById('confLatitude'), 'latitude');
     const longValid = validateDecimalDegrees(document.getElementById('confLongitude'), 'longitude');
-    
+
     if (!latValid || !longValid) {
         e.preventDefault();
     }
@@ -5093,7 +5093,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     ?>
     <td align="left">RF Hangtime: <input type="text" name="dmrRfHangTime" size="7" maxlength="3" value="<?php if (isset($configmmdvm['DMR']['ModeHang'])) { echo $configmmdvm['DMR']['ModeHang']; } else { echo "20"; } ?>" />
     Net Hangtime: <input type="text" name="dmrNetHangTime" size="7" maxlength="3" value="<?php if (isset($configmmdvm['DMR Network']['ModeHang'])) { echo $configmmdvm['DMR Network']['ModeHang']; } else { echo "20"; } ?>" />
-    Primary DMR Network: 
+    Primary DMR Network:
 	<select name="dmrPrimary">
 	    <option <?php if (($configdmrgateway['General']['Primary'] == "1") || ($configmmdvm['General']['Primary'] == "") ) {echo 'selected="selected" ';}; ?>value="1">Brandmeister</option>
 	    <option <?php if (($configdmrgateway['General']['Primary'] == "2") ) {echo 'selected="selected" ';}; ?>value="2">DMR+/FreeDMR/HBlink/Custom Network</option>
@@ -5146,7 +5146,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     ?>
     <td align="left">POCSAG Mode Hangtime: <input type="text" name="POCSAGHangTime" size="7" maxlength="3" value="<?php if (isset($configmmdvm['POCSAG Network']['ModeHang'])) { echo $configmmdvm['POCSAG Network']['ModeHang']; } else { echo "5"; } ?>"></td>
     </tr>
-    <?php } 
+    <?php }
       } // end DVMega Cast logic.
     ?>
     <tr>
@@ -5458,7 +5458,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     </tr>
     <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Default Reflector' );?>:<span><b>Default Reflector</b>Used for setting the default reflector.</span></a></td>
-    <td align="left" colspan="1"><select name="confDefRef" class="confDefRef" 
+    <td align="left" colspan="1"><select name="confDefRef" class="confDefRef"
 	onchange="if (this.options[this.selectedIndex].value == 'customOption') {
 	  toggleField(this,this.nextSibling);
 	  this.selectedIndex='0';
@@ -5571,8 +5571,8 @@ fclose($dextraFile);
       $currentTimeInt = $_SESSION['timeServerConfigs']['interval'];
     ?>
     <td style='word-wrap: break-word;white-space: normal' align="left"><strong>Interval:</strong>&nbsp;&nbsp;
-	<input type="radio" name="confTimeAnnounceInt" value="2" <?php if ($currentTimeInt == "2") { echo " checked"; }?>/><label>1 Hr.</label> 
-	<input type="radio" name="confTimeAnnounceInt" value="1" <?php if ($currentTimeInt == "1") { echo " checked"; }?> /><label>30 Mins.</label> 
+	<input type="radio" name="confTimeAnnounceInt" value="2" <?php if ($currentTimeInt == "2") { echo " checked"; }?>/><label>1 Hr.</label>
+	<input type="radio" name="confTimeAnnounceInt" value="1" <?php if ($currentTimeInt == "1") { echo " checked"; }?> /><label>30 Mins.</label>
 	<input type="radio" name="confTimeAnnounceInt" value="0" <?php if ($currentTimeInt == "0") { echo " checked"; }?> /><label>15 Mins.</label>
     </td>
     </tr>
@@ -5821,7 +5821,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
     </tr>
     <tr>
       <td align="left"><a class="tooltip2" href="#">DMR TG:<span><b>YSF2DMR TG</b>Enter your DMR TG here</span></a></td>
-      <td align="left" colspan="2"><input type="text" name="ysf2dmrTg" size="13" maxlength="7" value="<?php if (isset($configysf2dmr['DMR Network']['StartupDstId'])) { echo $configysf2dmr['DMR Network']['StartupDstId']; } ?>" /></td>  
+      <td align="left" colspan="2"><input type="text" name="ysf2dmrTg" size="13" maxlength="7" value="<?php if (isset($configysf2dmr['DMR Network']['StartupDstId'])) { echo $configysf2dmr['DMR Network']['StartupDstId']; } ?>" /></td>
     </tr>
     <?php } ?>
     <?php if (file_exists('/etc/dstar-radio.mmdvmhost') && $configysf2nxdn['Enabled']['Enabled'] == 1) { ?>
@@ -5914,7 +5914,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
     </select></td>
     </tr>
     <?php } ?>
- 
+
     </table>
 
     <br /><br />
@@ -5963,7 +5963,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
 					}
 					?>
 				    </select>
-				    
+
 				    &nbsp;Startup Module:<select name="m17StartupModule" class="ModSel">
 					<?php
 					$m17ModuleList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -5977,7 +5977,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
 					}
 					?>
 				    </select>
-				    
+
 				    </td>
 				</tr>
 				<?php if (isset($configm17gateway['General']['Suffix'])) { ?>
@@ -5985,7 +5985,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
 					<td align="left"><a class="tooltip2" href="#">M17 Callsign Suffix:<span><b>Callsign Suffix</b>Set your preferred callsign suffix here. Typical values are "H" for Hotspots, "R" for Repeaters.</span></a></td>
 					<td align="left">
 					<select name="m17CallsignSuffix">
-					<?php 
+					<?php
 					$m17SuffixList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 					foreach ($m17SuffixList as $suffix) {
 					    if ($configm17gateway['General']['Suffix'] == $suffix) {
@@ -6163,10 +6163,10 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
 			echo "<td align=\"left\" colspan=\"1\"><i class=\"fa fa-exclamation-circle\"></i> Primary Network - No talkgroup prefix</td>";
 		} else {
 			echo "<td align=\"left\" colspan=\"1\"><i class=\"fa fa-exclamation-circle\"></i> Uses \"2\" talkgroup prefix</td>";
-	
+
 		}
 	?>
-	
+
     </tr>
     <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'BrandMeister Network' );?>:<span><b>BrandMeister Dashboards</b>Direct links to your BrandMeister Dashboards</span></a></td>
@@ -6424,10 +6424,10 @@ if (!@file_exists($bmAPIkeyFile) && !@fopen($bmAPIkeyFile,'r')) {
 			echo "<td align=\"left\" colspan=\"1\"><i class=\"fa fa-exclamation-circle\"></i> Uses \"5\" talkgroup prefix</td>";
 		} else {
 			echo "<td align=\"left\" colspan=\"1\"><i class=\"fa fa-exclamation-circle\"></i> Primary Network - No talkgroup prefix</td>";
-	
+
 		}
 	?>
-	
+
     </tr>
     <tr>
     <td align="left"><a class="tooltip2" href="#">TGIF Network:<span><b>TGIF Dashboards</b>Direct links to your TGIF Dashboard</span></a></td>
@@ -6661,7 +6661,7 @@ $p25Hosts = fopen("/usr/local/etc/P25Hosts.txt", "r");
     <br /><br />
 
 <?php } ?>
-	
+
 <?php if (file_exists('/etc/dstar-radio.mmdvmhost') && ($configmmdvm['NXDN Network']['Enable'] == 1 || $configdmr2nxdn['Enabled']['Enabled'] == 1) ) { ?>
 	<h2 class="ConfSec"><?php echo __( 'NXDN Configuration' );?></h2>
     <table>
@@ -6737,7 +6737,7 @@ $p25Hosts = fopen("/usr/local/etc/P25Hosts.txt", "r");
 
 			    <br /><br />
 
-			<?php } ?>	
+			<?php } ?>
 
 <?php if ( $configmmdvm['POCSAG']['Enable'] == 1 ) { ?>
 	<h2 class="ConfSec"><?php echo __( 'POCSAG Configuration' );?></h2>
@@ -6871,7 +6871,7 @@ $p25Hosts = fopen("/usr/local/etc/P25Hosts.txt", "r");
     </table>
 
 
-    <?php if (isDVmegaCast() == 0) { // Begin DVMega Cast logic... ?> 
+    <?php if (isDVmegaCast() == 0) { // Begin DVMega Cast logic... ?>
     <?php if (file_exists('/etc/default/hostapd') && file_exists('/sys/class/net/wlan0') || file_exists('/sys/class/net/wlan1') || file_exists('/sys/class/net/wlan0_ap')) { ?>
     <br /><br />
     <h2 class="ConfSec"><?php _e( 'AccessPoint Mode' ); ?></h2>
@@ -6901,7 +6901,7 @@ $p25Hosts = fopen("/usr/local/etc/P25Hosts.txt", "r");
 	    $wifi_page = '<iframe frameborder="0" scrolling="no" style="overflow: hidden;"  name="wifi" src="wifi-manager.php" width="100%" onload="javascript:resizeIframe(this);">If you can see this message, your browser does not support iFrames, however if you would like to see the content please click <a href="wifi-manager.php">here</a>.</iframe>';
 	} else { // Legacy wpa_supp systems (Bullseye) use the legacy wifi config page...
 	    $wifi_page = '<iframe frameborder="0" scrolling="no" style="overflow: hidden;" name="wifi" src="wifi.php?page=wlan0_info" width="100%" onload="javascript:resizeIframe(this);">If you can see this message, your browser does not support iFrames, however if you would like to see the content please click <a href="wifi.php?page=wlan0_info">here</a>.</iframe>';
-	}	
+	}
 
 	if ( file_exists('/sys/class/net/wlan0') || file_exists('/sys/class/net/wlan1') || file_exists('/sys/class/net/wlan0_ap') ) {
 echo '
@@ -6971,8 +6971,8 @@ echo'
         var previewText = document.querySelector('.aprs-preview-text');
         var previewContainer = document.querySelector('.aprs-preview-container');
         var symbolImageTag = getAPRSSymbolImageTag(symbolCode, 48);
-        
-        if (symbolPreview && previewText && previewContainer) { 
+
+        if (symbolPreview && previewText && previewContainer) {
             if (symbolCode !== '') {
                 // Update the image container with the selected symbol and display "Preview:"
                 symbolPreview.innerHTML = symbolImageTag;
@@ -7065,23 +7065,23 @@ echo'
       if (dmrCheckbox) {
           dmrCheckbox.disabled = dmrCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
       }
-    
+
       if (ysfCheckbox) {
           ysfCheckbox.disabled = ysfCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
       }
-    
+
       if (dgIdCheckbox) {
           dgIdCheckbox.disabled = dgIdCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
       }
-    
+
       if (nxdnCheckbox) {
           nxdnCheckbox.disabled = nxdnCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
       }
-    
+
       if (m17Checkbox) {
           m17Checkbox.disabled = m17Checkbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
       }
-    
+
       if (ircDDBCheckbox) {
           ircDDBCheckbox.disabled = ircDDBCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
       }
@@ -7098,7 +7098,7 @@ echo'
 </body>
 </html>
 
-<?php 
+<?php
 } else {
 ?>
 <br />
@@ -7109,6 +7109,5 @@ echo'
 </body>
 </html>
 <?php
-    } 
+    }
 }
-?>

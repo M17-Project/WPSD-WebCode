@@ -18,5 +18,3 @@ $tempfile = '/tmp/c3Rhcm5ldHNlcnZlcg.tmp';
 $servicenames = array('mmdvmhost.service', 'starnetserver.service');
 
 require_once('fulledit_template.php');
-
-?>

@@ -111,4 +111,3 @@ if (empty($dmrID) == false) {
 	      echo '</table>'."\n";
     }
 }
-?>

@@ -97,5 +97,3 @@ else {
     print "DAPNET API configuration is incomplete. Setup your <a href='/admin/advanced/edit_dapnetapi.php'>DAPNET API information</a> to use this feature.";
     echo "</td></tr>\n</table>\n";
 }
-
-?>

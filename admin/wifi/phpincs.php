@@ -156,6 +156,3 @@ function ConvertToSecurity($security) {
 		break;
 	}
 }
-
-?>
-

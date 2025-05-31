@@ -7,5 +7,3 @@ if($_POST['action'] == 'enable') {
 if($_POST['action'] == 'disable') {
     exec('sudo rm -rf /etc/.TGNAMES');
 }
-
-?>

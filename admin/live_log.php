@@ -6,10 +6,10 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/config/version.php';
 
 // Sanity Check that this file has been opened correctly
 if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
-    
+
     // Sanity Check Passed.
     header('Cache-Control: no-cache');
-    
+
     if (!isset($_GET['ajax'])) {
 	unset($_SESSION['offset']);
 	//$_SESSION['offset'] = 0;
@@ -68,12 +68,12 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
 	    $logfile = "/var/log/pi-star/APRSGateway-".gmdate('Y-m-d').".log";
 	    break;
     }
-    
+
     if (isset($_GET['ajax'])) {
 	if (empty($logfile) || !file_exists($logfile)) {
 	    exit();
 	}
-	
+
 	$handle = fopen($logfile, 'rb');
 	if (isset($_SESSION['offset'])) {
 	    fseek($handle, 0, SEEK_END);
@@ -88,7 +88,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
 	else {
 	    fseek($handle, 0, SEEK_END);
 	    $_SESSION['offset'] = ftell($handle);
-	} 
+	}
 	exit();
     }
 ?>
@@ -156,7 +156,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
                 }
                 reloadDateTime();
               </script>
-              <div class="headerClock"> 
+              <div class="headerClock">
                 <span id="timer"></span>
             </div>
 		      <a class="menuconfig" href="/admin/configure.php"><?php echo __( 'Configuration' );?></a>
@@ -260,4 +260,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
 <?php
     }
 }
-?>

@@ -1,7 +1,7 @@
 <?php
 if (isset($_COOKIE['PHPSESSID']))
 {
-    session_id($_COOKIE['PHPSESSID']); 
+    session_id($_COOKIE['PHPSESSID']);
 }
 if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
@@ -10,7 +10,7 @@ if (session_status() != PHP_SESSION_ACTIVE) {
 if (!isset($_SESSION) || !is_array($_SESSION) || (count($_SESSION, COUNT_RECURSIVE) < 10)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -71,12 +71,12 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 		<h2 class="ConfSec center"><?php echo __( 'Backup/Restore' );?></h2>
 		    <?php if (!empty($_POST)) {
 			echo '<table width="100%">'."\n";
-			
+
 			if ( escapeshellcmd($_POST["action"]) == "download" ) {
 			    $backupDir = "/tmp/config_backup";
 			    $backupZip = "/tmp/config_backup.zip";
 			    $hostNameInfo = exec('cat /etc/hostname');
-			    
+
 			    exec("sudo rm -rf $backupZip > /dev/null");
 			    exec("sudo rm -rf $backupDir > /dev/null");
 			    exec("sudo mkdir $backupDir > /dev/null");
@@ -150,11 +150,11 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				readfile($backupZip);
 				exit();
 			    }
-			    
+
 			};
 			if ( escapeshellcmd($_POST["action"]) == "restore" ) {
 			    echo "<tr><th colspan=\"2\">Configuration Restore</th></tr>\n";
-			    
+
 			    $target_dir = "/tmp/config_restore/";
 			    exec("sudo rm -rf $target_dir > /dev/null");
 			    exec("mkdir $target_dir > /dev/null");
@@ -162,7 +162,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				$filename = $_FILES["fileToUpload"]["name"];
 	  			$source = $_FILES["fileToUpload"]["tmp_name"];
 				$type = $_FILES["fileToUpload"]["type"];
-				
+
 				$name = explode(".", $filename);
 				$accepted_types = array('application/zip', 'application/x-zip-compressed', 'multipart/x-zip', 'application/x-compressed');
 				foreach($accepted_types as $mime_type) {
@@ -173,21 +173,21 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				}
 			    }
 			    $continue = false;
-			    
+
 			    if (isset($name))
 			    {
 				$continue = strtolower($name[1]) == 'zip' ? true : false;
 			    }
-			    
+
 			    if(!$continue) {
 				$output .= "The file you are trying to upload is not a .zip file. Please try again.\n";
 			    }
-			    
+
 			    if (isset($filename))
 			    {
 				$target_path = $target_dir.$filename;
 			    }
-			    
+
 			    if(isset($target_path) && move_uploaded_file($source, $target_path)) {
 				$zip = new ZipArchive();
 				$x = $zip->open($target_path);
@@ -196,10 +196,10 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			            $zip->close();
 			            unlink($target_path);
 				}
-				
+
 				// Stop the DV Services
 			    	exec('sudo wpsd-services fullstop > /dev/null');
-	
+
 				// Overwrite the configs
 				exec("sudo rm -rf /etc/WPSD-Dashboard-Config.ini /etc/dstar-radio.* /etc/bmapi.key /etc/dapnetapi.key /etc/timeserver.disable /etc/WPSD_config_mgr > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/tmp/config_backup/* /tmp/config_restore/ > /dev/null");
@@ -209,7 +209,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				if (isDVmegaCast() == 1) {
 				    exec("sudo mkdir -p /usr/local/cast/etc  > /dev/null");
 				    exec("sudo sh -c 'cp -a /tmp/config_restore/cast-settings/* /usr/local/cast/etc/' > /dev/null");
-				    exec('sudo chmod 775 /usr/local/cast/etc ; sudo chown -R www-data:pi-star /usr/local/cast/etc ; sudo chmod 664 /usr/local/cast/etc/*');	
+				    exec('sudo chmod 775 /usr/local/cast/etc ; sudo chown -R www-data:pi-star /usr/local/cast/etc ; sudo chmod 664 /usr/local/cast/etc/*');
 				    exec('sudo /usr/local/cast/sbin/RSET.sh  > /dev/null 2>&1 &');
 				}
                                 exec("sudo mv -f /tmp/config_restore/gpsd /etc/default/ > /dev/null");
@@ -224,16 +224,16 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				exec("sudo cp -a /tmp/config_restore/.WPSD_config  /etc/ > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/pistar-css.ini /etc/wpsd-css.ini > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/* /etc/ > /dev/null");
-				
+
 				//Restore the Timezone Config
 				$timeZone = exec("grep -oP '^Timezone = \K.*' /etc/WPSD-Dashboard-Config.ini");
 				$timeZone = preg_replace( "/\r|\n/", "", $timeZone);
 				exec('sudo timedatectl set-timezone '.$timeZone.' > /dev/null');
-				
+
 				//Restore ircDDGBateway Link Manager Password
 				$ircRemotePassword = exec('grep remotePassword /etc/ircddbgateway | awk -F\'=\' \'{print $2}\'');
 				exec('sudo sed -i "/password=/c\\password='.$ircRemotePassword.'" /root/.Remote\ Control');
-				
+
 				exec('sudo /usr/local/sbin/.wpsd-display-driver-helper > /dev/null');  // Run the display driver helper based on selected MMDVMHost display type
 
 				// Reset the GPIO Pins on Pi4, Pi5 etc. only
@@ -241,7 +241,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 
 				// Start the services
 			    	exec('sudo wpsd-services start > /dev/null &');
-	
+
 				// Complete
 				$output .= "<h3 style='text-align:center'>Configuration Restoration Complete.</h3>\n";
 			    }
@@ -256,7 +256,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    }
 			    echo "<tr><td>$output</td></tr>\n";
 			};
-			
+
 			echo "</table>\n";
 		    } else { ?>
 			<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
@@ -292,4 +292,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
     </html>
 <?php
 }
-?>

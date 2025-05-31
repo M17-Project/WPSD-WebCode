@@ -53,7 +53,7 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
         echo "  </tr>\n";
         echo "  <tr>\n";
         echo "    <td><p>$mode already disabled! Did you mean to \"enable\" $mode?<br />Page Reloading...</p></td>\n";
-        echo "  </tr>\n"; 
+        echo "  </tr>\n";
         echo "</table>\n";
         // Clean up...
         unset($_POST);
@@ -162,4 +162,3 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
   </form>
 ';
 }
-?>

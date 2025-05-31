@@ -121,4 +121,3 @@ if (file_exists('/etc/wpsd-css.ini')) {
     assignCSSValue($tableBorderColor, $piStarCss['ExtraSettings']['TableBorderColor']);
     
 }
-?>

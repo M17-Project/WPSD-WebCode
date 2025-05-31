@@ -1,7 +1,7 @@
 <?php
 if (isset($_COOKIE['PHPSESSID']))
 {
-    session_id($_COOKIE['PHPSESSID']); 
+    session_id($_COOKIE['PHPSESSID']);
 }
 if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
@@ -10,7 +10,7 @@ if (session_status() != PHP_SESSION_ACTIVE) {
 if (!isset($_SESSION) || !is_array($_SESSION) || (count($_SESSION, COUNT_RECURSIVE) < 10)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -43,10 +43,10 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/jitter_test.php") {
 	system('sudo /usr/local/sbin/wpsd-dmr_jittertest '.$target.' > /dev/null 2>&1 &');
 	$_SESSION['jittertest-isrunning'] = 1;
     }
-    
+
     // Sanity Check Passed.
     header('Cache-Control: no-cache');
-    
+
     if (!isset($_GET['ajax'])) {
 	//unset($_SESSION['update_offset']);
 	if (file_exists('/var/log/pi-star/wpsdr_icmptest.log')) {
@@ -56,28 +56,28 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/jitter_test.php") {
 	    $_SESSION['update_offset'] = 0;
 	}
     }
-    
+
     if (isset($_GET['ajax'])) {
 	//session_start();
 	if (!file_exists('/var/log/pi-star/wpsd_icmptest.log')) {
 	    exit();
 	}
-	
+
 	if (($handle = fopen('/var/log/pi-star/wpsd_icmptest.log', 'rb')) != false) {
 	    if (isset($_SESSION['update_offset'])) {
 		fseek($handle, 0, SEEK_END);
 		if ($_SESSION['update_offset'] > ftell($handle)) { //log rotated/truncated
 		    $_SESSION['update_offset'] = 0; //continue at beginning of the new log
 		}
-		
+
 		$data = stream_get_contents($handle, -1, $_SESSION['update_offset']);
-		
+
 		$jitterIsRunning = shell_exec('ps ax | grep "/usr/local/sbin/wpsd-dmr_jittertest" | grep -v grep') != null ? "YES" : "NO";
 		$oldOffset = $_SESSION['update_offset'];
-		
+
 		$_SESSION['update_offset'] += strlen($data);
 		echo "<pre>$data</pre>";
-		
+
 		// we reach the end of the test
 		if (($oldOffset == $_SESSION['update_offset']) && (isset($_SESSION['jittertest-isrunning']) && ($_SESSION['jittertest-isrunning'] == 1)) && ($jitterIsRunning == "NO"))
 		{
@@ -189,4 +189,3 @@ Test Complete.
 
 <?php
 }
-?>

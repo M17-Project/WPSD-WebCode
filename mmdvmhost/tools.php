@@ -67,15 +67,15 @@ function isProcessRunning($processName, $full = false, $refresh = false) {
   return false;
 }
 
-function createConfigLines() { 
+function createConfigLines() {
 	$out ="";
-	foreach($_GET as $key=>$val) { 
+	foreach($_GET as $key=>$val) {
 		if($key != "cmd") {
 			$out .= "define(\"$key\", \"$val\");"."\n";
 		}
 	}
 	return $out;
-} 
+}
 
 function getSize($filesize, $precision = 2) {
 	$units = array('', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y');
@@ -196,6 +196,3 @@ function isRaspberryPi5() {
     return strpos($output, 'Raspberry Pi 5') !== false;
 }
 $isPi5 = isRaspberryPi5();
-
-?>
-

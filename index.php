@@ -41,8 +41,7 @@ $section = 'ZUM';
 $key = 'NewInstall';
 $expectedValue = '1';
 $iniData = parse_ini_file($iniFile, true);
-$isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] === $expectedValue;
-?>
+$isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] === $expectedValue; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">

@@ -98,9 +98,9 @@ switch($page) {
 				}
 				//preg_match('/TX Bytes:(\d+ \(\d+.\d+ [K|M|G]iB\))/i',$strWlan0,$result);
 				//$strTxBytes = $result[1];
-				if (preg_match('/Access Point: ([0-9a-f:]+)/i',$strWlan0,$result)) { 
+				if (preg_match('/Access Point: ([0-9a-f:]+)/i',$strWlan0,$result)) {
 				$strBSSID = $result[1]; }
-				if (preg_match('/Connected to\ ([0-9a-f:]+)/i',$strWlan0,$result)) { 
+				if (preg_match('/Connected to\ ([0-9a-f:]+)/i',$strWlan0,$result)) {
 				$strBSSID = $result[1]; }
 				if (preg_match('/Bit Rate([=:0-9\.]+ Mb\/s)/i',$strWlan0,$result)) {
 				$strBitrate = str_replace(':', '', str_replace('=', '', $result[1])); }
@@ -138,16 +138,16 @@ switch($page) {
 			exec('ifconfig wlan0 | grep -i running | wc -l',$test);
 			if($test[0] == 1) {
 				exec('sudo ifdown wlan0',$return);
-			} 
+			}
 			else {
 				echo 'Interface already down';
 			}
-		} 
+		}
 		elseif(isset($_POST['ifup_wlan0'])) {
 			exec('ifconfig wlan0 | grep -i running | wc -l',$test);
 			if($test[0] == 0) {
 				exec('sudo ifup wlan0',$return);
-			} 
+			}
 			else {
 				echo 'Interface already up';
 			}
@@ -370,4 +370,3 @@ echo '
 <div class="tail">.</div>
 </body>
 </html>';
-?>

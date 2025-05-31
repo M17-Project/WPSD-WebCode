@@ -21,7 +21,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/power.php") {
     // Sanity Check Passed.
     header('Cache-Control: no-cache');
 
-    if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) {
+    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) {
 	exec('/usr/local/sbin/.wpsd-platform-detect | grep "Pi 5 Model" | wc -l', $output);
 	$count = intval($output[0]);
 	$is_pi_5 = ($count >= 1);
@@ -64,12 +64,14 @@ if ($_SERVER["PHP_SELF"] == "/admin/power.php") {
         <script type="text/javascript" src="/js/functions.js?version=<?php echo $versionCmd; ?>"></script>
         <script type="text/javascript">
           $.ajaxSetup({ cache: false });
+          window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
         </script>
 	</head>
 	<body>
 	    <div class="container">
 		<div class="header">
 		    <div class="SmallHeader shLeft noMob">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+		    <?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
 		    <div class="SmallHeader shRight noMob">
                       <div id="CheckUpdate">
                       <?php
@@ -80,25 +82,11 @@ if ($_SERVER["PHP_SELF"] == "/admin/power.php") {
 		    <h1>WPSD <?php echo __(( 'Dashboard' )) . " - ".__( 'Power' );?></h1>
 			<div class="navbar">
               <script type= "text/javascript">
-               $(document).ready(function() {
-                 setInterval(function() {
-                   $("#timer").load("/includes/datetime.php");
-                   }, 1000);
-
-                 function update() {
-                   $.ajax({
-                     type: 'GET',
-                     cache: false,
-                     url: '/includes/datetime.php',
-                     timeout: 1000,
-                     success: function(data) {
-                       $("#timer").html(data); 
-                       window.setTimeout(update, 1000);
-                     }
-                   });
-                 }
-                 update();
-               });
+              function reloadDateTime(){
+                $( '#timer' ).html( _getDatetime( window.time_format ) );
+                setTimeout(reloadDateTime,1000);
+                }
+                reloadDateTime();
               </script>
               <div class="headerClock">
                 <span id="timer"></span>
@@ -115,13 +103,36 @@ if ($_SERVER["PHP_SELF"] == "/admin/power.php") {
 			<table width="100%">
 			    <tr><th colspan="2"><?php echo __( 'Power' );?></th></tr>
 			    <?php
-			    if ( escapeshellcmd($_POST["action"]) == "reboot" ) {
+			    if ( escapeshellcmd($_POST["action"]) === "reboot" ) {
 				echo '<tr><td colspan="2" style="background: #000000; color: #4DEEEA;"><br /><br />System is rebooting...
-				    <br /><br />You will be redirected back to the dashboard automatically in ' . $rbMinutes . ' ' . (($rbMinutes > 1) ? "minutes" : "minute") . ' ' . (($rbSeconds > 0) ? $rbSeconds . ' seconds' : '') . '.<br /><br /><br />
-				    <script language="JavaScript" type="text/javascript">
-				        setTimeout(function() {
-				            location.href = \'/\';
-				        }, ' . ($rbTime * 1000) . '); // milliseconds
+				    <br /><br />You will be redirected back to the dashboard automatically.<br /><br /><div class="status"></div><br />
+				    <script>
+
+                var offline = false;
+                
+                function check_internet_connection(){
+                  $(".status").html("<svg style=\"fill:#4DEEEA;\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><style>.spinner_Wezc{transform-origin:center;animation:spinner_Oiah .75s step-end infinite}@keyframes spinner_Oiah{8.3%{transform:rotate(30deg)}16.6%{transform:rotate(60deg)}25%{transform:rotate(90deg)}33.3%{transform:rotate(120deg)}41.6%{transform:rotate(150deg)}50%{transform:rotate(180deg)}58.3%{transform:rotate(210deg)}66.6%{transform:rotate(240deg)}75%{transform:rotate(270deg)}83.3%{transform:rotate(300deg)}91.6%{transform:rotate(330deg)}100%{transform:rotate(360deg)}}</style><g class=\"spinner_Wezc\"><circle cx=\"12\" cy=\"2.5\" r=\"1.5\" opacity=\".14\"/><circle cx=\"16.75\" cy=\"3.77\" r=\"1.5\" opacity=\".29\"/><circle cx=\"20.23\" cy=\"7.25\" r=\"1.5\" opacity=\".43\"/><circle cx=\"21.50\" cy=\"12.00\" r=\"1.5\" opacity=\".57\"/><circle cx=\"20.23\" cy=\"16.75\" r=\"1.5\" opacity=\".71\"/><circle cx=\"16.75\" cy=\"20.23\" r=\"1.5\" opacity=\".86\"/><circle cx=\"12\" cy=\"21.5\" r=\"1.5\"/></g></svg>");
+            $.ajax({
+                type: "GET",
+                url: "/api/", 
+                success: function(data, status, xhr) {
+                    if ( offline ) {
+                      // we were offline so reboot must have happened?
+                      $(".status").html("System is back, redirecting to Dashboard");
+                      setTimeout( () => {
+                        location.href = "/";
+                      }, "1500");
+                    }
+                },
+                error: function(output) {
+                    // ok were offline
+                    offline = true;
+                    console.log("Offline now....")
+                    }
+            });
+        };
+                setInterval(check_internet_connection, 1500);
+                
 				    </script>
 				    </td></tr>';
 				   exec("sudo sync && sleep 2 && sudo reboot > /dev/null 2>&1 &");

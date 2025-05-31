@@ -6,10 +6,6 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
 }
 // Load the language support
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';
-// Load the Pi-Star Release file
-$pistarReleaseConfig = '/etc/pistar-release';
-$configPistarRelease = array();
-$configPistarRelease = parse_ini_file($pistarReleaseConfig, true);
 // Load the Version Info
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/version.php';
 // load config

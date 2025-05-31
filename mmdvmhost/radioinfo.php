@@ -62,7 +62,7 @@ if (isset($_SESSION['CSSConfigs']['Background']['TableRowBgEvenColor'])) {
       <?php if ($_SESSION['ModemConfigs']['Modem']['Hardware'] == "dvmpicast") { // DVMega Cast logic... ?>
       <div class="divTableHeadCell noMob">DVMega Cast Mainboard Firmware</div>
       <?php } else { // end DVMega Cast logic ?>
-      <div class="divTableHeadCell noMob">Modem Firmware</div>
+      <div class="divTableHeadCell noMob">Modem Type</div>
       <?php } ?>
 
     </div>

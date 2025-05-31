@@ -13,6 +13,7 @@ if (!isset($_SESSION) || !is_array($_SESSION) || (count($_SESSION, COUNT_RECURSI
 }
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 function loadSessionConfigFile($key, $configFile, $minEntries = 2) {
     if ((!isset($_SESSION[$key]) || (count($_SESSION[$key], COUNT_RECURSIVE) < $minEntries)) && file_exists($configFile)) {
@@ -25,13 +26,25 @@ function checkSessionValidity() {
 	global $callsign;
 	
 	if (empty($callsign)) {
-	    include $_SERVER['DOCUMENT_ROOT'].'/config/ircddblocal.php';
+	    include $_SERVER['DOCUMENT_ROOT'].'/config/config.php';
 	    $_SESSION['MYCALL'] = strtoupper($callsign);
 	}
 	else {
 	    $_SESSION['MYCALL'] = strtoupper($callsign);
 	}
     }
+
+	// get the name of the current profile
+	$profile_dir = '/etc/WPSD_config_mgr';
+	if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
+		if (is_dir("$profile_dir" . "/" ."$current_profile") != false ) {
+			$_SESSION['CURRENT_PROFILE'] = trim(file_get_contents('/etc/.WPSD_config'));
+		} else {
+			$_SESSION['CURRENT_PROFILE'] = false;
+		}
+	} else {
+		$_SESSION['CURRENT_PROFILE'] = false;
+	}
 
     if ( ! isset( $_SESSION['BMAPIKey'] ) || ( is_countable( $_SESSION['BMAPIKey'] ) && count( $_SESSION['BMAPIKey'], COUNT_RECURSIVE) < 1 ) && @file_exists( '/etc/bmapi.key' ) ) {
 	$configBMapi = @parse_ini_file('/etc/bmapi.key', true);
@@ -45,7 +58,8 @@ function checkSessionValidity() {
     }
 
     loadSessionConfigFile('DAPNETAPIKeyConfigs', '/etc/dapnetapi.key');
-    loadSessionConfigFile('PiStarRelease', '/etc/pistar-release');
+    loadSessionConfigFile('WPSDdashConfig', '/etc/WPSD-Dashboard-Config.ini');
+    loadSessionConfigFile('WPSDrelease', '/etc/WPSD-release');
     if (!isset($_SESSION['MMDVMHostConfigs']) || (count($_SESSION['MMDVMHostConfigs'], COUNT_RECURSIVE) < 2)) {
 	$_SESSION['MMDVMHostConfigs'] = getMMDVMConfigContent();
     }
@@ -76,14 +90,14 @@ function checkSessionValidity() {
     loadSessionConfigFile('NXDNGatewayConfigs', '/etc/nxdngateway');
     loadSessionConfigFile('M17GatewayConfigs', '/etc/m17gateway');
     loadSessionConfigFile('P25GatewayConfigs', '/etc/p25gateway');
-    loadSessionConfigFile('CSSConfigs', '/etc/pistar-css.ini');
+    loadSessionConfigFile('CSSConfigs', '/etc/wpsd-css.ini');
     loadSessionConfigFile('ModemConfigs', '/etc/dstar-radio.mmdvmhost');
 
     if ( ! isset( $_SESSION['DvModemFWVersion'] ) || ( is_countable( $_SESSION['DvModemFWVersion'] ) && count( $_SESSION['DvModemFWVersion'], COUNT_RECURSIVE ) < 1 ) ) {
-	$_SESSION['DvModemFWVersion'] = $_SESSION['PiStarRelease']['Pi-Star']['ModemFW'];
+	$_SESSION['DvModemFWVersion'] = $_SESSION['WPSDrelease']['WPSD']['ModemFW'];
     }
     if ( ! isset( $_SESSION['DvModemTCXOFreq'] ) || ( is_countable( $_SESSION['DvModemTCXOFreq'] ) && count( $_SESSION['DvModemTCXOFreq'], COUNT_RECURSIVE) < 1 ) ) {
-	$_SESSION['DvModemTCXOFreq'] = $_SESSION['PiStarRelease']['Pi-Star']['TCXO'];;
+	$_SESSION['DvModemTCXOFreq'] = $_SESSION['WPSDrelease']['WPSD']['TCXO'];;
     }
 }
 
@@ -412,7 +426,7 @@ function isM17GatewayConnected() {
 
     $logLines = $logLines1 + $logLines2;
 
-    $errorMessages = array('Link lost' , 'Link refused');
+    $errorMessages = array('Received a DISC from reflector' , 'Received a NACK from reflector' , 'Link lost' , 'Link refused');
     
     foreach($logLines as $m17MessageLine) {
 		foreach($errorMessages as $errorLine) {
@@ -516,15 +530,6 @@ function getFWstate () {
     }
 }
 
-// cron status
-function getCronState () {
-    if (isProcessRunning('cron',true) == 1) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 // Pi-Star Remote status
 function getPSRState () {
     if (isProcessRunning('/usr/local/sbin/pistar-remote',true) == 1) {
@@ -565,10 +570,10 @@ function isDVmegaCast() {
 // status classes used in sysinfo.php
 function getStatusClass($status, $disabled = false) {
     if ($status) {
-    echo '<td class="active-service-cell" align="left" title="Service Active">';
+	echo '<td class="active-service-cell" align="left" title="Service Active">';
     }
     else {
-    if ($disabled)
+ 	if ($disabled)
         echo '<td class="disabled-service-cell" align="left" title="Service Disabled">';
     else
         echo '<td class="inactive-service-cell" align="left" title="Service Not Active">';
@@ -620,6 +625,11 @@ function getModeClass($status, $disabled = false) {
 	        echo '<div class="inactive-mode-cell" title="Inactive">';
 	    }
     }
+}
+
+function isSystemdServiceRunning($SVCname) {
+    $output = shell_exec("systemctl is-active " . escapeshellarg($SVCname) . " 2>&1");
+    return trim($output) === "active";
 }
 
 // shows if mode is enabled or not.
@@ -708,30 +718,30 @@ function getMMDVMLog() {
     $logLines1 = array();
     $logLines2 = array();
     $lineNos = "";
-    if (file_exists(MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d").".log")) {
-	$logPath = MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d").".log";
+    if (file_exists(constant('MMDVMLOGPATH')."/".constant('MMDVMLOGPREFIX')."-".gmdate("Y-m-d").".log")) {
+	$logPath = constant('MMDVMLOGPATH')."/".constant('MMDVMLOGPREFIX')."-".gmdate("Y-m-d").".log";
 	$fileList = array_filter(array("/etc/.GETNAMES", "/etc/.CALLERDETAILS", "/etc/.SHOWDMRTA", "/etc/.TGNAMES"), 'file_exists');
         if (!$file = array_shift($fileList)) { // no caller names/last caller selected
-	    if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) { // multi-core
+	    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
 		if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) { // more than 40 rows selected
-		    $logLines1 = explode("\n", `tail -1500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`);  // 40 or less rows selected
+		    $logLines1 = explode("\n", `tail -1500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
 	        } else {
-		    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`);  // 40 or less rows selected
+		    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
 	        }
 	    } else { 
-		$logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`); // single-core crap
+		$logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
 	    }
 	    $lineNos = sizeof($logLines1);
 	    $logLines1 = array_slice($logLines1, -1500);
         } else { // caller names/last caller selected! keep perf. in check..
-	    if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) { // multi-core
+	    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
 		if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) {  // more than 40 rows selected
-		    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`); // search last 500 lines
+		    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // search last 500 lines
 		} else {
-		    $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`); // 40 or less rows selected
+		    $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // 40 or less rows selected
 		}
 	    } else {
-		$logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`); // single-core crap
+		$logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
 	    }
 	    $lineNos = sizeof($logLines1);
 	    $logLines1 = array_slice($logLines1, -1500);
@@ -742,10 +752,10 @@ function getMMDVMLog() {
     if ($lineNos < 150) {
         if (file_exists(MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log")) {
 	    $logPath = MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
-	    if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) { // multi-core
-		$logLines2 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`);
+	    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
+		$logLines2 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);
 	    } else {
-		$logLines2 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|Alias|0000)"`); // single-core crap
+		$logLines2 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
 	    }
 	    $logLines2 = array_slice($logLines2, -1500);
         }
@@ -984,9 +994,9 @@ function getHeardList($logLines) {
 	else if(strpos($logLine,"invalid access")) {
 	    continue;
 	}
-    else if(strpos($logLine,"packet received from an invalid source")) {
-        continue;
-    }
+	else if(strpos($logLine,"packet received from an invalid source")) {
+	    continue;
+	}
 	else if(strpos($logLine,"received RF header for wrong repeater")) {
 	    continue;
 	}
@@ -996,9 +1006,12 @@ function getHeardList($logLines) {
 	else if(strpos($logLine,"overflow in the DMR slot RF queue")) {
 	    continue;
 	}
-    else if(strpos($logLine,"overflow in the System Fusion RF queue")) {
-        continue;
-    }
+	else if(strpos($logLine,"overflow in the System Fusion RF queue")) {
+ 	    continue;
+	}
+	else if(strpos($logLine,"overflow in the M17 RF queue")) {
+	    continue;
+	}
 	else if(strpos($logLine,"non repeater RF header received")) {
 	    continue;
 	}
@@ -1006,6 +1019,15 @@ function getHeardList($logLines) {
             continue;
 	}
 	else if(strpos($logLine,"DMR Talker Alias")) {
+	    continue;
+	}
+	else if(strpos($logLine,", Talker Alias ")) {
+	    continue;
+	}
+	else if(strpos($logLine,", text Data: ")) {
+	    continue;
+	}
+	else if(strpos($logLine,", data text")) {
 	    continue;
 	}
 	else if(strpos($logLine,"CSBK Preamble")) {
@@ -1045,7 +1067,7 @@ function getHeardList($logLines) {
            }
            // The change to this code was causing all FCS traffic to always show TOut rather than the timer.
            // This version should still show time-out when needed, AND show the time if it exists.
-           if (strpos($logLine,"RF user has timed out") || strpos($logLine,"watchdog has expired")) {
+           if (strpos($logLine,"RF user has timed out") || strpos($logLine,"watchdog has expired") || strpos($logLine, "Mode set")) {
                if (array_key_exists(2, $lineTokens) && strpos($lineTokens[2], "seconds")) {
                    $duration = strtok($lineTokens[2], " "); 
                }
@@ -1372,9 +1394,13 @@ function getActualMode($metaLastHeard, &$configs) {
 
 // returns link-states of all D-Star-modules
 function getDSTARLinks() {
+    // Get our current configured callsign / module
+    $dstarCallsign = str_pad(getConfigItem("General", "Callsign", $_SESSION['MMDVMHostConfigs']), 7, " ", STR_PAD_RIGHT).getConfigItem("D-Star", "Module", $_SESSION['MMDVMHostConfigs']);
+
     if (filesize(LINKLOGPATH."/Links.log") == 0) {
 	return "Not Linked";
     }
+
     if ($linkLog = fopen(LINKLOGPATH."/Links.log",'r')) {
 	while ($linkLine = fgets($linkLog)) {
 	    $linkDate	= "&nbsp;";
@@ -1383,6 +1409,7 @@ function getDSTARLinks() {
 	    $linkSource	= "&nbsp;";
 	    $linkDest	= "&nbsp;";
 	    $linkDir	= "&nbsp;";
+
 	    // Reflector-Link, sample:
 	    // 2011-09-22 02:15:06: DExtra link - Type: Repeater Rptr: DB0LJ	B Refl: XRF023 A Dir: Outgoing
 	    // 2012-04-03 08:40:07: DPlus link - Type: Dongle Rptr: DB0ERK B Refl: REF006 D Dir: Outgoing
@@ -1394,7 +1421,16 @@ function getDSTARLinks() {
 		$linkSource	= $linx[4][0];
 		$linkDest	= $linx[5][0];
 		$linkDir	= $linx[6][0];
+		if ($linkSource != $dstarCallsign) {
+		    $linkDate	= "&nbsp;";
+		    $protocol	= "&nbsp;";
+		    $linkType	= "&nbsp;";
+		    $linkSource	= "&nbsp;";
+		    $linkDest	= "&nbsp;";
+		    $linkDir	= "&nbsp;";
+		}
 	    }
+
 	    // CCS-Link, sample:
 	    // 2013-03-30 23:21:53: CCS link - Rptr: PE1AGO C Remote: PE1KZU	Dir: Incoming
 	    if(preg_match_all('/^(.{19}).*(CC[A-Za-z]*).*Rptr: (.{8}).*Remote: (.{8}).*Dir: (.{8})/',$linkLine,$linx) > 0){
@@ -1405,6 +1441,7 @@ function getDSTARLinks() {
 		$linkDest	= $linx[4][0];
 		$linkDir	= $linx[5][0];
 	    }
+
 	    // Dongle-Link, sample: 
 	    // 2011-09-24 07:26:59: DPlus link - Type: Dongle User: DC1PIA	Dir: Incoming
 	    // 2012-03-14 21:32:18: DPlus link - Type: Dongle User: DC1PIA Dir: Incoming
@@ -1416,9 +1453,11 @@ function getDSTARLinks() {
 		$linkDest	= $linx[4][0];
 		$linkDir	= $linx[5][0];
 	    }
-        if (strtolower(substr($linkDir, 0, 2)) == "in") { $linkDir = "In"; }
-        if (strtolower(substr($linkDir, 0, 3)) == "out") { $linkDir = "Out"; }
-        $out = $linkDest." ".$protocol."/".$linkDir;
+
+	    if (strtolower(substr($linkDir, 0, 2)) == "in") { $linkDir = "Incoming"; }
+	    if (strtolower(substr($linkDir, 0, 3)) == "out") { $linkDir = "Outgoing"; }
+	    $out = $linkDest. " (" .$protocol ."/" .$linkDir. ")";
+
 	}
     }
     fclose($linkLog);
@@ -1560,7 +1599,7 @@ function getActualLink($logLines, $mode) {
     case "M17":
             if (isProcessRunning("M17Gateway")) {
 		foreach($logLines as $logLine) {
-		    if(preg_match_all('/Linked .* reflector ((M17|URF)-.{3} [A-Z])/', $logLine, $linx) > 0) {
+		    if(preg_match_all('/Linked to ((M17|URF)-.{3} [A-Z])/', $logLine, $linx) > 0) {
 			return $linx[1][0];
 		    }
 		    else if (strpos($logLine, "Switched to reflector")) {
@@ -1755,7 +1794,7 @@ function tgLookup($mode, $target) {
 		    $target = "TG $target";
 		}
 	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FreeDMR")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_FreeDMR_.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_FreeDMR.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
 		if (!empty($target_lookup)) {
 			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
 				$target_local = " TG " . ((int) $target_offset - 8000000);
@@ -1770,6 +1809,22 @@ function tgLookup($mode, $target) {
 		} else {
 		    $target = "TG $target";
 		}
+        } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FD_ADN_")) {
+            $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_ADN.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+            if (!empty($target_lookup)) {
+                if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                    $target_local = " TG " . ((int) $target_offset - 8000000);
+                } else {
+                    $target_local = "";
+                }
+                if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                    $target = "TG $target <span style='float:right;' class='noMob'>(ADN:$target_local $target_lookup)</span>";
+                } else {
+                    $target = "TG $target <span class='noMob'>(ADN:$target_local $target_lookup)</span>";
+                }
+            } else {
+                $target = "TG $target";
+            }
 	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) == "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "DMR+_IPSC2")) {
 		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_DMRp.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
 		if (!empty($target_lookup)) {

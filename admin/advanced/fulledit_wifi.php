@@ -11,10 +11,18 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
     checkSessionValidity();
 }
 
-$editorname = 'WPA Supplicant';
-$configfile = '/etc/wpa_supplicant/wpa_supplicant.conf';
-$tempfile = '/tmp/k45s7h5s9k3.tmp';
-$servicenames = array();
+if ($osVer >= 12) { // Bookworm uses NetworkManager
+    $editorname = 'NetworkManager Connections';
+    $configDirectory = '/etc/NetworkManager/system-connections/';
+    $tempfile = '/tmp/nm_edit_temp.tmp';
+    $servicenames = array('');
+    $connectionFiles = glob($configDirectory . '*.nmconnection');
+} else { // WPA supplicant
+    $editorname = 'WPA Supplicant';
+    $configfile = '/etc/wpa_supplicant/wpa_supplicant.conf';
+    $tempfile = '/tmp/k45s7h5s9k3.tmp';
+    $servicenames = array();
+}
 
 require_once('fulledit_template.php');
 

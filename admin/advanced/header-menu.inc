@@ -3,6 +3,7 @@
 <?php require_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php'; ?>
 <div class="header">
     <div class="SmallHeader shLeft">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+	<?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
     <div class="SmallHeader shRight">
        <div id="CheckUpdate">
        <?php
@@ -113,7 +114,7 @@
 				<li class="subs"><a href="fulledit_dapnetapi.php">DAPNet API</a></li>
 			    </ul>
 			</li>
-			<li class="subs"><a href="fulledit_wpaconfig.php">WiFi</a></li>
+			<li class="subs"><a href="fulledit_wifi.php">WiFi</a></li>
 			<li class="subs"><a href="fulledit_rssidat.php">RSSI Data</a></li>
 		    </ul>
 		</li>
@@ -147,7 +148,6 @@
 			<li class="subs"><a href="ssh_access.php">SSH Access</a></li>
 			<li class="subs"><a href="jitter_test.php">DMR Jitter Test</a></li>
 			<li class="subs"><a href="calibration.php">MMDVMHost Calibration</a></li>
-			<li class="subs"><a href="filemanager.php">File Manager</a></li>
 			<?php if(isDVmegaCast() == 1) { // Begin DVmega Cast logic... ?>	
 			<li class="subs"><a href="/admin/cast/cast-firmware/">DVMega Cast Upgrade Utility</a></li>
 			<?php } else { // end DVmega cast logic ?>

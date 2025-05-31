@@ -5,7 +5,7 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
     session_start();
 }
 
-if (file_exists('/etc/pistar-css.ini'))
+if (file_exists('/etc/wpsd-css.ini'))
 {
     $backupDir = "/tmp/css_backup";
     $backupZip = "/tmp/css_backup.zip";
@@ -14,7 +14,7 @@ if (file_exists('/etc/pistar-css.ini'))
     exec("sudo rm -rf $backupZip 2>&1");
     exec("sudo rm -rf $backupDir 2>&1");
     exec("sudo mkdir $backupDir 2>&1");
-    exec("sudo cp /etc/pistar-css.ini $backupDir 2>&1");
+    exec("sudo cp /etc/wpsd-css.ini $backupDir 2>&1");
     exec("sudo zip -j $backupZip $backupDir/* 2>&1");
     
     if (file_exists($backupZip)) {
@@ -28,11 +28,11 @@ if (file_exists('/etc/pistar-css.ini'))
 	header('Content-Type: application/octet-stream');
 	if ($hostNameInfo != "pi-star")
 	{
-	    header('Content-Disposition: attachment; filename="'.basename("Pi-Star_CSS_".$hostNameInfo."_".$local_time.".zip").'"');
+	    header('Content-Disposition: attachment; filename="'.basename("WPSD_CSS_".$hostNameInfo."_".$local_time.".zip").'"');
 	}
 	else
 	{
-	    header('Content-Disposition: attachment; filename="'.basename("Pi-Star_CSS_$local_time.zip").'"');
+	    header('Content-Disposition: attachment; filename="'.basename("WPSD_CSS_$local_time.zip").'"');
 	}
 	header('Content-Transfer-Encoding: binary');
 	header('Expires: 0');

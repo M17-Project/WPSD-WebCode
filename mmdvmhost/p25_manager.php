@@ -30,13 +30,13 @@ if ( $testMMDVModeP25 == 1 || $testYSF2P25 == 1 ) {
 	    }
 	    if ($_POST["Link"] == "LINK") {
 		if ($_POST['p25LinkHost'] == "none") {
-		    $remoteCommand = "cd /var/log/pi-star && sudo /usr/local/bin/RemoteCommand ".$remotePort." TalkGroup 9999";
+		    $remoteCommand = "cd /var/log/pi-star && sudo /usr/local/bin/RemoteCommand ".$remotePort." TalkGroup unlink";
 		}
 		else {
 		    $remoteCommand = "cd /var/log/pi-star && sudo /usr/local/bin/RemoteCommand ".$remotePort." TalkGroup ".$_POST['p25LinkHost'];
 		}
 	    } else if ($_POST["Link"] == "UNLINK") {
-		$remoteCommand = "cd /var/log/pi-star && sudo /usr/local/bin/RemoteCommand ".$remotePort." TalkGroup 9999";
+		$remoteCommand = "cd /var/log/pi-star && sudo /usr/local/bin/RemoteCommand ".$remotePort." TalkGroup unlink";
 	    }
 	    else {
 		echo "<div style='text-align:left;font-weight:bold;'>P25 Link Manager</div>\n";

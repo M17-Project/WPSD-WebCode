@@ -4,6 +4,7 @@ session_name("WPSD_Session");
 session_id('wpsdsession');
 session_start();
 
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/class-wpsd-functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/version.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/ircddblocal.php';
@@ -14,30 +15,12 @@ $MYCALL = strtoupper($callsign);
 $_SESSION['MYCALL'] = $MYCALL;
 
 // Clear session data (page {re}load);
-unset($_SESSION['BMAPIKey']);
-unset($_SESSION['DAPNETAPIKeyConfigs']);
-unset($_SESSION['PiStarRelease']);
-unset($_SESSION['MMDVMHostConfigs']);
-unset($_SESSION['ircDDBConfigs']);
-unset($_SESSION['timeServerConfigs']);
-unset($_SESSION['DStarRepeaterConfigs']);
-unset($_SESSION['DMRGatewayConfigs']);
-unset($_SESSION['YSFGatewayConfigs']);
-unset($_SESSION['DGIdGatewayConfigs']);
-unset($_SESSION['DAPNETGatewayConfigs']);
-unset($_SESSION['YSF2DMRConfigs']);
-unset($_SESSION['YSF2NXDNConfigs']);
-unset($_SESSION['YSF2P25Configs']);
-unset($_SESSION['DMR2YSFConfigs']);
-unset($_SESSION['DMR2NXDNConfigs']);
-unset($_SESSION['APRSGatewayConfigs']);
-unset($_SESSION['NXDNGatewayConfigs']);
-unset($_SESSION['P25GatewayConfigs']);
-unset($_SESSION['CSSConfigs']);
-unset($_SESSION['DvModemFWVersion']);
-unset($_SESSION['DvModemTCXOFreq']);
-unset($_SESSION['M17GatewayConfigs']);
-unset($_SESSION['ModemConfigs']);
+$keepSessions = ['MYCALL'];
+foreach ($_SESSION as $key => $value) {
+    if (!in_array($key, $keepSessions)) {
+        unset($_SESSION[$key]);
+    }
+}
 
 checkSessionValidity();
 
@@ -79,6 +62,7 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 	<script type="text/javascript" src="/js/functions.js?version=<?php echo $versionCmd; ?>"></script>
 	<script type="text/javascript">
 	 $.ajaxSetup({ cache: false });
+   window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
 	</script>
         <link href="/js/select2/css/select2.min.css?version=<?php echo $versionCmd; ?>" rel="stylesheet" />
         <script src="/js/select2/js/select2.full.min.js?version=<?php echo $versionCmd; ?>"></script>
@@ -161,6 +145,7 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
     function setFilterActivityMax(obj) {
       max = obj.value || 1;
       localStorage.setItem('filter_activity_max', obj.value);
+	  reloadDynDataId = setInterval(reloadDynData, reloadDynDataInterval);
     }
 
     function reloadUpdateCheck(){
@@ -176,11 +161,10 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
     setTimeout(reloadMessageCheck,300000);
 
     function reloadDateTime(){
-      $("#DateTime").load("/includes/datetime.php",function(){
-        setTimeout(reloadDateTime,1000) });
+      $( '#DateTime' ).html( _getDatetime( window.time_format ) );
+      setTimeout(reloadDateTime,1000);
     }
-    setTimeout(reloadDateTime,1000);
-
+    reloadDateTime();
     </script>
 <script>
   function executeBackgroundTasks() {
@@ -215,6 +199,7 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 	<div class="container">
 	    <div class="header">
                <div class="SmallHeader shLeft noMob"><a style="border-bottom: 1px dotted;" class="tooltip" href="#"><?php echo __( 'Hostname' ).": ";?> <span><strong>System IP Address<br /></strong><?php echo str_replace(',', ',<br />', exec("hostname -I | awk '{print $1}'"));?> </span>  <?php echo exec('cat /etc/hostname'); ?></a></div>
+			   <?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
 		<div class="SmallHeader shRight noMob">
 		<div id="CheckUpdate">
 		<?php
@@ -241,7 +226,6 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 		      echo ' <a class="menupower" href="/admin/power.php">'.__( 'Power' ).'</a>'."\n";
 		      echo ' <a class="menusysinfo noMob" href="/admin/sysinfo.php">System Details</a>'."\n";
 		      echo ' <a class="menulogs noMob" href="/admin/live_log.php">'.__( 'Log Viewer' ).'</a>'."\n";
-		      echo ' <a class="menuappearance noMob" href="/admin/appearance.php">Appearance</a>'."\n";
 		      echo ' <a class="menudashboard" href="/">'.__( 'Dashboard' ).'</a>'."\n";
 		    }
                     if ($_SERVER["PHP_SELF"] !== "/admin/index.php") {
@@ -253,17 +237,19 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 			if (isDVmegaCast() == 1) {
 		    	    echo '<a class="menucastmemory noMob" href="/admin/cast/memory-list/">Cast Memory</a>';
 			}
+			echo ' <a class="menuappearance noMob" href="/admin/appearance.php">Appearance</a>'."\n";
                         echo '<a class="menuprofile noMob" href="/admin/profile_manager.php">Profiles</a>'."\n";
                     } ?>
 	    	</div>
 		</div>
 
 	    <?php
+	    /*
 	    // Check if config files need updating but supress if new installation
 	    if (($_SERVER["PHP_SELF"] == "/admin/index.php") || ($_SERVER["PHP_SELF"] == "/index.php")) {
-		$configUpNeeded = $_SESSION['PiStarRelease']['Pi-Star']['ConfUpdReqd'];
+		$configUpNeeded = $_SESSION['WPSDrelease']['WPSD']['ConfUpdReqd'];
                 if (!isset($configUpNeeded) || ($configUpNeeded < $configUpdateRequired)) {	
-		    $fileList = array_filter(array("/etc/dstar-radio.mmdvmhost", "/etc/dstar-radio.dstarrepeater"), 'file_exists');
+		    $fileList = array_filter(array("/etc/dstar-radio.mmdvmhost"), 'file_exists');
 		    if ($file = array_shift($fileList)) {
 	    ?>
 		<div>
@@ -280,6 +266,7 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 	    <?php }
 	        }
 	    }
+	    */
 	    ?>
 	    <?php
             // Output some default features
@@ -316,13 +303,6 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 		echo "<h1>New ZUMspot Installation...</h1>\n";
 		echo "<p>You will be redirected to the configuration page in 10 seconds to setup your ZUMspot...</p>\n";
 		echo '<script type="text/javascript">setTimeout(function() { window.location="/admin/configure.php";},10000);</script>'."\n";
-            } else if (file_exists('/etc/dstar-radio.dstarrepeater')) { //dstarrepeater migration
-		echo '<div class="contentwide">'."\n";
-		echo "<h1>NOTE: Migration Required...</h1>\n";
-		echo "<p>DSTARrepeater mode is unsupported and has been removed. You will need to re-configure using the (now default) MMDVMHost controller mode.</p>\n";
-		echo "<p>You will be redirected to the configuration page in 30 seconds to setup your installation... Or <a href='admin/configure.php'>configure now...</a></p>\n";
-		echo '<script type="text/javascript">setTimeout(function() { window.location="/admin/configure.php";},30000);</script>'."\n";
-
 	    } else if (file_exists('/etc/dstar-radio.mmdvmhost')) {
 		echo '<div class="nav">'."\n";					// Start the Side Menu
 		echo '<script type="text/javascript">'."\n";
@@ -467,17 +447,14 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 			     </table>
 			   </div>
 		    <?php
-		    	} else { // Yay! good API key!
-			    echo '<script type="text/javascript">'."\n";
-        	    	    echo 'function reloadbmConnections(){'."\n";
-        	    	    echo '  $("#bmConnects").load("/mmdvmhost/bm_links.php",function(){ setTimeout(reloadbmConnections,15000) });'."\n";
-        	    	    echo '}'."\n";
-        	    	    echo 'setTimeout(reloadbmConnections,15000);'."\n";
-        	    	    echo '</script>'."\n";
-        	    	    echo '<div id="bmConnects">'."\n";
-		    	    include 'mmdvmhost/bm_links.php';                   // BM Links
-		    	    echo '</div>'."\n";
-		    	    include 'mmdvmhost/bm_manager.php';                 // BM DMR Link Manager
+		        } else { // Yay! good API key!
+		            if (!isset($_POST["tgSubmit"])) {
+		                include 'mmdvmhost/bm_common.php'; // BM Common func
+		                echo '<div id="bmConnects">'."\n";
+		                include 'mmdvmhost/bm_links.php';  // BM Links
+		                echo '</div>'."\n";
+		            }
+		            include 'mmdvmhost/bm_manager.php';    // BM DMR Link Manager
 		        }
 		    }
 		}
@@ -695,16 +672,18 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
                       function reloadDynData() {
                         fetchData("/mmdvmhost/last_heard_table.php", "#lastHeard");
                         fetchData("/mmdvmhost/local_tx_table.php", "#localTxs");';
-                        if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) {
+                        if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) {
                             echo 'fetchData("/mmdvmhost/caller_details_table.php", "#liveCallerDeets");';
                         }
                       echo '
                       }';
-                      if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) {
-                          echo "setInterval(reloadDynData, 1500);";
+                      if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) {
+						echo "reloadDynDataInterval = 1500;";
                       } else {
-                          echo "setInterval(reloadDynData, 2500);";
-                      }
+						echo "reloadDynDataInterval = 2500;";
+					  }
+					  echo "reloadDynDataId = setInterval(reloadDynData, reloadDynDataInterval);";
+                      
                     echo '
                     </script>';
 		}
@@ -789,9 +768,18 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 <?php
 include $_SERVER['DOCUMENT_ROOT'].'/includes/footer.php';
 include $_SERVER['DOCUMENT_ROOT'].'/includes/execute-background-tasks.php';
+// print custom JS
+echo wpsd()->user_js();
 ?>
 <script>
 executeBackgroundTasks();
+reloadDateTime();
+reloadDynData();
 </script>
+    <?php
+    if($_SESSION['WPSDdashConfig']['WPSD']['PhoneticCallsigns'] == "1"){
+        echo '<script src="/js/phonetic-callsigns.js"></script>';
+    }
+    ?>
     </body>
 </html>

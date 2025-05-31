@@ -19,9 +19,6 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';        // Transla
 $fw_enable    = "sudo /usr/local/sbin/wpsd-system-manager -efw";
 $fw_disable   = "sudo /usr/local/sbin/wpsd-system-manager -dfw";
 
-$cron_enable  = "sudo /usr/local/sbin/wpsd-system-manager -ec";
-$cron_disable = "sudo /usr/local/sbin/wpsd-system-manager -dc";
-
 $rfc_enable   = "sudo /usr/local/sbin/wpsd-system-manager -erf";
 $rfc_disable  = "sudo /usr/local/sbin/wpsd-system-manager -drf";
 
@@ -47,7 +44,7 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
 } elseif
     (!empty($_POST['submit_service']) && escapeshellcmd($_POST['service_action'] == "Disable")) {
     $mode = escapeshellcmd($_POST['service_sel']); // get selected mode from for post
-    if ($mode == "Cron" && (getCronState() == 0) || $mode == "RF Remote Control" && (getPSRState() == 0) || $mode == "Firewall" && (getFWstate() == 0) || $mode == "WPSD Services Watchdog" && (getPSWState() == 0)) { //check if already disabled
+    if ($mode == "RF Remote Control" && (getPSRState() == 0) || $mode == "Firewall" && (getFWstate() == 0) || $mode == "WPSD Services Watchdog" && (getPSWState() == 0)) { //check if already disabled
         // Output to the browser
 	echo '<div style="text-align:left;font-weight:bold;">System Manager</div>'."\n";
         echo "<table>\n";
@@ -62,9 +59,7 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
         unset($_POST);
         echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},3000);</script>';
     } else { // looks good!
-	    if ($mode == "Cron") {
-	        system($cron_disable);
-	    } elseif ($mode == "Firewall") {
+	    if ($mode == "Firewall") {
 	        system($fw_disable);
 	    } elseif ($mode == "RF Remote Control") {
 	        system($rfc_disable);
@@ -90,7 +85,7 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
     } elseif
         (!empty($_POST['submit_service']) && escapeshellcmd($_POST['service_action'] == "Enable")) {
         $mode = escapeshellcmd($_POST['service_sel']); // get selected mode from for post
-	if ($mode == "Cron" && (getCronState() == 1) || $mode == "RF Remote Control" && (getPSRState() == 1) || $mode == "Firewall" && (getFWstate() == 1) || $mode == "WPSD Services Watchdog" && (getPSWState() == 1)) {
+	if ($mode == "RF Remote Control" && (getPSRState() == 1) || $mode == "Firewall" && (getFWstate() == 1) || $mode == "WPSD Services Watchdog" && (getPSWState() == 1)) {
             // Output to the browser
 	    echo '<div style="text-align:left;font-weight:bold;">System Manager</div>'."\n";
             echo "<table>\n";
@@ -105,10 +100,7 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
             unset($_POST);
             echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},3000);</script>';
 	} else { // looks good!
-	    if ($mode == "Cron") {
-		system($cron_enable);
-	    } elseif ($mode == "Firewall") {
-		sleep(5);
+	    if ($mode == "Firewall") {
 		system($fw_enable);
 	    } elseif ($mode == "RF Remote Control") {
 		system($rfc_enable);
@@ -152,8 +144,6 @@ if (!empty($_POST["submit_service"]) && empty($_POST["service_sel"])) { //handle
 	  <td>
 	    <input name="service_sel" id="service-sel-0" value="Firewall" type="radio">
 	    <label for="service-sel-0"'.((getFWstate()=='0'? "class='paused-mode-span'":"")). 'title="Disabled">Firewall</label>
-	    &nbsp;| <input name="service_sel" id="service-sel-1"  value="Cron" type="radio">
-	    <label for="service-sel-1"'.((getCronstate()=='0'? "class='paused-mode-span'":"")). 'title="Disabled">Cron</label>
 	    &nbsp;| <input name="service_sel" id="service-sel-2"  value="RF Remote Control" type="radio">
 	    <label for="service-sel-2"'.((getPSRState()=='0'? "class='paused-mode-span'":"")). 'title="Disabled">RF Remote Control</label>
 	    &nbsp;| <input name="service_sel" id="service-sel-3"  value="WPSD Services Watchdog" type="radio">

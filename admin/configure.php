@@ -12,36 +12,23 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';
 
 // Clear session data (page {re}load);
-unset($_SESSION['BMAPIKey']);
-unset($_SESSION['DAPNETAPIKeyConfigs']);
-unset($_SESSION['PiStarRelease']);
-unset($_SESSION['MMDVMHostConfigs']);
-unset($_SESSION['ircDDBConfigs']);
-unset($_SESSION['timeServerConfigs']);
-unset($_SESSION['DMRGatewayConfigs']);
-unset($_SESSION['YSFGatewayConfigs']);
-unset($_SESSION['DGIdGatewayConfigs']);
-unset($_SESSION['DAPNETGatewayConfigs']);
-unset($_SESSION['YSF2DMRConfigs']);
-unset($_SESSION['YSF2NXDNConfigs']);
-unset($_SESSION['YSF2P25Configs']);
-unset($_SESSION['DMR2YSFConfigs']);
-unset($_SESSION['DMR2NXDNConfigs']);
-unset($_SESSION['APRSGatewayConfigs']);
-unset($_SESSION['NXDNGatewayConfigs']);
-unset($_SESSION['P25GatewayConfigs']);
-unset($_SESSION['CSSConfigs']);
-unset($_SESSION['DvModemFWVersion']);
-unset($_SESSION['DvModemTCXOFreq']);
-unset($_SESSION['M17GatewayConfigs']);
-unset($_SESSION['ModemConfigs']);
+$keepSessions = ['MYCALL'];
+foreach ($_SESSION as $key => $value) {
+    if (!in_array($key, $keepSessions)) {
+        unset($_SESSION[$key]);
+    }
+}
 
 checkSessionValidity();
 
-// Load the pistar-release file
-$pistarReleaseConfig = '/etc/pistar-release';
-$configPistarRelease = parse_ini_file($pistarReleaseConfig, true);
-$config_file = '/etc/WPSD-Dashboard-Config.ini';
+// Load the WPSD release file
+$WPSDreleaseConfig = '/etc/WPSD-release';
+$configWPSDrelease = parse_ini_file($WPSDreleaseConfig, true);
+
+$wpsdConfigFile = '/etc/WPSD-Dashboard-Config.ini';
+$configWPSD = parse_ini_file($wpsdConfigFile, true);
+
+$skipped_calls = ["WPSD42", "M1ABC", "NOCALL", "N0CALL", "PE1XYZ", "PE1ABC"];
 
 // Load the ircDDBGateway config file
 $configs = array();
@@ -384,6 +371,7 @@ if (isDVmegaCast() == 1) {
     $configmmdvm['Transparent Data']['Enable'] = "1";
 }
 
+/*
 // New MMDVMHost uart stuff
 if (!isset($configmmdvm['Modem']['Protocol']) ||
 !isset($configmmdvm['Modem']['UARTPort']) ||
@@ -392,6 +380,7 @@ if (!isset($configmmdvm['Modem']['Protocol']) ||
     $configmmdvm['Modem']['UARTPort'] = $configmmdvm['Modem']['Port'];
     $configmmdvm['Modem']['UARTSpeed'] = 115200;
 }
+*/
 
 // Convert [aprs.fi] sections to new [APRS] format
 function clearAprsDotFi(&$cfgFile, $suffix) {
@@ -490,6 +479,7 @@ $MYCALL=strtoupper($callsign);
     <script src="/js/select2/js/select2.full.min.js?version=<?php echo $versionCmd; ?>"></script>
     <script src="/js/select2/js/select2-searchInputPlaceholder.js?version=<?php echo $versionCmd; ?>"></script>  
     <script>
+        window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
         function disableSubmitButtons() {
                 var inputs = document.getElementsByTagName('input');
                 for (var i = 0; i < inputs.length; i++) {
@@ -512,6 +502,10 @@ $MYCALL=strtoupper($callsign);
 		disableSubmitButtons();
 		document.getElementById("autoApPassForm").submit();
 	}
+	function submitDiagsOptForm() {
+		disableSubmitButtons();
+		document.getElementById("diagsOptForm").submit();
+	}
 	function factoryReset() {
 		if (confirm('WARNING: This will reset all of your settings back to factory defaults. WiFi configuration will be retained to maintain network access to this hotspot.\n\nAre you SURE you want to do this?\n\nPress OK to restore the factory configuration\nPress Cancel to go back.')) {
 			document.getElementById("factoryReset").submit();
@@ -520,8 +514,14 @@ $MYCALL=strtoupper($callsign);
 		}
 	}
 	function resizeIframe(obj) {
-		var numpix = parseInt(obj.contentWindow.document.body.scrollHeight, 10);
-		obj.style.height = numpix + 'px';
+    	    var heightBuffer = 10;
+    	    var widthBuffer = 5;
+    
+    	    var height = obj.contentWindow.document.body.scrollHeight + heightBuffer;
+    	    var width = obj.contentWindow.document.body.scrollWidth + widthBuffer;
+    
+    	    obj.style.height = height + 'px';
+    	    obj.style.width = width + 'px';
 	}
 	$(document).ready(function() {
           $('.ysfStartupHost').select2({searchInputPlaceholder: 'Search...'});
@@ -601,7 +601,7 @@ $MYCALL=strtoupper($callsign);
 		var inputField = $("#" + targetField);
 
 		// Disable the field during lookup
-		inputField.prop("disabled", true);
+		inputField.prop("disabled", false);
 		inputField.attr("placeholder", "Searching...");
 
 		$.ajax({
@@ -785,6 +785,11 @@ $MYCALL=strtoupper($callsign);
         }
     }
 </script>
+<style>
+input[type=number] {
+    font: 0.8em 'Inconsolata', monospace !important;
+}
+</style>
 </head>
 <body onload="checkFrequency(); return false;">
 <div id="unsavedChanges">
@@ -796,8 +801,8 @@ $MYCALL=strtoupper($callsign);
 // warn to backup configs, only if this is not a new installation.
 $config_dir = "/etc/WPSD_config_mgr";
 if (!is_dir($config_dir) || count(glob("$config_dir/*")) < 1) { // no saved configs
-    if (file_exists('/etc/dstar-radio.mmdvmhost') && $MYCALL != "M1ABC") { // NOT a new installation , so display message...
-?>
+    if (file_exists('/etc/dstar-radio.mmdvmhost') && !in_array($MYCALL, $skipped_calls)) { // NOT a new installation , so display message..
+?> 
 <div>
   <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
     <tr>
@@ -810,25 +815,10 @@ if (!is_dir($config_dir) || count(glob("$config_dir/*")) < 1) { // no saved conf
     }
 }
 ?>
-<?php
-$bmAPIkeyFile = '/etc/bmapi.key';
-if (file_exists($bmAPIkeyFile) && fopen($bmAPIkeyFile,'r')) {
-  $configBMapi = parse_ini_file($bmAPIkeyFile, true);
-  $bmAPIkey = $configBMapi['key']['apikey'];
-  // Check the BM API Key
-  if ( strlen($bmAPIkey) <= 200 ) {
-?>
-<div>
-  <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
-    <tr>
-    <td align="center" valign="top" style="background-color: #ffff90; color: #906000; word-wrap: break-all;padding:20px;">Notice! You have a legacy Brandmeister API Key, which will not work any longer. Read the announcement on how to migrate: <a href="https://news.brandmeister.network/introducing-user-api-keys/" target="new" alt="BM API Keys">BM API Key Announcement and Migration Instructions</a>; and then <a href="/admin/advanced/fulledit_bmapikey.php">Update your API Key</a> to delete this message and to ensure BM Manager continues to work properly..</td>
-    </tr>
-  </table>
-</div>
-<?php } } ?>
 <div class="container">
 <div class="header">
 <div class="SmallHeader shLeft noMob">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+<?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
 <div class="SmallHeader shRight noMob">
   <div id="CheckUpdate">
   <?php
@@ -839,25 +829,11 @@ if (file_exists($bmAPIkeyFile) && fopen($bmAPIkeyFile,'r')) {
 <h1>WPSD <?php echo __(( 'Dashboard' )) . " - ".__( 'Configuration' );?></h1>
         <div class="navbar">
               <script type= "text/javascript">
-               $(document).ready(function() {
-                 setInterval(function() {
-                   $("#timer").load("/includes/datetime.php");
-                   }, 1000);
-
-                 function update() {
-                   $.ajax({
-                     type: 'GET',
-                     cache: false,
-                     url: '/includes/datetime.php',
-                     timeout: 1000,
-                     success: function(data) {
-                       $("#timer").html(data); 
-                       window.setTimeout(update, 1000);
-                     }
-                   });
-                 }
-                 update();
-               });
+              function reloadDateTime(){
+                $( '#DateTime' ).html( _getDatetime( window.time_format ) );
+                setTimeout(reloadDateTime,1000);
+              }
+              reloadDateTime();
               </script>
               <div class="headerClock">
                 <span id="timer"></span>
@@ -918,6 +894,8 @@ if ($_SERVER["PHP_SELF"] == "/admin/configure.php") {
 	//HTML output starts here
      echo '<div class="contentwide">'."\n";
 if (!empty($_POST)):
+
+	exec('sudo wpsd-services fullstop > /dev/null 2>/dev/null');
 
 	// Admin Password Change
 	if (!empty($_POST['adminPassword'])) {
@@ -1026,7 +1004,7 @@ if (!empty($_POST)):
 	  if (file_exists('/etc/timeserver.disable'))
 	      system('sudo rm /etc/timeserver.disable');
 	  // reset repos
-	  system('sudo wpsd-services fullstop > /dev/null 2>/dev/null');
+	  exec('sudo wpsd-services fullstop > /dev/null 2>/dev/null');
 	  exec('sudo git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git update-index --no-assume-unchanged pistar-upnp.service');
 	  exec('sudo git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git reset --hard origin/master');
 	  exec('sudo git --work-tree=/usr/local/bin --git-dir=/usr/local/bin/.git reset --hard origin/master');
@@ -1038,7 +1016,7 @@ if (!empty($_POST)):
 	  if (isDVmegaCast() == 1) { // if DVMega cast, reset main board
 	      system('sudo /usr/local/cast/bin/cast-reset ; sleep 5 > /dev/null 2>/dev/null');
 	  }
-	  system('sudo wpsd-services start > /dev/null 2>/dev/null &');
+	  exec('sudo wpsd-services start > /dev/null 2>/dev/null &');
           echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},5000);</script>';
 	  echo "<br />\n</div>\n";
           echo "<br />\n</div>\n</div>\n</body>\n</html>\n";
@@ -1122,7 +1100,7 @@ if (!empty($_POST)):
 	}
 
 	// Set the Latitude
-	if (empty($_POST['confLatitude']) != TRUE ) {
+	if (isset($_POST['confLatitude']) && is_numeric($_POST['confLatitude'])) {
 	  $newConfLatitude = preg_replace('/[^0-9\.\-]/', '', $_POST['confLatitude']);
 	  $rollConfLat0 = 'sudo sed -i "/latitude=/c\\latitude='.$newConfLatitude.'" /etc/ircddbgateway';
 	  $rollConfLat1 = 'sudo sed -i "/latitude1=/c\\latitude1='.$newConfLatitude.'" /etc/ircddbgateway';
@@ -1140,7 +1118,7 @@ if (!empty($_POST)):
 	}
 
 	// Set the Longitude
-	if (empty($_POST['confLongitude']) != TRUE ) {
+	if (isset($_POST['confLongitude']) && is_numeric($_POST['confLongitude'])) {
 	  $newConfLongitude = preg_replace('/[^0-9\.\-]/', '', $_POST['confLongitude']);
 	  $rollConfLon0 = 'sudo sed -i "/longitude=/c\\longitude='.$newConfLongitude.'" /etc/ircddbgateway';
 	  $rollConfLon1 = 'sudo sed -i "/longitude1=/c\\longitude1='.$newConfLongitude.'" /etc/ircddbgateway';
@@ -1557,7 +1535,7 @@ if (!empty($_POST)):
 	     system($rollTimeserverBand);
 	  }
 
-	  $newCallsignUpper = strtoupper(escapeshellcmd($_POST['confCallsign']));
+	  $newCallsignUpper = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $_POST['confCallsign']));
 	  $confRPT2 = str_pad(escapeshellcmd($_POST['confCallsign']), 7, " ")."G";
 
 	  $confRPT1 = strtoupper($confRPT1);
@@ -1595,6 +1573,7 @@ if (!empty($_POST)):
 
 	  $configysfgateway['General']['Callsign'] = $newCallsignUpper;
 	  $configmmdvm['General']['Callsign'] = $newCallsignUpper;
+	  $configmmdvm['FM']['Callsign'] = $newCallsignUpper;
 	  $configysfgateway['aprs.fi']['Password'] = aprspass($newCallsignUpper);
 	  $configysfgateway['aprs.fi']['Description'] = $newCallsignUpper."_WPSD";
 	  $configysf2dmr['aprs.fi']['Password'] = aprspass($newCallsignUpper);
@@ -2316,17 +2295,6 @@ if (!empty($_POST)):
 	$rollRepeaterPort1 = 'sudo sed -i "/repeaterPort1=/c\\repeaterPort1=20011" /etc/ircddbgateway';
 	$configmmdvm['Modem']['UARTSpeed'] = $confHardwareSpeed;
 
-	  if ( $confHardware == 'idrp2c' ) {
-	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=1" /etc/ircddbgateway';
-	    $rollRepeaterAddress1 = 'sudo sed -i "/repeaterAddress1=/c\\repeaterAddress1=172.16.0.1" /etc/ircddbgateway';
-	    $rollRepeaterPort1 = 'sudo sed -i "/repeaterPort1=/c\\repeaterPort1=20000" /etc/ircddbgateway';
-	    system($rollRepeaterType1);
-	    $testNetworkConfig = exec('grep "eth0:1" /etc/network/interfaces | wc -l');
-	    if (substr($testNetworkConfig, 0, 1) === '0') {
-	      system('sudo sed -i "$ a\ \\nauto eth0:1\\nallow-hotplug eth0:1\\niface eth0:1 inet static\\n    address 172.16.0.20\\n    netmask 255.255.255.0" /etc/network/interfaces');
-	    }
-	  }
-
 	  if ( $confHardware == 'dvmpis' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
@@ -2401,6 +2369,11 @@ if (!empty($_POST)):
 	    system($rollRepeaterType1);
 	  }
 
+	  if ( $confHardware == 'zum' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+ 	    system($rollRepeaterType1);
+	  }
+
 	  if ( $confHardware == 'zumspotlibre' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
@@ -2439,7 +2412,7 @@ if (!empty($_POST)):
 	  if ( $confHardware == 'zumspotduplexgpio' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+            $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
           if ( $confHardware == 'zumradiopiusb' ) {
@@ -2452,51 +2425,56 @@ if (!empty($_POST)):
 	  if ( $confHardware == 'zumradiopigpio' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
+            $configmmdvm['DMR Network']['Slot1'] = 1;
 	    $configmmdvm['Modem']['UARTSpeed'] = "460800";
-	  }
-
-	  if ( $confHardware == 'zum' ) {
-	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
-	    system($rollRepeaterType1);
-	  }
-
-	  if ( $confHardware == 'stm32dvm' ) {
-	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
-	    system($rollRepeaterType1);
 	  }
 
 	  if ( $confHardware == 'stm32dvmv3+' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
 	    $configmmdvm['Modem']['UARTSpeed'] = "460800";
+            $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'stm32usb' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
+            $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'stm32usbv3+' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
 	    $configmmdvm['Modem']['UARTSpeed'] = "460800";
+            $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'stm32dvmmtr2kopi' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
 	    $configmmdvm['Modem']['UARTSpeed'] = "500000";
+            $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'stm32dvmnanopi' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['Modem']['UARTSpeed'] = "115200";
+            $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'f4mgpio' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
+            $configmmdvm['General']['Duplex'] = 0;
+            $configmmdvm['DMR Network']['Slot1'] = 0;
+
 	  }
 
 	  if ( $confHardware == 'f4mf7m' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'mmdvmhshat' ) {
@@ -2537,25 +2515,25 @@ if (!empty($_POST)):
 	  if ( $confHardware == 'mmdvmhsdualhatgpio' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'lshsdualhatgpio' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'mmdvmhsdualhatusb' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'mmdvmrpthat' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
 	  }
 
 	  if ( $confHardware == 'mmdvmmdohat' ) {
@@ -2575,7 +2553,51 @@ if (!empty($_POST)):
 	  if ( $confHardware == 'mmdvmvyehatdual' ) {
 	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
 	    system($rollRepeaterType1);
-	    $configmmdvm['General']['Duplex'] = 1;
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'jtahotspotdual' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'jtarptv3f4' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'jtaduplexminihat' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'jtadogboneduplex' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'jtadogbonesimplex' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['General']['Duplex'] = 0;
+	    $configmmdvm['DMR Network']['Slot1'] = 0;
+	  }
+
+	  if ( $confHardware == 'jtaduplexmodela' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['DMR Network']['Slot1'] = 1;
+	  }
+
+	  if ( $confHardware == 'nanohotspotnpi' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
+	    $configmmdvm['General']['Duplex'] = 0;
+	    $configmmdvm['DMR Network']['Slot1'] = 0;
 	  }
 
 	  if ( $confHardware == 'nanodv' ) {
@@ -2627,6 +2649,11 @@ if (!empty($_POST)):
 	    system($rollRepeaterType1);
 	    $configmmdvm['General']['Duplex'] = 0;
 	    $configmmdvm['DMR Network']['Slot1'] = 0;
+	  }
+
+	  if ( $confHardware == 'genericmmdvm' ) {
+	    $rollRepeaterType1 = 'sudo sed -i "/repeaterType1=/c\\repeaterType1=0" /etc/ircddbgateway';
+	    system($rollRepeaterType1);
 	  }
 
 	  // Set the Service start delay
@@ -3107,7 +3134,7 @@ if (!empty($_POST)):
 
 	// handle NONE display post
 	if ((empty($_POST['mmdvmDisplayType']) == TRUE) || (escapeshellcmd($_POST['mmdvmDisplayType']) == "None")) {
-	    $configmmdvm['General']['Display'] = "";
+	    $configmmdvm['General']['Display'] = "None";
 	    unset($_POST['mmdvmDisplayType']);
 	}
 
@@ -3435,7 +3462,7 @@ if (!empty($_POST)):
 	if (isset($configmmdvm['Nextion']['Port'])) {
 	    if ( $configmmdvm['Nextion']['Port'] == "/dev/modem" ) { $configmmdvm['Nextion']['Port'] = "modem"; }
 	}
-	if (!isset($configmmdvm['FM'])) {
+	if (isset($configmmdvm['FM'])) {
 		$configmmdvm['FM']['Enable'] = "0";
 		$configmmdvm['FM']['Callsign'] = $newCallsignUpper;
 		$configmmdvm['FM']['CallsignSpeed'] = "20";
@@ -3469,6 +3496,12 @@ if (!empty($_POST)):
 		$configmmdvm['FM']['MaxDevLevel'] = "90";
 		$configmmdvm['FM']['ExtAudioBoost'] = "1";
 	}
+
+	// Stop ircDDBGateway from trying to lookup rr.openquad.net (the hard coded default) all the time
+ 	if ( (!isset($configs['ircddbHostname2'])) && (!isset($configs['ircddbEnabled2'])) ) {
+ 		$fix2ndIRCHost = "sudo sed -i '/^ircddbEnabled=/a ircddbEnabled2=0' /etc/ircddbgateway";
+ 		system($fix2ndIRCHost);
+ 	}
 	
 	// Add missing options to DMR2YSF
 	if (!isset($configdmr2ysf['YSF Network']['FCSRooms'])) { $configdmr2ysf['YSF Network']['FCSRooms'] = "/usr/local/etc/FCSHosts.txt"; }
@@ -3735,7 +3768,7 @@ if (!empty($_POST)):
 	if (isset($configysfgateway['APRS']['Enable'])) { $configysfgateway['APRS']['Enable'] = $YSFGatewayAPRS; }
 
 	// Add the DAPNet Config
-	if (!isset($configdapnetgw['General']['Callsign'])) { $configdapnetgw['General']['Callsign'] = "M1ABC"; }
+	if (!isset($configdapnetgw['General']['Callsign'])) { $configdapnetgw['General']['Callsign'] = "WPSD42"; }
 	if (!isset($configdapnetgw['General']['RptAddress'])) { $configdapnetgw['General']['RptAddress'] = "127.0.0.1"; }
 	if (!isset($configdapnetgw['General']['RptPort'])) { $configdapnetgw['General']['RptPort'] = "3800"; }
 	if (!isset($configdapnetgw['General']['LocalAddress'])) { $configdapnetgw['General']['LocalAddress'] = "127.0.0.1"; }
@@ -3773,7 +3806,7 @@ if (!empty($_POST)):
 	}
 
 	// config file update notifier vars
-	system('sudo sed -i "/ConfUpdReqd = /c\\ConfUpdReqd = '.$configUpdateRequired.'" /etc/pistar-release');
+	system('sudo sed -i "/ConfUpdReqd = /c\\ConfUpdReqd = '.$configUpdateRequired.'" '.$WPSDreleaseConfig.'');
 
 	// Create the hostfiles.nodextra file if required
 	if (empty($_POST['confHostFilesNoDExtra']) != TRUE ) {
@@ -3868,7 +3901,7 @@ if (!empty($_POST)):
 			exec('sudo mv /tmp/bW1kdm1ob3N0DQo.tmp /etc/mmdvmhost');		// Move the file back
 			exec('sudo chmod 644 /etc/mmdvmhost');					// Set the correct runtime permissions
 			exec('sudo chown root:root /etc/mmdvmhost');				// Set the owner
-			exec('sudo /usr/local/sbin/nextion-driver-helper');			// Run the Nextion driver helper based on selected MMDVMHost display type
+			exec('sudo /usr/local/sbin/.wpsd-display-driver-helper');		// Run the display driver helper based on selected MMDVMHost display type
 		}
 	}
 
@@ -4372,7 +4405,7 @@ if (!empty($_POST)):
 	//         * Every Block is 8 chars and string total is 49 bytes/chars.
 	*/
 	if (isDVmegaCast() == 1) {
-	    $callsignCast = !empty($newCallsignUpper) ? $newCallsignUpper : 'PE1ABC';
+	    $callsignCast = !empty($newCallsignUpper) ? $newCallsignUpper : 'PE1XYZ';
 	    $dmridCast = !empty($newPostDmrId) ? $newPostDmrId : '2040000';
 	    $essidCast = !empty($_POST['bmExtendedId']) && $_POST['bmExtendedId'] !== 'None' ? $_POST['bmExtendedId'] : '00';
 	    $modSuffixCast = !empty($_POST['confDStarModuleSuffix']) ? $_POST['confDStarModuleSuffix'] : 'E';
@@ -4438,19 +4471,46 @@ if (!empty($_POST)):
 	    system($rollUpdateCheckConfig);
 	}
 
+	// User map opt-in
+	if (!empty($_POST['mapOpted'])) {
+	    $newMapOpted = escapeshellcmd($_POST['mapOpted']);
+    
+	    $rollMapOpted = "sudo sed -i \"/OptIntoUserMap = /c\\OptIntoUserMap = $newMapOpted\" $config_file";
+	    system($rollMapOpted);
+	}
+
+	// Diags/Updates opt-out
+	if (!empty($_POST['diagsOpted'])) {
+	    $newDiagsOpted = escapeshellcmd($_POST['diagsOpted']);
+    
+	    $rollDiagsOpted = "sudo sed -i \"/OptIntoDiags = /c\\OptIntoDiags = $newDiagsOpted\" $config_file";
+	    system($rollDiagsOpted);
+
+	    if ($newDiagsOpted == "false") {
+		$command = 'for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer; do sudo systemctl stop $unit && sudo systemctl disable $unit; done';
+		system($command);
+		$rollUpdateCheckConfig = "sudo sed -i \"/UpdateNotifier = /c\\UpdateNotifier = false\" $config_file";
+		system($rollUpdateCheckConfig);
+
+	    } else {
+		$command = 'for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer wpsd-running-tasks.service; do sudo systemctl enable $unit && sudo systemctl start $unit; done';
+		system($command);
+	    }
+	}
 
 	// Start all services
         if (isDVmegaCast() == 1) { // DVMega Cast mode logic
 	    system($rollCastMode);
 	}
-	system('sudo wpsd-services restart > /dev/null 2>/dev/null &');
+	exec('sudo wpsd-services start > /dev/null 2>/dev/null &');
+	exec('sudo .wpsd-slipstream-tasks > /dev/null 2>/dev/null &');
 
 	unset($_POST);
 	echo '<script type="text/javascript">window.location=window.location;</script>';
 
 else:
 	// Output the HTML Form here
-	if (file_exists('/etc/dstar-radio.mmdvmhost') && !$configModem['Modem']['Hardware'] && $MYCALL != "M1ABC") { echo "<script type\"text/javascript\">\n\talert(\"NOTE:\\n\\nPlease (re-)select your modem from the 'Radio/Modem Type' drop-down list.\")\n</script>\n"; }
+	if (file_exists('/etc/dstar-radio.mmdvmhost') && !$configModem['Modem']['Hardware'] && !in_array($MYCALL, $skipped_calls))  { echo "<script type\"text/javascript\">\n\talert(\"NOTE:\\n\\nPlease (re-)select your modem from the 'Radio/Modem Type' drop-down list.\")\n</script>\n"; }
 	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Chrome') !== false) {
 		$toggleDMRCheckboxCr			= 'onclick="toggleDMRCheckbox()"';
 		$toggleDSTARCheckboxCr			= 'onclick="toggleDSTARCheckbox()"';
@@ -4600,19 +4660,19 @@ else:
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'dvrptr1') {		echo ' selected="selected"';}?> value="dvrptr1">DV-RPTR V1 (USB)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'dvrptr2') {		echo ' selected="selected"';}?> value="dvrptr2">DV-RPTR V2 (USB)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'dvrptr3') {		echo ' selected="selected"';}?> value="dvrptr3">DV-RPTR V3 (USB)</option>
-		<option<?php if ($configModem['Modem']['Hardware'] === 'zum') {			echo ' selected="selected"';}?> value="zum">MMDVM / MMDVM_HS / Teensy / ZUM (USB)</option>
-		<option<?php if ($configModem['Modem']['Hardware'] === 'stm32dvm') {		echo ' selected="selected"';}?> value="stm32dvm">STM32-DVM / MMDVM_HS - Raspberry Pi Hat (GPIO)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'stm32dvmv3+') {		echo ' selected="selected"';}?> value="stm32dvmv3+">RB STM32-DVM (GPIO v3+)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'stm32usb') {		echo ' selected="selected"';}?> value="stm32usb">RB STM32-DVM (USB)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'stm32usbv3+') {		echo ' selected="selected"';}?> value="stm32usbv3+">RB STM32-DVM (USB v3+)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'stm32dvmmtr2kopi') {	echo ' selected="selected"';}?> value="stm32dvmmtr2kopi">RB STM32-DVM-MTR2k (GPIO v3+)</option>
+		<option<?php if ($configModem['Modem']['Hardware'] === 'stm32dvmnanopi') {	echo ' selected="selected"';}?> value="stm32dvmnanopi">RB STM32-DVM-NanoPi (GPIO v1)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'zumspotlibre') {	echo ' selected="selected"';}?> value="zumspotlibre">ZUMspot - Libre (USB)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'zumspotusb') {		echo ' selected="selected"';}?> value="zumspotusb">ZUMspot - USB Stick</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'zumspotgpio') {		echo ' selected="selected"';}?> value="zumspotgpio">ZUMspot - Single Band Raspberry Pi Hat (GPIO)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'zumspotdualgpio') {	echo ' selected="selected"';}?> value="zumspotdualgpio">ZUMspot - Dual Band Raspberry Pi Hat (GPIO)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'zumspotduplexgpio') {	echo ' selected="selected"';}?> value="zumspotduplexgpio">ZUMspot - Duplex Raspberry Pi Hat (GPIO)</option>
-	        <option<?php if ($configModem['Modem']['Hardware'] === 'zumradiopigpio') {	echo ' selected="selected"';}?> value="zumradiopigpio">ZUM Radio-MMDVM for Pi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'zumradiopigpio') {	echo ' selected="selected"';}?> value="zumradiopigpio">ZUM Radio-MMDVM (Rptr.) for Pi (GPIO)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'zumradiopiusb') {	echo ' selected="selected"';}?> value="zumradiopiusb">ZUM Radio-MMDVM-Nucleo (USB)</option>
+		<option<?php if ($configModem['Modem']['Hardware'] === 'zum') {                 echo ' selected="selected"';}?> value="zum">MMDVM / MMDVM_HS / Teensy / ZUM (USB)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'f4mgpio') {		echo ' selected="selected"';}?> value="f4mgpio">MMDVM F4M-GPIO (GPIO)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'f4mf7m') {		echo ' selected="selected"';}?> value="f4mf7m">MMDVM F4M/F7M (F0DEI) for USB</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'mmdvmhsdualbandgpio') {	echo ' selected="selected"';}?> value="mmdvmhsdualbandgpio">MMDVM_HS_Dual_Band for Pi (GPIO)</option>
@@ -4624,6 +4684,14 @@ else:
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'mmdvmmdohat') {		echo ' selected="selected"';}?> value="mmdvmmdohat">MMDVM_HS_MDO Hat (BG3MDO) for Pi (GPIO)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'mmdvmvyehat') {		echo ' selected="selected"';}?> value="mmdvmvyehat">MMDVM_HS_NPi Hat (VR2VYE) for Nano Pi (GPIO)</option>
 	        <option<?php if ($configModem['Modem']['Hardware'] === 'mmdvmvyehatdual') {	echo ' selected="selected"';}?> value="mmdvmvyehatdual">MMDVM_HS_Hat_Dual Hat (VR2VYE) for Pi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtahotspotdual') {	echo ' selected="selected"';}?> value="jtahotspotdual">hotSPOT Dual Hat (VR2VYE, BI7JTA) for RPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtaduplexminihat') {	echo ' selected="selected"';}?> value="jtaduplexminihat">Duplex_Mini hotSPOT Hat; ceramic antennas (BI7JTA) for RPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtasimplexminihat') {	echo ' selected="selected"';}?> value="jtasimplexminihat">Simplex Mini Hat (BI7JTA) for RPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'nanohotspotnpi') {	echo ' selected="selected"';}?> value="nanohotspotnpi">Nano_hotSPOT (BI7JTA) for NanoPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtadogbonesimplex') {	echo ' selected="selected"';}?> value="jtadogbonesimplex">DogBone Simplex Mini Hotspot (BI7JTA) for RPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtadogboneduplex') {	echo ' selected="selected"';}?> value="jtadogboneduplex">DogBone Duplex Mini Hotspot (BI7JTA) for RPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtaduplexmodela') {	echo ' selected="selected"';}?> value="jtaduplexmodela">Duplex Model A Hotspots (BI7JTA) for RPi (GPIO)</option>
+	        <option<?php if ($configModem['Modem']['Hardware'] === 'jtarptv3f4') {		echo ' selected="selected"';}?> value="jtarptv3f4">V3FR Repeater Board (BI7JTA) for Pi (GPIO)</option>
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'lshshatgpio') {		echo ' selected="selected"';}?> value="lshshatgpio">LoneStar - MMDVM_HS_Hat for Pi (GPIO)</option>
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'lshsdualhatgpio') {	echo ' selected="selected"';}?> value="lshsdualhatgpio">LoneStar - MMDVM_HS_Dual_Hat for Pi (GPIO)</option>
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'lsusb') {		echo ' selected="selected"';}?> value="lsusb">LoneStar - USB Stick</option>
@@ -4631,6 +4699,7 @@ else:
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'nanodv') {		echo ' selected="selected"';}?> value="nanodv">MMDVM_NANO_DV (BG4TGO) for NanoPi AIR (GPIO)</option>
 	    	<option<?php if ($configModem['Modem']['Hardware'] === 'nanodvusb') {		echo ' selected="selected"';}?> value="nanodvusb">MMDVM_NANO_DV (BG4TGO) for NanoPi AIR (USB)</option>
 		<option<?php if ($configModem['Modem']['Hardware'] === 'opengd77') {		echo ' selected="selected"';}?> value="opengd77">OpenGD77 DMR hotspot (USB)</option>
+		<option<?php if ($configModem['Modem']['Hardware'] === 'genericmmdvm') {	echo ' selected="selected"';}?> value="genericmmdvm">Generic MMDVM Hotspot Board (GPIO)</option>
 		<?php } // End DVMega Cast logic ?>
     </select></td>
     </tr>
@@ -4680,7 +4749,7 @@ else:
     }
 ?>
     </select></td>
-    <td align="left" colspan="2">Time Format: 
+    <td align="left" colspan="2">Dashboard Time Format: 
     <input type="radio" name="systemTimeFormat" value="24" <?php if (constant("TIME_FORMAT") == "24") {  echo 'checked="checked"'; } ?> />24 Hour
     <input type="radio" name="systemTimeFormat" value="12" <?php if (constant("TIME_FORMAT") == "12") { echo 'checked="checked"'; } ?> />12 Hour
     </tr>
@@ -4706,14 +4775,6 @@ else:
 	echo '    </select></td></tr>'."\n";
     }
 ?>
-    <tr>
-    <td align="left"><a class="tooltip2" href="#">Update Notifier:<span><b>Update Notifier</b>Enables/Disables automatic dashboard software update notifications.</span></a></td>
-    <td colspan="2" align="left">
-    <input type="radio" name="autoUpdateCheck" value="false" <?php if (constant("AUTO_UPDATE_CHECK") == "false") { echo 'checked="checked"'; } ?> />Disabled
-    <input type="radio" name="autoUpdateCheck" value="true" <?php if (constant("AUTO_UPDATE_CHECK") == "true") { echo 'checked="checked"'; } ?> />Enabled
-    </td>
-    <td align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'>Enables / Disables automatic dashboard software update notifications.<br>When enabled, software update availability is displayed in the dashboard header.</td>
-    </tr>
     </table>
 
     <br /><br />
@@ -4723,26 +4784,117 @@ else:
     <table>
     <tr>
     </tr>
-    <tr>
-    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Latitude' );?>:<span><b>Gateway Latitude</b>This is the latitude where the gateway is located (positive number for North, negative number for South) - Set to 0 to hide your hotspot location</span></a></td>
-    <td align="left" colspan="3"><input type="text" id="confLatitude" name="confLatitude" size="13" maxlength="9" value="<?php echo $configmmdvm['Info']['Latitude']; ?>" /> degrees (positive value for North, negative for South)</td>
-    </tr>
-    <tr>
-    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Longitude' );?>:<span><b>Gateway Longitude</b>This is the longitude where the gateway is located (positive number for East, negative number for West) - Set to 0 to hide your hotspot location</span></a></td>
-    <td align="left" colspan="3"><input type="text" id="confLongitude" name="confLongitude" size="13" maxlength="9" value="<?php echo $configmmdvm['Info']['Longitude'];  ?>" /> degrees (positive value for East, negative for West)</td>
-    </tr>
+<tr>
+    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Latitude' );?>:<span><b>Node Latitude</b>This is the latitude where the node is located (positive number for North, negative number for South) - Set to 0 to diable</span></a></td>
+    <td align="left" colspan="3">
+        <input type="number" 
+               id="confLatitude" 
+               name="confLatitude" 
+               size="15" 
+               step="0.000001"
+               min="-90" 
+               max="90" 
+               value="<?php echo $configmmdvm['Info']['Latitude']; ?>" 
+               onchange="validateDecimalDegrees(this, 'latitude')"
+               required
+        /> degrees (positive value for North, negative for South)
+        <span id="latitudeError" class="error-message" style="color: red; display: none;"></span>
+    </td>
+</tr>
+<tr>
+    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Longitude' );?>:<span><b>Node Longitude</b>This is the longitude where the node is located (positive number for East, negative number for West) - Set to 0 to disable</span></a></td>
+    <td align="left" colspan="3">
+        <input type="number" 
+               id="confLongitude" 
+               name="confLongitude" 
+               size="15" 
+               step="0.000001"
+               min="-180" 
+               max="180" 
+               value="<?php echo $configmmdvm['Info']['Longitude']; ?>" 
+               onchange="validateDecimalDegrees(this, 'longitude')"
+               required
+        /> degrees (positive value for East, negative for West)
+        <span id="longitudeError" class="error-message" style="color: red; display: none;"></span>
+    </td>
+</tr>
+
+<script>
+function validateDecimalDegrees(input, type) {
+    const value = parseFloat(input.value);
+    const errorElement = document.getElementById(type + 'Error');
+    
+    // Check if it's a valid number
+    if (isNaN(value)) {
+        errorElement.textContent = "Please enter a valid decimal number";
+        errorElement.style.display = "block";
+        input.value = "";
+        return false;
+    }
+    
+    // Validate range based on type
+    const ranges = {
+        latitude: { min: -90, max: 90 },
+        longitude: { min: -180, max: 180 }
+    };
+    
+    const range = ranges[type];
+    if (value < range.min || value > range.max) {
+        errorElement.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} must be between ${range.min} and ${range.max} degrees`;
+        errorElement.style.display = "block";
+        input.value = "";
+        return false;
+    }
+    
+    // Special case for value 0 (hiding location)
+    if (value === 0) {
+        errorElement.style.display = "none";
+        return true;
+    }
+    
+    // Validate decimal places (maximum 6 decimal places)
+    const decimalPlaces = (input.value.split('.')[1] || '').length;
+    if (decimalPlaces > 6) {
+        errorElement.textContent = "Maximum 6 decimal places allowed";
+        errorElement.style.display = "block";
+        input.value = value.toFixed(6);
+        return false;
+    }
+    
+    // Clear error message if validation passes
+    errorElement.style.display = "none";
+    return true;
+}
+
+// Add form submit handler to validate both fields
+document.querySelector('form').addEventListener('submit', function(e) {
+    const latValid = validateDecimalDegrees(document.getElementById('confLatitude'), 'latitude');
+    const longValid = validateDecimalDegrees(document.getElementById('confLongitude'), 'longitude');
+    
+    if (!latValid || !longValid) {
+        e.preventDefault();
+    }
+});
+</script>
     <tr>
     <td colspan="4" align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-info-circle"></i> Hint: You can use <a href="https://w0chp.radio/get-your-location-coords/" target="_new">this tool to try and calculate your location coordinates.</a></td>
     </tr>
     <tr>
+    <td align="left"><a class="tooltip2" href="#">Show This Node on the WPSD User Map:<span><b>Show Node on the WPSD User Map</b>Enables/Disables your WPSD Node being displayed on the WPSD User Map.</span></a></td>
+    <td colspan="2" align="left">
+    <input type="radio" name="mapOpted" value="false" <?php if (constant("MAP_OPTED") == "false" || !defined(constant("MAP_OPTED"))  ) { echo 'checked="checked"'; } ?> />Hide
+    <input type="radio" name="mapOpted" value="true" <?php if (constant("MAP_OPTED") == "true") { echo 'checked="checked"'; } ?> />Display
+    </td>
+    <td align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'>Display Your WPSD Node on the <a href="https://user-map.wpsd.radio/" target="_new">WPSD User Map</a>.<br><small><i class="fa fa-exclamation-circle"></i> Notes: You must input your latitude and longitude coordinates above to ensure map accuracy. The WPSD User Map is <em>not</em> APRS -- it's just a fun map for users to share that they use WPSD and what their location is.</small></td>
+    </tr>
+    <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Town' );?>:<span><b>Gateway City/State</b>The City/State where the gateway is located</span></a></td>
-    <td align="left" colspan="3"><input type="text" name="confDesc1" size="30" maxlength="30" value="<?php echo $configs['description1'] ?>" /></td>
+    <td align="left" colspan="3"><input type="text" name="confDesc1" size="30" value="<?php echo $configs['description1'] ?>" /></td>
     </tr>
     <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Country' );?>:<span><b>Gateway Country</b>The country where the gateway is located</span></a></td>
-    <td align="left" colspan="3"><input type="text" name="confDesc2" size="30" maxlength="30" value="<?php echo $configs['description2'] ?>" /></td>
+    <td align="left" colspan="3"><input type="text" name="confDesc2" size="30" value="<?php echo $configs['description2'] ?>" /></td>
     </tr>
-    <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'URL' );?>:<span><b>URL</b>Your URL you'd like to be displayed in various networks/gateways, such as Brandmeister, DMR+, etc.<br><br>This does NOT affect your callsign link on the Dashboard page.</span></a></td>
     <td align="left" colspan="2"><input type="text" name="confURL" size="45" maxlength="255" value="<?php echo $configs['url'] ?>" /></td>
     <td align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'>
@@ -4803,6 +4955,7 @@ else:
                 if ($configdgidgateway['Enabled']['Enabled'] !== "1")  { echo(' disabled="disabled"'); }?> >
                 <label for="aprsgw-service-selection-2">DGId</label>
             </div>
+	    <?php if (isDVmegaCast() == 0) { // Begin DVMega Cast logic... ?>
             <div style="display: inline-block;vertical-align: middle; margin-left:5px;">
                 <input name="NXDNGatewayAPRS"  id="aprsgw-service-selection-3" value="NXDNGatewayAPRS" type="checkbox"
                 <?php if($NXDNGatewayAPRS == "1" && $configmmdvm['NXDN Network']['Enable'] == "1") { echo(' checked="checked"'); }
@@ -4815,6 +4968,7 @@ else:
                 if ($configmmdvm['M17 Network']['Enable'] !== "1")  { echo(' disabled="disabled"'); }?> >
                 <label for="aprsgw-service-selection-4">M17</label>
             </div>
+	    <?php } // end DVMega Cast logic ?>
             <div style="display: inline-block;vertical-align: middle; margin-left:5px;">
                 <input name="IRCDDBGatewayAPRS" id="aprsgw-service-selection-5" value="IRCDDBGatewayAPRS" type="checkbox"
                 <?php if($IRCDDBGatewayAPRS == "1" && $configs['ircddbEnabled'] == "1" && $configmmdvm['D-Star Network']['Enable'] == "1") { echo(' checked="checked"'); }
@@ -4837,8 +4991,13 @@ else:
     </td>
     </tr>
     <tr>
+    <?php if (isDVmegaCast() == 0) { // Begin DVMega Cast logic... ?>
     <td colspan="4" style='word-wrap: break-word;white-space: normal;padding-left: 5px;' align="left"><i class="fa fa-info-circle"></i> APRSGateway will use the location information (Lat./Lon.) you have entered above. However, If you have a GPS device connected and have enabled GPSd (below), it will use the GPS device location informaion.</td>
+    <?php } else { ?>
+    <td colspan="4" style='word-wrap: break-word;white-space: normal;padding-left: 5px;' align="left"><i class="fa fa-info-circle"></i> APRSGateway will use the location information (Lat./Lon.) you have entered above.</td>
+    <?php } // end DVMega Cast logic ?>
     </tr>
+    <?php if (isDVmegaCast() == 0) { // Begin DVMega Cast logic... ?>
     <tr>
     <td align="left"><a class="tooltip2" href="#">GPSd:<span><b>GPS daemon support</b>Read NMEA data from a serially connected GPS unit and then to make that data available for other programs.</span></a></td>
     <input type="hidden" name="GPSD" value="OFF" />
@@ -4852,6 +5011,7 @@ else:
     </td>
     <td colspan="3" style='word-wrap: break-word;white-space: normal;padding-left: 5px;' align="left"><i class="fa fa-question-circle"></i> Enabling this option, allows an externally-connected GPS device to send your location information to APRS, vs. the location information (Lat./Lon.) you have entered above. This functionality requires that you also enable APRS Gateway (above).</td>
     </tr>
+    <?php } // end DVMega Cast logic ?>
     </table>
 
     <br /><br />
@@ -5293,7 +5453,7 @@ else:
     <?php } // end DVmega Cast logic ?>
     <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Remote Password' );?>:<span><b>Remote Password</b>Used for ircDDBGateway remote control access</span></a></td>
-    <td align="left" colspan="2"><input type="password" name="confPassword" id="ircddbPass" size="30" maxlength="30" value="<?php echo $configs['remotePassword'] ?>" />
+    <td align="left" colspan="2"><input type="password" name="confPassword" id="ircddbPass" size="30" value="<?php echo $configs['remotePassword'] ?>" />
     <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-ircddb-password"></span></td>
     </tr>
     <tr>
@@ -5649,7 +5809,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
     <tr>
       <td align="left"><a class="tooltip2" href="#">Hotspot Security:<span><b>DMR Master Password</b>Override the Password for DMR with your own custom password, make sure you already configured this on your chosed DMR Master. Empty the field to use the default.</span></a></td>
       <td align="left" colspan="2">
-        <input type="password" name="bmHSSecurity_YSF" id="bmHSSecurity_YSF" size="30" maxlength="30" value="<?php if (isset($configModem['BrandMeister']['Password'])) {echo $configModem['BrandMeister']['Password'];} ?>"></input>
+        <input type="password" name="bmHSSecurity_YSF" id="bmHSSecurity_YSF" size="30" value="<?php if (isset($configModem['BrandMeister']['Password'])) {echo $configModem['BrandMeister']['Password'];} ?>"></input>
 	<span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-bm-password_YSF"></span>
       </td>
     </tr>
@@ -5951,7 +6111,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
     <tr>
       <td align="left"><a class="tooltip2" href="#">BM Hotspot Security:<span><b>BrandMeister Password</b>Enter your Security password for BrandMeister, and make sure you already configured this using BM Self Care.</span></a></td>
       <td align="left" colspan="2">
-        <input type="password" name="bmHSSecurity" id="bmHSSecurity" size="30" maxlength="30" value="<?php if (isset($configModem['BrandMeister']['Password'])) {echo $configModem['BrandMeister']['Password'];} ?>"></input>
+        <input type="password" name="bmHSSecurity" id="bmHSSecurity" size="30" value="<?php if (isset($configModem['BrandMeister']['Password'])) {echo $configModem['BrandMeister']['Password'];} ?>"></input>
         <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-bm-password"></span>
       </td>
       <td align="left"><a href="https://brandmeister.network/?page=register" target="_new">Register for a Brandmeister Account...</a></td>
@@ -6248,7 +6408,7 @@ if (!@file_exists($bmAPIkeyFile) && !@fopen($bmAPIkeyFile,'r')) {
     <tr>
       <td align="left"><a class="tooltip2" href="#">TGIF Security Key:<span><b>TGIF Security Key</b>Override the default login with your own TGIF security key, Make sure you already configured this using TGIF Self Care. Empty the field to use the default.</span></a></td>
       <td align="left" colspan="2">
-        <input type="password" name="tgifHSSecurity" id="tgifHSSecurity" size="30" maxlength="30" value="<?php if (isset($configModem['TGIF']['Password'])) {echo $configModem['TGIF']['Password'];} ?>"></input>
+        <input type="password" name="tgifHSSecurity" id="tgifHSSecurity" size="30" value="<?php if (isset($configModem['TGIF']['Password'])) {echo $configModem['TGIF']['Password'];} ?>"></input>
 	<span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-tgif-password"></span>
       </td>
       <td align="left"><a href="https://tgif.network/profile.php?tab=Security" target="_new">Get your TGIF Security Key here...</a></td>
@@ -6738,9 +6898,9 @@ $p25Hosts = fopen("/usr/local/etc/P25Hosts.txt", "r");
 
 <?php
 	if ($osVer >= 12) { // Bookworm uses NetworkManager, so use our newer wifi-manager...
-	    $wifi_page = '<iframe frameborder="0" scrolling="auto" name="wifi" src="wifi-manager.php" width="100%" onload="javascript:resizeIframe(this);">If you can see this message, your browser does not support iFrames, however if you would like to see the content please click <a href="wifi-manager.php">here</a>.</iframe>';
+	    $wifi_page = '<iframe frameborder="0" scrolling="no" style="overflow: hidden;"  name="wifi" src="wifi-manager.php" width="100%" onload="javascript:resizeIframe(this);">If you can see this message, your browser does not support iFrames, however if you would like to see the content please click <a href="wifi-manager.php">here</a>.</iframe>';
 	} else { // Legacy wpa_supp systems (Bullseye) use the legacy wifi config page...
-	    $wifi_page = '<iframe frameborder="0" scrolling="auto" name="wifi" src="wifi.php?page=wlan0_info" width="100%" onload="javascript:resizeIframe(this);">If you can see this message, your browser does not support iFrames, however if you would like to see the content please click <a href="wifi.php?page=wlan0_info">here</a>.</iframe>';
+	    $wifi_page = '<iframe frameborder="0" scrolling="no" style="overflow: hidden;" name="wifi" src="wifi.php?page=wlan0_info" width="100%" onload="javascript:resizeIframe(this);">If you can see this message, your browser does not support iFrames, however if you would like to see the content please click <a href="wifi.php?page=wlan0_info">here</a>.</iframe>';
 	}	
 
 	if ( file_exists('/sys/class/net/wlan0') || file_exists('/sys/class/net/wlan1') || file_exists('/sys/class/net/wlan0_ap') ) {
@@ -6783,6 +6943,23 @@ echo'
     <tr><td colspan="3" align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-exclamation-circle"></i> <strong>NOTE:</strong> This changes the password for admin pages, this configuration page AND the '<code>pi-star</code>' SSH account.</td></tr>
     </table>
     </form>
+
+<br />
+    <h2 class="ConfSec"><?php echo __( 'Auto-Updates and Diagnostics' );?></h2>
+    <form id="diagsOptForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+    <table>
+    <tr>
+    <td align="left"><b>Enable / Disable Auto-Updates &amp; Diagnostics</b></td>
+    <td align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-question-circle"></i> WPSD sends encrypted/private diagnostics data to the WPSD update servers to determine if updates are available.</td>
+    <td align="left">
+    <input type="radio" name="diagsOpted" value="true" <?php if (constant("DIAGS_OPTED") == "true" || !defined(constant("DIAGS_OPTED"))  ) { echo 'checked="checked"'; } ?> />Enabled
+    <input type="radio" name="diagsOpted" value="false" <?php if (constant("DIAGS_OPTED") == "false") { echo 'checked="checked"'; } ?> />Disabled
+    <td align="right"><input type="button" id="diagsSubmit" value="<?php echo __( 'Submit' );?>" onclick="submitDiagsOptForm()" /></td>
+    </tr>
+    <tr><td colspan="4" align="left" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-exclamation-circle"></i> <strong>Warning:</strong> Disabling Auto-Updates and Diagnostics will completely disable <em>all</em> automated and critical WPSD software updates, as well as hostfiles, talkgroups and user ID (DMR / NXDN) database updates.<br>Also note, by disabling Auto-Updates and Diagnostics, you will forfeit any and all official WPSD support (we can't troubleshoot/support installations that are both outdated and which do not contain any diagnostics data.)</td></tr>
+    </table>
+    </form>
+
 <?php endif; ?>
 <br />
 </div>
@@ -6861,39 +7038,61 @@ echo'
     var aprsGatewayCheckbox;
 
     window.onload = function () {
-        toggleAPRSGatewayCheckbox();
+      toggleAPRSGatewayCheckbox();
     };
 
     function toggleAPRSGatewayCheckbox() {
-        aprsGatewayCheckbox = document.getElementById('toggle-aprsgateway');
-        var gpsdCheckbox = document.getElementById('toggle-GPSD');
-        var dmrCheckbox = document.getElementById('aprsgw-service-selection-0');
-        var ysfCheckbox = document.getElementById('aprsgw-service-selection-1');
-        var dgIdCheckbox = document.getElementById('aprsgw-service-selection-2');
-        var nxdnCheckbox = document.getElementById('aprsgw-service-selection-3');
-        var m17Checkbox = document.getElementById('aprsgw-service-selection-4');
-        var ircDDBCheckbox = document.getElementById('aprsgw-service-selection-5');
+      aprsGatewayCheckbox = document.getElementById('toggle-aprsgateway');
+      var gpsdCheckbox = document.getElementById('toggle-GPSD');
+      var dmrCheckbox = document.getElementById('aprsgw-service-selection-0');
+      var ysfCheckbox = document.getElementById('aprsgw-service-selection-1');
+      var dgIdCheckbox = document.getElementById('aprsgw-service-selection-2');
+      var nxdnCheckbox = document.getElementById('aprsgw-service-selection-3');
+      var m17Checkbox = document.getElementById('aprsgw-service-selection-4');
+      var ircDDBCheckbox = document.getElementById('aprsgw-service-selection-5');
 
-        // Disable or enable GPSD based on the state of APRS Gateway checkbox
-        gpsdCheckbox.disabled = !aprsGatewayCheckbox.checked;
+      // Disable or enable GPSD based on the state of APRS Gateway checkbox
+      if (gpsdCheckbox) {
+          gpsdCheckbox.disabled = !aprsGatewayCheckbox.checked;
 
-        // Uncheck GPSD if APRS Gateway is unchecked
-        if (!aprsGatewayCheckbox.checked) {
-            gpsdCheckbox.checked = false;
-        }
+          // Uncheck GPSD if APRS Gateway is unchecked
+          if (!aprsGatewayCheckbox.checked) {
+              gpsdCheckbox.checked = false;
+          }
+      }
 
-        // Disable or enable other checkboxes based on the state of APRS Gateway checkbox
-        dmrCheckbox.disabled = !aprsGatewayCheckbox.checked;
-        ysfCheckbox.disabled = !aprsGatewayCheckbox.checked;
-        dgIdCheckbox.disabled = !aprsGatewayCheckbox.checked;
-        nxdnCheckbox.disabled = !aprsGatewayCheckbox.checked;
-        m17Checkbox.disabled = !aprsGatewayCheckbox.checked;
-        ircDDBCheckbox.disabled = !aprsGatewayCheckbox.checked;
+      // For each mode checkbox, respect both PHP-set disabled state and APRS Gateway state
+      if (dmrCheckbox) {
+          dmrCheckbox.disabled = dmrCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
+      }
+    
+      if (ysfCheckbox) {
+          ysfCheckbox.disabled = ysfCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
+      }
+    
+      if (dgIdCheckbox) {
+          dgIdCheckbox.disabled = dgIdCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
+      }
+    
+      if (nxdnCheckbox) {
+          nxdnCheckbox.disabled = nxdnCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
+      }
+    
+      if (m17Checkbox) {
+          m17Checkbox.disabled = m17Checkbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
+      }
+    
+      if (ircDDBCheckbox) {
+          ircDDBCheckbox.disabled = ircDDBCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
+      }
     }
 
     // Add an event listener to the toggle-aprsgateway checkbox to call the function when its state changes
     window.addEventListener('load', function () {
-        aprsGatewayCheckbox.addEventListener('change', toggleAPRSGatewayCheckbox);
+      aprsGatewayCheckbox = document.getElementById('toggle-aprsgateway');
+      if (aprsGatewayCheckbox) {
+          aprsGatewayCheckbox.addEventListener('change', toggleAPRSGatewayCheckbox);
+      }
     });
 </script>
 </body>

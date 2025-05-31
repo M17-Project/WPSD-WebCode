@@ -48,6 +48,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 	    <div class="container">
 		<div class="header">
 		    <div class="SmallHeader shLeft">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+			<?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
                     <div class="SmallHeader shRight">
                       <div id="CheckUpdate">
                       <?php
@@ -87,13 +88,12 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    exec("sudo cp /etc/wpsd-upnp-rules $backupDir > /dev/null");
 			    exec("sudo cp /etc/WPSD-Dashboard-Config.ini $backupDir > /dev/null");
                 	    exec("sudo cp /etc/hostapd/hostapd.conf $backupDir > /dev/null");
-			    exec("sudo cp /etc/pistar-css.ini $backupDir > /dev/null");
-			    exec("sudo cp /etc/pistar-release $backupDir > /dev/null");
+			    exec("sudo cp /etc/*css.ini $backupDir > /dev/null");
+			    exec("sudo cp /etc/wpsd-release $backupDir > /dev/null");
 			    exec("sudo cp /etc/aprsgateway $backupDir > /dev/null");
 			    exec("sudo cp /etc/ircddbgateway $backupDir > /dev/null");
 			    exec("sudo cp /etc/mmdvmhost $backupDir > /dev/null");
 			    exec("sudo cp /etc/dapnetgateway $backupDir > /dev/null");
-                	    exec("sudo cp /etc/pistar-css.ini $backupDir > /dev/null");
 			    exec("sudo cp /etc/p25gateway $backupDir > /dev/null");
 			    exec("sudo cp /etc/ysfgateway $backupDir > /dev/null");
 			    exec("sudo cp /etc/dmr2nxdn $backupDir > /dev/null");
@@ -117,6 +117,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    exec("sudo cp /etc/default/gpsd $backupDir > /dev/null");
 			    exec("sudo cp /etc/*_paused $backupDir > /dev/null");
 			    exec("sudo cp /etc/.bm_tgs.json.saved $backupDir > /dev/null");
+			    exec("sudo cp /etc/.WPSD_config $backupDir > /dev/null");
 			    exec("sudo cp /etc/timeserver.disable $backupDir > /dev/null");
 			    exec("sudo cp /usr/local/etc/RSSI.dat $backupDir > /dev/null");
 			    exec("sudo find /root/ -maxdepth 1 -name '*Hosts.txt' -exec cp {} $backupDir \; > /dev/null");
@@ -220,6 +221,8 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
                 		exec("sudo mv -f /tmp/config_restore/hostapd.conf /etc/hostapd/ > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/*_paused /etc/ > /dev/null");
 				exec("sudo cp -a /tmp/config_restore/.bm_tgs.json.saved /etc/ > /dev/null");
+				exec("sudo cp -a /tmp/config_restore/.WPSD_config  /etc/ > /dev/null");
+				exec("sudo mv -f /tmp/config_restore/pistar-css.ini /etc/wpsd-css.ini > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/* /etc/ > /dev/null");
 				
 				//Restore the Timezone Config
@@ -231,7 +234,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				$ircRemotePassword = exec('grep remotePassword /etc/ircddbgateway | awk -F\'=\' \'{print $2}\'');
 				exec('sudo sed -i "/password=/c\\password='.$ircRemotePassword.'" /root/.Remote\ Control');
 				
-				exec('sudo /usr/local/sbin/nextion-driver-helper > /dev/null');  // Run the Nextion driver helper based on selected MMDVMHost display type
+				exec('sudo /usr/local/sbin/.wpsd-display-driver-helper > /dev/null');  // Run the display driver helper based on selected MMDVMHost display type
 
 				// Reset the GPIO Pins on Pi4, Pi5 etc. only
 				exec('sudo /usr/local/sbin/wpsd-modemreset boot > /dev/null');

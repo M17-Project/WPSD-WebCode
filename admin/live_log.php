@@ -107,6 +107,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
     <link rel="stylesheet" type="text/css" href="/css/font-awesome-4.7.0/css/font-awesome.min.css" />
     <script type="text/javascript" src="/js/jquery.min.js?version=<?php echo $versionCmd; ?>"></script>
     <script type="text/javascript" src="/js/jquery-timing.min.js?version=<?php echo $versionCmd; ?>"></script>
+    <script type="text/javascript" src="/js/functions.js?version=<?php echo $versionCmd; ?>"></script>
     <script type="text/javascript">
       $(function() {
         var placeholderVisible = true;
@@ -136,6 +137,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
       <div class="container">
 	  <div class="header">
 	      <div class="SmallHeader shLeft">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+		  <?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
               <div class="SmallHeader shRight">
                 <div id="CheckUpdate">
                 <?php
@@ -147,25 +149,12 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
 	      <p>
 		  <div class="navbar">
               <script type= "text/javascript">
-               $(document).ready(function() {
-                 setInterval(function() {
-                   $("#timer").load("/includes/datetime.php");
-                   }, 1000);
-
-                 function update() {
-                   $.ajax({
-                     type: 'GET',
-                     cache: false,
-                     url: '/includes/datetime.php',
-                     timeout: 1000,
-                     success: function(data) {
-                       $("#timer").html(data); 
-                       window.setTimeout(update, 1000);
-                     }
-                   });
-                 }
-                 update();
-               });
+              window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
+              function reloadDateTime(){
+                $( '#timer' ).html( _getDatetime( window.time_format ) );
+                setTimeout(reloadDateTime,1000);
+                }
+                reloadDateTime();
               </script>
               <div class="headerClock"> 
                 <span id="timer"></span>
@@ -190,21 +179,21 @@ if ($_SERVER["PHP_SELF"] == "/admin/live_log.php") {
   <form method="get">
    <b>Select a log to view:</b>
     <select name="log" value="log">
-	<option name="MMDVMHost">MMDVMHost</option>
-	<option name="ircDDBGateway">ircDDBGateway</option>
-	<option name="DMRGateway">DMRGateway</option>
-	<option name="YSFGateway">YSFGateway</option>
-	<option name="DGIdGateway">DGIdGateway</option>
-	<option name="P25Gateway">P25Gateway</option>
-	<option name="NXDNGateway">NXDNGateway</option>
-	<option name="M17Gateway">M17Gateway</option>
-	<option name="DAPNETGateway">DAPNETGateway</option>
-	<option name="DMR2NXDN">DMR2NXDN</option>
-	<option name="DMR2YSF">DMR2YSF</option>
-	<option name="YSF2DMR">YSF2DMR</option>
-	<option name="YSF2NXDN">YSF2NXDN</option>
-	<option name="YSF2P25">YSF2P25</option>
-	<option name="APRSGateway">APRSGateway</option>
+        <option name="APRSGateway">APRSGateway</option>
+        <option name="DAPNETGateway">DAPNETGateway</option>
+        <option name="DGIdGateway">DGIdGateway</option>
+        <option name="DMR2NXDN">DMR2NXDN</option>
+        <option name="DMR2YSF">DMR2YSF</option>
+        <option name="DMRGateway">DMRGateway</option>
+        <option name="ircDDBGateway">ircDDBGateway</option>
+        <option name="M17Gateway">M17Gateway</option>
+        <option name="MMDVMHost">MMDVMHost</option>
+        <option name="NXDNGateway">NXDNGateway</option>
+        <option name="P25Gateway">P25Gateway</option>
+        <option name="YSF2DMR">YSF2DMR</option>
+        <option name="YSF2NXDN">YSF2NXDN</option>
+        <option name="YSF2P25">YSF2P25</option>
+        <option name="YSFGateway">YSFGateway</option>
     </select>
     <input type="submit" name="sumbit" value="Select" />
   </form>

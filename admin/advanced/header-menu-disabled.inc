@@ -1,6 +1,7 @@
 <?php require_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php'; ?>
 <div class="header">
     <div class="SmallHeader shLeft">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+    <?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
     <div class="SmallHeader shRight">
        <div id="CheckUpdate">
        <?php

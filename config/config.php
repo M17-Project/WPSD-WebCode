@@ -1,6 +1,4 @@
 <?php
-# This is an auto-generated config-file!
-# Be careful, when manual editing this!
 
 define("MMDVMLOGPATH", "/var/log/pi-star");
 define("MMDVMLOGPREFIX", "MMDVM");
@@ -21,28 +19,37 @@ if (file_exists($config_file)) {
 
     $callsign = $config['WPSD']['Callsign'] ?? 'M1ABC';
 
-    // Set timezone
     if (!empty($config['WPSD']['Timezone'])) {
         date_default_timezone_set($config['WPSD']['Timezone']);
     } else {
         date_default_timezone_set('UTC');
     }
 
-    // Set time format
     if (isset($config['WPSD']['TimeFormat'])) {
         define('TIME_FORMAT', $config['WPSD']['TimeFormat']);
     } else {
         define('TIME_FORMAT', '24');
     }
 
-    // Set auto-update check
     if (isset($config['WPSD']['UpdateNotifier'])) {
         define('AUTO_UPDATE_CHECK', $config['WPSD']['UpdateNotifier'] === '1' ? 'true' : 'false');
     } else {
-        define('AUTO_UPDATE_CHECK', 'false'); // Default to 'false' if not set
+        define('AUTO_UPDATE_CHECK', 'true');
     }
 
-    // Set dashboard language
+    if (isset($config['WPSD']['OptIntoUserMap'])) {
+        define('MAP_OPTED', $config['WPSD']['OptIntoUserMap'] === '1' ? 'true' : 'false');
+    } else {
+        define('MAP_OPTED', 'false');
+    }
+
+    if (isset($config['WPSD']['OptIntoDiags'])) {
+        define('DIAGS_OPTED', $config['WPSD']['OptIntoDiags'] === '1' ? 'true' : 'false');
+    } else {
+        define('DIAGS_OPTED', 'true');
+    }
+
     $DashLanguage = !empty($config['WPSD']['DashLanguage']) ? $config['WPSD']['DashLanguage'] : 'english_us';
 }
 ?>
+

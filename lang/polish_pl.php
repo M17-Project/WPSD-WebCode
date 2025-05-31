@@ -140,7 +140,7 @@ $lang = array (
   "GTOT"                        =>  "GTOT",       // Short for Group Timeout
   // Dashboard Front Page / Admin - Section Headders
   "Gateway Activity"             =>  "Aktywność bramki",
-  "Local RF Activity"               =>  "Atywność lokalna",
+  "Local RF Activity"               =>  "Aktywność lokalna",
   "Active Starnet Groups"       =>  "Aktywne grupy Starnet",
   "Active Starnet Group Members"      =>  "Aktywni członkowie w grupie Starnet",
   "D-Star Link Manager"         =>  "Zarządzanie D-Star Link",

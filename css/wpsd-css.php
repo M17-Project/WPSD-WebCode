@@ -102,6 +102,12 @@ h2.ConfSec {
     padding-bottom: 1rem;
 }
 
+h3.ConfSec {
+    font-size: 1.4em;
+    text-align: left;
+}
+
+
 .left {
     text-align: left;
 }
@@ -154,6 +160,13 @@ tt, code, kbd, pre {
     background: #000000;
     font-size: 18px;
     padding: 1em;
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* For Webkit browsers like Chrome/Safari */
+#tail::-webkit-scrollbar {
+    display: none;
 }
 
 table {
@@ -608,6 +621,10 @@ select {
 
 .select2-results__option {
   color: black !important;
+}
+
+.select2-results__option--selectable {
+    min-width: 75%;
 }
 
 .navbar {
@@ -1325,4 +1342,12 @@ meter::-webkit-meter-even-less-good-value {
 
 .larger {
     font-size: larger;
+}
+
+table td.sans {
+    font-family: 'Source Sans Pro', sans-serif !important;
+}
+
+div.network, div.wifiinfo, div.intinfo, div.infoheader {
+    border: none !important;
 }

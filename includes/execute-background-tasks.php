@@ -1,7 +1,14 @@
 <?php
 
-$UUID = $_SESSION['PiStarRelease']['Pi-Star']['UUID'];
-$CALL = $_SESSION['PiStarRelease']['Pi-Star']['Callsign'];
+session_name("WPSD_Session");
+session_id('wpsdsession');
+session_start();
+
+require_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/config/version.php';
+
+$UUID = $_SESSION['WPSDrelease']['WPSD']['UUID'];
+$CALL = $_SESSION['WPSDrelease']['WPSD']['Callsign'];
 $UA = "$CALL $UUID";
 
 $directory = '/usr/local/sbin';

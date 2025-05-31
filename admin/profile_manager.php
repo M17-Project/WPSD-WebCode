@@ -25,21 +25,21 @@ if (isset($_SESSION['CSSConfigs']['Background'])) {
     $backgroundModeCellActiveColor = $_SESSION['CSSConfigs']['Background']['ModeCellActiveColor'];
 }
 
-$config_dir = "/etc/WPSD_config_mgr";
-$curr_config_raw = trim(file_get_contents('/etc/.WPSD_config'));
-$curr_config = $curr_config_raw;
-$saved = date("M d Y @ h:i A", filemtime("$config_dir" . "/". "$curr_config"));
-$curr_config_friendly = str_replace("_", " ", $curr_config_raw);
-if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
-    if (is_dir("$config_dir" . "/" ."$curr_config") != false ) {
-    	 $curr_config = "<span class='larger' style='font-weight:bold;color:$backgroundModeCellActiveColor;'>".trim(file_get_contents('/etc/.WPSD_config'))."</span><br /><small>(Saved: ".$saved."</small>)\n";
+$profile_dir = "/etc/WPSD_config_mgr";
+$current_profile_raw = trim(file_get_contents('/etc/.WPSD_config'));
+$current_profile = $current_profile_raw;
+$saved = date("M d Y @ h:i A", filemtime("$profile_dir" . "/". "$current_profile"));
+$current_profile_friendly = str_replace("_", " ", $current_profile_raw);
+if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
+    if (is_dir("$profile_dir" . "/" ."$current_profile") != false ) {
+    	 $current_profile = "<span class='larger' style='font-weight:bold;color:$backgroundModeCellActiveColor;'>".trim(file_get_contents('/etc/.WPSD_config'))."</span><br /><small>(Saved: ".$saved."</small>)\n";
     } else {
 	$no_raw_profile = true;
-	$curr_config = "<p><i class='fa fa-exclamation-circle'></i> Current Profile Deleted! You may want to switch to a saved profile, or save a new profile.</p>";
+	$current_profile = "<p><i class='fa fa-exclamation-circle'></i> Current Profile Deleted! You may want to switch to a saved profile, or save a new profile.</p>";
     }
 } else {
     $no_raw_profile = true;
-    $curr_config = "<p>No saved profiles yet.</p>";
+    $current_profile = "<p>No saved profiles yet.</p>";
 }
 ?>
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -72,25 +72,12 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
                     <h1>WPSD <?php echo __(( 'Dashboard' )); ?> - Profile Manager</h1>
 			<div class="navbar">
  			<script type= "text/javascript">
-			  $(document).ready(function() {
-			    setInterval(function() {
-			      $("#timer").load("/includes/datetime.php");
-			    }, 1000);
-
-			    function update() {
-			      $.ajax({
-				type: 'GET',
-				cache: false,
-				url: '/includes/datetime.php',
-				timeout: 1000,
-				success: function(data) {
-				  $("#timer").html(data); 
-				  window.setTimeout(update, 1000);
-				}
-			      });
-			    }
-			  update();
-			});
+        window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
+        function reloadDateTime(){
+          $( '#timer' ).html( _getDatetime( window.time_format ) );
+            setTimeout(reloadDateTime,1000);
+          }
+          reloadDateTime();
 		      </script>
  		      <div class="headerClock">
 			<span id="timer"></span>
@@ -105,11 +92,11 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
 		    <?php if (!empty($_POST)) { ?>
 		    <table width="100%">
 			    <?php
-			    if ( escapeshellcmd($_POST["save_current_config"]) || escapeshellcmd($_POST['curr_config'] )) { // new or current profile save posted
+			    if ( escapeshellcmd($_POST["save_current_config"]) || escapeshellcmd($_POST['current_profile'] )) { // new or current profile save posted
                                 if (escapeshellcmd($_POST["save_current_config"])) { // new profile, need new descr.
                                     $desc = $_POST['config_desc'];
-                                } else if (escapeshellcmd($_POST['curr_config'])) { // current profile, use existing descr.
-                                    $desc = $_POST['curr_config'];
+                                } else if (escapeshellcmd($_POST['current_profile'])) { // current profile, use existing descr.
+                                    $desc = $_POST['current_profile'];
                                 }
 				if ($desc == "") {
 				    echo '<tr><td colspan="3"><p class="larger"><i class="fa fa-times-circle" aria-hidden="true"></i> You need to provide a Profile Description!</p>
@@ -139,12 +126,11 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
                             	    exec("sudo cp /etc/wpsd-upnp-rules $profileDir > /dev/null");
                             	    exec("sudo cp /etc/WPSD-Dashboard-Config.ini $profileDir > /dev/null");
                             	    exec("sudo cp /etc/hostapd/hostapd.conf $profileDir > /dev/null");
-                            	    exec("sudo cp /etc/pistar-css.ini $profileDir > /dev/null");
+                            	    exec("sudo cp /etc/*css.ini $profileDir > /dev/null");
                             	    exec("sudo cp /etc/aprsgateway $profileDir > /dev/null");
                             	    exec("sudo cp /etc/ircddbgateway $profileDir > /dev/null");
                             	    exec("sudo cp /etc/mmdvmhost $profileDir > /dev/null");
                             	    exec("sudo cp /etc/dapnetgateway $profileDir > /dev/null");
-                            	    exec("sudo cp /etc/pistar-css.ini $profileDir > /dev/null");
                             	    exec("sudo cp /etc/p25gateway $profileDir > /dev/null");
                             	    exec("sudo cp /etc/ysfgateway $profileDir > /dev/null");
                             	    exec("sudo cp /etc/dmr2nxdn $profileDir > /dev/null");
@@ -208,6 +194,7 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
 					exec('sudo /usr/local/cast/bin/cast-reset ; sleep 2 > /dev/null 2>/dev/null');
 				    }
 				    exec("sudo sh -c 'rm -rf $profileDir/*Hosts.txt' > /dev/null");
+				    exec("sudo sh -c 'mv $profileDir/pistar-css.ini /etc/wpsd-css.ini' > /dev/null");
 				    exec("sudo sh -c 'cp -a $profileDir/* /etc/' > /dev/null");
 				    exec("sudo sh -c 'cp -a $profileDir/.CALLERDETAILS /etc/' > /dev/null");
 				    exec("sudo sh -c 'cp -a $profileDir/.TGNAMES /etc/' > /dev/null");
@@ -275,7 +262,7 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
 			<tr>
                             <td style="white-space:normal;padding: 3px;">
                             <?php
-                                if (count(glob("$config_dir/*")) == 0) {
+                                if (count(glob("$profile_dir/*")) == 0) {
                             ?>
                                 <p>No saved profiles yet.</p>
                             <?php } else { ?>
@@ -284,10 +271,10 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
                                     <select name="configs" id="list_profiles" form="list_configs">
 					<option value="" disabled selected>Select...</option>
 				    <?php
-				    foreach ( glob("$config_dir/*") as $dir ) {
-					$config_file = str_replace("$config_dir/", "", $dir);
-					$config_file_friendly = str_replace("_", " ", $config_file);
-					echo "              <option name='selected_config' value='$config_file'>$config_file_friendly</option>\n";
+				    foreach ( glob("$profile_dir/*") as $dir ) {
+					$profile_file = str_replace("$profile_dir/", "", $dir);
+					$profile_file_friendly = str_replace("_", " ", $profile_file);
+					echo "              <option name='selected_config' value='$profile_file'>$profile_file_friendly</option>\n";
 				    }
 				    ?>
                                     </select>
@@ -299,11 +286,11 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
 
 			    <td style="white-space:normal;padding: 3px;">
 			    <p>
-			    <?php echo str_replace("_", " ", $curr_config); ?>
+			    <?php echo str_replace("_", " ", $current_profile); ?>
 			    <?php if ($no_raw_profile != true) { ?>
 				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="save_running_config">
 				    <div<>Save Current Settings to This Running Profile: </div>
-				    <input type="hidden" name="curr_config" value="<?php echo $curr_config_friendly; ?>">
+				    <input type="hidden" name="current_profile" value="<?php echo $current_profile_friendly; ?>">
 				    <button type="submit" name="running_config">Quick Save</button>
 				</form>
 			    <?php } ?>
@@ -342,7 +329,7 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
 			<td colspan="3" style="white-space:normal;padding: 3px;">
 			<p>
 			<?php
-			    if (count(glob("$config_dir/*")) == 0) {
+			    if (count(glob("$profile_dir/*")) == 0) {
 			?>
 			    <p>No saved profiles yet.</p>
 			<?php } else { ?>
@@ -351,10 +338,10 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$config_dir/*")) > 0) {
 				<select name="delete_configs" id="profiles_avail" form="del_configs">
 				<option value="" disabled selected>Select...</option>
 				<?php
-				    foreach ( glob("$config_dir/*") as $dir ) {
-					$config_file = str_replace("$config_dir/", "", $dir);
-					$config_file_friendly = str_replace("_", " ", $config_file);
-					echo "	<option name='selected_config' value='$config_file'>$config_file_friendly</option>\n";
+				    foreach ( glob("$profile_dir/*") as $dir ) {
+					$profile_file = str_replace("$profile_dir/", "", $dir);
+					$profile_file_friendly = str_replace("_", " ", $profile_file);
+					echo "	<option name='selected_config' value='$profile_file'>$profile_file_friendly</option>\n";
 				}
 				?>
 				</select>

@@ -98,7 +98,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/config/version.php';
       
       echo '<form action="" method="post">'."\n";
       echo "<table>\n";
-      echo "<tr><th colspan=\"2\">".$editorname."<th></tr>\n";
+      echo "<tr><th colspan=\"2\">".$editorname."</th></tr>\n";
       
       // List all key = value 
       foreach($parsedIni as $key => $value)

@@ -195,7 +195,7 @@ function signalStrengthBars($signalStrength) {
 	$bars .= "<span style='color:$color;'>&#x2588;</span>"; // Unicode FULL BLOCK character
     }
     for ($i = $filledBars; $i < $numBars; $i++) {
-	$bars .= "<span style='color:#666666;'>&#x2588;</span>"; // Unicode FULL BLOCK character
+	$bars .= "<span style='color:#D1D1D1;'>&#x2588;</span>"; // Unicode FULL BLOCK character
     }
     return $bars;
 }
@@ -224,14 +224,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['regulatory_domain']))
 }
 
 function parseNetworkInfo($line) {
-    $parts = preg_split('/(?<!\\\):/', $line);
+    $parts = explode(':', $line); // for nmcli -t output
+    if (count($parts) < 4) return null; // Skip malformed lines
 
-    $ssid = trim($parts[2]);
-    $signalStrength = trim($parts[6]);
-    $channel = trim($parts[4]);
-    $securityType = trim($parts[8]);
-
-    return compact('ssid', 'signalStrength', 'channel', 'securityType');
+    return [
+        'ssid'           => trim($parts[0]),
+        'signalStrength' => trim($parts[1]),
+        'channel'        => trim($parts[2]),
+        'securityType'   => trim($parts[3])
+    ];
 }
 
 if (isset($_POST['action'])) {
@@ -242,28 +243,34 @@ if (isset($_POST['action'])) {
             if (isset($_POST['ssid']) && isset($_POST['passphrase'])) {
                 $ssid = $_POST['ssid'];
                 $passphrase = $_POST['passphrase'];
-                executeCommand("sudo nmcli connection add type wifi con-name \"$ssid\" ifname '*' ssid \"$ssid\" wifi-sec.key-mgmt wpa-psk wifi-sec.psk \"$passphrase\" ; sleep 1");
+
+		$escapedSsid = escapeshellarg($ssid);
+		$escapedPassphrase = escapeshellarg($passphrase);
+
+		executeCommand("sudo nmcli connection add type wifi con-name " . $escapedSsid . 
+                          " ifname '*' ssid " . $escapedSsid . 
+                          " wifi-sec.key-mgmt wpa-psk wifi-sec.psk " . $escapedPassphrase . " ; sleep 1");
 		echo "<p>(Please give the Wifi Information some time to initialize and refresh its status)</p>";
             } else {
                 echo "Error: SSID and passphrase are required for adding a connection.";
             }
             break;
-        case 'delete':
+	case 'delete':
             if (isset($_POST['connection'])) {
                 $connection = $_POST['connection'];
-                executeCommand("sudo nmcli connection delete \"$connection\" sleep 1");
+
+                $escaped_connection_name = escapeshellarg(trim($connection));
+
+                executeCommand("sudo nmcli connection delete " . $escaped_connection_name . "; sleep 1");
             } else {
                 echo "Error: Connection name is required for deletion.";
             }
             break;
         case 'scan':
-            $scanOutput = shell_exec('sudo nmcli -e yes -c no -g common device wifi list --rescan yes');
+	    $scanOutput = shell_exec("sudo nmcli -t -f SSID,SIGNAL,CHAN,SECURITY device wifi list --rescan yes");
             $networks = explode("\n", trim($scanOutput));
 
             if (count($networks) > 1) {
-                $header = array_map('trim', preg_split('/\s+/', $networks[0]));
-                 unset($networks[0]);
-
         ?>
         <table>
             <thead>
@@ -280,7 +287,7 @@ if (isset($_POST['action'])) {
             <tbody>
                 <?php foreach ($networks as $network) : ?>
                     <?php $networkInfo = parseNetworkInfo($network); ?>
-                    <?php if (!empty($networkInfo['ssid'])) : ?>
+		    <?php if (!empty(trim($networkInfo['ssid'])) && $networkInfo['ssid'] !== '--') : ?>
                         <tr>
                             <td><?php echo $networkInfo['ssid']; ?></td>
                             <td><?php echo signalStrengthBars($networkInfo['signalStrength']). "&nbsp" .$networkInfo['signalStrength']; ?>%</td>
@@ -449,7 +456,7 @@ else {
     <label for="action">Action:</label>
     <select name="action" id="action" onchange="showHideFormFields()">
         <option value="" selected disabled>Choose Action...</option>
-        <option value="scan">Scan &amp Add Available Networks (10 secs.)</option>
+        <option value="scan">Scan &amp Add Available Networks (can take 10 secs.)</option>
         <option value="add">Add Connection Manually</option>
     </select>
     <br>
@@ -495,9 +502,11 @@ else {
 <?php
 if (isset($_POST['action']) && $_POST['action'] === 'set_domain') {
     if (isset($_POST['regulatory_domain'])) {
-        $selectedDomain = $_POST['regulatory_domain'];
-        executeCommand("sudo iw reg set $selectedDomain");
-        executeCommand("sudo sed -i 's/cfg80211\.ieee80211_regdom=.*/cfg80211.ieee80211_regdom=$selectedDomain/' /boot/firmware/cmdline.txt ; sleep 1");
+	$selectedDomain = $_POST['regulatory_domain'];
+	$escapedDomain = escapeshellarg($selectedDomain);
+
+	executeCommand("sudo iw reg set " . $escapedDomain);
+	executeCommand("sudo sed -i 's/cfg80211\.ieee80211_regdom=.*/cfg80211.ieee80211_regdom=" . $selectedDomain . "/' /boot/firmware/cmdline.txt ; sleep 1");
 	echo "<pre>WiFi Country Updated.</pre>";
     } else {
         echo "Error: Please select a regulatory domain.";

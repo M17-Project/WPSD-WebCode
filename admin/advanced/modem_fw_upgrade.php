@@ -87,7 +87,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/modem_fw_upgrade.php") {
        $mmdvm_hs_version = $versionData['mmdvm_hs'];
        $dvmega_fw_version = $versionData['dvmega'];
        $rpt_version = $versionData['rpt'];
-       $fw_ver_msg = "Latest firmware version(s): MMDVM Hotspots: <b><code>".$mmdvm_hs_version. "</code></b> &bull; DVMega: <b><code>".$dvmega_fw_version."</code></b> &bull; MMDVM Repeaters: <b><code>".$rpt_version."</code></b>";
+       $fw_ver_msg = "Latest firmware version(s): MMDVM Hotspots: <b><code>v".$mmdvm_hs_version. "</code></b> &bull; DVMega: <b><code>v".$dvmega_fw_version."</code></b> &bull; MMDVM Repeaters: <b><code>v".$rpt_version."</code></b>";
    } else {
        $fw_ver_msg = "Unkown (failed to retrieve firmware version).";
    }
@@ -104,7 +104,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/modem_fw_upgrade.php") {
     <meta http-equiv="pragma" content="no-cache" />
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
     <meta http-equiv="Expires" content="0" />
-    <title>WPSD <?php echo __( 'Dashboard' )." - Jitter Test";?></title>
+    <title>WPSD <?php echo __( 'Dashboard' )." - Modem Firmware Upgrade";?></title>
     <link rel="stylesheet" type="text/css" href="/css/font-awesome-4.7.0/css/font-awesome.min.css" />
 <?php include_once $_SERVER['DOCUMENT_ROOT'].'/config/browserdetect.php'; ?>
     <script type="text/javascript" src="/js/jquery.min.js?version=<?php echo $versionCmd; ?>"></script>
@@ -191,14 +191,16 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/modem_fw_upgrade.php") {
       'dvmega_usb_mega' => 'DV-Mega Arduino Mega Shield USB (ttyUSB0)',
       'rpt_nucleo-64' => 'Repeater - Nucleo64 F446RE GPIO',
       'rpt_nucleo-144' => 'Repeater - Nucleo144 F767ZI GPIO',
-      'rpt_mmdvm_hat-0.2' => 'Repeater - MMDVM_RPT_Hat 0.2 GPIO',
-      'rpt_mmdvm_hat-0.3' => 'Repeater - MMDVM_RPT_Hat 0.3 GPIO',
-      'rpt_zum-0.9' => 'Repeater - ZUM Radio MMDVM for Pi v0.9 GPIO',
-      'rpt_zum-1.0' => 'Repeater - ZUM Radio MMDVM for Pi v1.0 GPIO',
+      'rpt_mmdvm_hat-v0.2' => 'Repeater - MMDVM_RPT_Hat v0.2 GPIO',
+      'rpt_mmdvm_hat-v0.3' => 'Repeater - MMDVM_RPT_Hat v0.3 GPIO',
+      'rpt_zum-v0.9' => 'Repeater - ZUM Radio MMDVM for Pi v0.9 GPIO',
+      'rpt_zum-v1.0-F4' => 'Repeater - ZUM Radio MMDVM for Pi v1.0 GPIO (F4 chip)',
+      'rpt_zum-v1.0-F7' => 'Repeater - ZUM Radio MMDVM for Pi v1.0 GPIO (F7 chip)',
       'rpt_builder_v3' => 'Repeater - Repeater Builder STM32_DVM v3 GPIO',
       'rpt_builder_v4' => 'Repeater - Repeater Builder STM32_DVM v4 GPIO',
       'rpt_builder_v5' => 'Repeater - Repeater Builder STM32_DVM v5 GPIO',
-      'rpt_builder_mtr2k_v3' => 'Repeater - Repeater Builder STM32_DVM_MTR2K v3 GPIO',
+      'rpt_builder_mtr2k_v3-F446' => 'Repeater - Repeater Builder STM32_DVM_MTR2K v3 GPIO (F446 chip)',
+      'rpt_builder_mtr2k_v3-F405' => 'Repeater - Repeater Builder STM32_DVM_MTR2K v3 GPIO (F405 chip)',
     ];
 
     $output = shell_exec('sudo /usr/local/sbin/wpsd-modemupgrade list');

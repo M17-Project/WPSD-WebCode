@@ -82,52 +82,54 @@ if ($_SERVER["PHP_SELF"] == "/admin/update.php") {
     <link rel="stylesheet" type="text/css" href="/css/font-awesome-4.7.0/css/font-awesome.min.css" />
     <script type="text/javascript" src="/js/jquery.min.js?version=<?php echo $versionCmd; ?>"></script>
     <script type="text/javascript" src="/js/jquery-timing.min.js?version=<?php echo $versionCmd; ?>"></script>
+    <script type="text/javascript" src="/js/functions.js?version=<?php echo $versionCmd; ?>"></script>
     <script type="text/javascript">
-    $(function() {
-      $.repeat(1000, function() {
-        $.get('/admin/update.php?ajax', function(data) {
-          if (data.length < 1) return;
-          var objDiv = document.getElementById("tail");
-          var isScrolledToBottom = objDiv.scrollHeight - objDiv.clientHeight <= objDiv.scrollTop + 1;
-	  $('#tail').append(data);
-	  //data = data.replace(/\\n/g, '').replace(/\n/g, ''); // strip linebreaks and literal '\n's
-	  //$('#tail').append('<pre>' + data + '</pre>'); // preformat it.
-          if (isScrolledToBottom)
-            objDiv.scrollTop = objDiv.scrollHeight;
+      window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
+      $(function() {
+        var firstUpdate = true;
+        var updateCompleted = false;
+  
+        $.repeat(1000, function() {
+          $.get('/admin/update.php?ajax', function(data) {
+            if (data.length < 1) return;
+            var objDiv = document.getElementById("tail");
+            var isScrolledToBottom = objDiv.scrollHeight - objDiv.clientHeight <= objDiv.scrollTop + 1;
+      
+            if (firstUpdate) {
+              $('#tail').html('<h3 style="color:white;margin-bottom:-5px;margin-top:-1px;">Running WPSD Software Update...</h3>');
+              firstUpdate = false;
+            }
+            
+            if (data.includes("Process Finished") && !updateCompleted) {
+              $('#tail h3').first().text('WPSD Software Update Completed');
+              updateCompleted = true;
+            }
+            
+            $('#tail').append(data);
+            
+            if (isScrolledToBottom)
+              objDiv.scrollTop = objDiv.scrollHeight;
+          });
         });
       });
-    });
     </script>
   </head>
   <body>
       <div class="container">
 	<div class="header">
 	   <div class="SmallHeader shLeft">Hostname: <?php echo exec('cat /etc/hostname'); ?></div>
+		 <?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
 	     <div class="SmallHeader shRight noMob">
                <div id="CheckUpdate"><?php echo $version; ?></div><br />
              </div>
              <h1>WPSD <?php echo __( 'Dashboard' )." - ".__( 'WPSD Update' );?></h1>
              <div class="navbar">
               <script type= "text/javascript">
-               $(document).ready(function() {
-                 setInterval(function() {
-                   $("#timer").load("/includes/datetime.php");
-                   }, 1000);
-
-                 function update() {
-                   $.ajax({
-                     type: 'GET',
-                     cache: false,
-                     url: '/includes/datetime.php',
-                     timeout: 1000,
-                     success: function(data) {
-                       $("#timer").html(data); 
-                       window.setTimeout(update, 1000);
-                     }
-                   });
+                 function reloadDateTime(){
+                   $( '#timer' ).html( _getDatetime( window.time_format ) );
+                   setTimeout(reloadDateTime,1000);
                  }
-                 update();
-               });
+                 reloadDateTime();
               </script>
               <div class="headerClock"> 
                 <span id="timer"></span>

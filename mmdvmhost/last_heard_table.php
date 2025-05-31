@@ -5,7 +5,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDa
 include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
 include_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';	      // Translation Code
 
-if (isset($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows']) && $_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4) {
+if (isset($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows']) && $_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4) {
     $lastHeardRows = $_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'];
     if ($lastHeardRows > 100) {  
 	$lastHeardRows = "100";  // need an internal limit
@@ -19,8 +19,8 @@ if (isset($_SESSION['CSSConfigs']['Background'])) {
     $backgroundModeCellInactiveColor = $_SESSION['CSSConfigs']['Background']['ModeCellInactiveColor'];
 }
 
-if (isset($_SESSION['PiStarRelease']['Pi-Star']['CallLookupProvider'])) {
-    $callsignLookupSvc = $_SESSION['PiStarRelease']['Pi-Star']['CallLookupProvider'];
+if (isset($_SESSION['WPSDdashConfig']['WPSD']['CallLookupProvider'])) {
+    $callsignLookupSvc = $_SESSION['WPSDdashConfig']['WPSD']['CallLookupProvider'];
 } else {
     $callsignLookupSvc = "QRZ";
 }
@@ -58,14 +58,14 @@ $testMMDVModeDMR = getConfigItem("DMR", "Enable", $_SESSION['MMDVMHostConfigs'])
   <?php 
     if ( file_exists( '/etc/.FILTERACTIVITY' ) ) : ?>
       <div class="filter-activity-max-wrap">
-        <<input onChange='setFilterActivityMax(this)' class='filter-activity-max' style="width:40px;" type='number' step='0.5' min='0.5' name='filter-activity-max' value='<?php echo file_get_contents( '/etc/.FILTERACTIVITY' ); ?>' /> s
+        <input onChange='setFilterActivityMax(this)' onfocus = 'clearInterval(reloadDynDataId)' class='filter-activity-max' style="width:40px;" type='number' step='0.5' min='0.5' name='filter-activity-max' value='<?php echo file_get_contents( '/etc/.FILTERACTIVITY' ); ?>' /> s
       </div>
   <?php endif; ?>
 </div>
             <input type="hidden" name="display-lastcaller" value="OFF" />
             <div style="float: right; vertical-align: bottom; padding-top: 0px;" id="lhCN">
                <div class="grid-container" style="display: inline-grid; grid-template-columns: auto 40px; padding: 1px;; grid-column-gap: 5px;">
-                <?php if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) { ?>
+                <?php if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { ?>
                  <div class="grid-item menucaller" style="padding: 10px 0 0 20px;" title="Display Caller Details">Caller Details: </div>
                    <div class="grid-item">
                     <div style="padding-top:6px;">
@@ -75,7 +75,7 @@ $testMMDVModeDMR = getConfigItem("DMR", "Enable", $_SESSION['MMDVMHostConfigs'])
                  </div>
                 <?php } ?>
             </div>
-                <?php if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) { ?>
+                <?php if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { ?>
 <?php if (getEnabled("DMR", $_SESSION['MMDVMHostConfigs']) == 1 || getEnabled("NXDN", $_SESSION['MMDVMHostConfigs']) == 1 || getEnabled("P25", $_SESSION['MMDVMHostConfigs']) == 1 || getServiceEnabled('/etc/ysf2dmr') == 1 || getServiceEnabled('/etc/ysf2p25') == 1 || getServiceEnabled('/etc/ysf2nxdn') == 1) { ?>
 <input type="hidden" name="lh-tgnames" value="OFF" />
   <div style="float: right; vertical-align: bottom; padding-top: 0px;" id="lhTGN">
@@ -199,7 +199,7 @@ for ($i = 0;  ($i <= $lastHeardRows - 1); $i++) {
 		    }
 
 		    // Check if it's a private call or TG
-		    if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false && is_numeric($target)) {
+		    if (strpos($mode, "DMR") !== false && strpos($target, "TG") === false) {
 			$target = "Private Call to $target";  // Private call detected
 		    } else {
 			$target = preg_replace('/TG /', '', $target);  // Clean up "TG" from the target
@@ -223,7 +223,7 @@ for ($i = 0;  ($i <= $lastHeardRows - 1); $i++) {
 		        $listElem[4] = trim($listElem[4]);  // Trim to avoid extra spaces
 
 		        // Check if it's a private call or TG
-		        if (strpos($listElem[1], "DMR") !== false && strpos($listElem[4], "TG") === false && is_numeric($listElem[4])) {
+		        if (strpos($listElem[1], "DMR") !== false && strpos($listElem[4], "TG") === false) {
 		            $listElem[4] = "Private Call to $listElem[4]";  // Private call detected
 		        }
 

@@ -129,6 +129,7 @@ if ($listElem[6] == null) {
 	// dynamic TX <title>
 	echo "<script>if(typeof window.original_title === 'undefined'){window.original_title = jQuery('title').text();}</script>";
 	echo $_SESSION['MYCALL'] != $listElem[2] ? "<script>jQuery('title').text('>$listElem[2]<');localStorage.setItem('last_caller','$listElem[2]');jQuery('.last-caller').hide();</script>" : "<script>jQuery('title').text('TX');</script>";
+	echo "<script>jQuery('link[rel=\"shortcut icon\"').attr('href', '/images/favicon_active.ico?version=$versionCmd');</script>";
   
 } else if ($listElem[6] == "DMR Data")
     {
@@ -143,6 +144,7 @@ if ($listElem[6] == null) {
   $duration = $listElem[6].'s (' . timeago( $dt->getTimestamp(), $now->getTimestamp() ) . ')';
   // dynamic <title> reset
   echo "<script>if(typeof window.original_title !== 'undefined'){jQuery('title').text(window.original_title)};jQuery('.last-caller').hide();</script>";
+  echo "<script>jQuery('link[rel=\"shortcut icon\"').attr('href', '/images/favicon.ico?version=$versionCmd');</script>";
 }
 
 if ($listElem[7] == null) {

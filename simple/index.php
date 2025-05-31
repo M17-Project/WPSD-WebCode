@@ -4,6 +4,7 @@ session_name("WPSD_Session");
 session_id('wpsdsession');
 session_start();
 
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/class-wpsd-functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/version.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/config/ircddblocal.php';
@@ -14,27 +15,13 @@ $MYCALL = strtoupper($callsign);
 $_SESSION['MYCALL'] = $MYCALL;
 
 // Clear session data (page {re}load);
-unset($_SESSION['BMAPIKey']);
-unset($_SESSION['DAPNETAPIKeyConfigs']);
-unset($_SESSION['PiStarRelease']);
-unset($_SESSION['MMDVMHostConfigs']);
-unset($_SESSION['ircDDBConfigs']);
-unset($_SESSION['DStarRepeaterConfigs']);
-unset($_SESSION['DMRGatewayConfigs']);
-unset($_SESSION['YSFGatewayConfigs']);
-unset($_SESSION['DGIdGatewayConfigs']);
-unset($_SESSION['DAPNETGatewayConfigs']);
-unset($_SESSION['YSF2DMRConfigs']);
-unset($_SESSION['YSF2NXDNConfigs']);
-unset($_SESSION['YSF2P25Configs']);
-unset($_SESSION['DMR2YSFConfigs']);
-unset($_SESSION['DMR2NXDNConfigs']);
-unset($_SESSION['APRSGatewayConfigs']);
-unset($_SESSION['NXDNGatewayConfigs']);
-unset($_SESSION['P25GatewayConfigs']);
-unset($_SESSION['CSSConfigs']);
-unset($_SESSION['DvModemFWVersion']);
-unset($_SESSION['DvModemTCXOFreq']);
+$keepSessions = ['MYCALL'];
+foreach ($_SESSION as $key => $value) {
+    if (!in_array($key, $keepSessions)) {
+        unset($_SESSION[$key]);
+    }
+}
+
 checkSessionValidity();
 
 if (isset($_SESSION['CSSConfigs']['Text'])) {
@@ -66,6 +53,7 @@ if(empty($_POST['func'])) {
 	<script type="text/javascript" src="/js/functions.js?version=<?php echo $versionCmd; ?>"></script>
 	<script type="text/javascript">
 	 $.ajaxSetup({ cache: false });
+   window.time_format = '<?php echo constant("TIME_FORMAT"); ?>';
 	</script>
         <script type="text/javascript">
           $(document).ready(function(){
@@ -137,6 +125,7 @@ if(empty($_POST['func'])) {
 	<div class="container">
 	    <div class="header">
                <div class="SmallHeader shLeft noMob"><a style="border-bottom: 1px dotted;" class="tooltip" href="#"><?php echo __( 'Hostname' ).": ";?> <span><strong>System IP Address<br /></strong><?php echo str_replace(',', ',<br />', exec("hostname -I | awk '{print $1}'"));?> </span>  <?php echo exec('cat /etc/hostname'); ?></a></div>
+			   <?php if ($_SESSION['CURRENT_PROFILE']) { ?><div class="SmallHeader shLeft noMob"> | <?php echo __( 'Current Profile' ).": ";?> <?php echo $_SESSION['CURRENT_PROFILE']; ?></div><?php } ?>
 	       <div class="SmallHeader shRight noMob">
 	         <div id="CheckUpdate">
        		  <?php
@@ -153,25 +142,11 @@ if(empty($_POST['func'])) {
 
  		<div class="navbar">
                 <script type= "text/javascript">
-                 $(document).ready(function() {
-                   setInterval(function() {
-                     $("#timer").load("/includes/datetime.php");
-                     }, 1000);
-
-                   function update() {
-                     $.ajax({
-                       type: 'GET',
-                       cache: false,
-                       url: '/includes/datetime.php',
-                       timeout: 1000,
-                       success: function(data) {
-                         $("#timer").html(data); 
-                         window.setTimeout(update, 1000);
-                       }
-                     });
-                   }
-                   update();
-                 });
+                function reloadDateTime(){
+                  $( '#timer' ).html( _getDatetime( window.time_format ) );
+                  setTimeout(reloadDateTime,1000);
+                }
+                reloadDateTime();
                 </script>
 		<div class="headerClock">
 		    <span id="timer"></span>
@@ -241,12 +216,12 @@ if(empty($_POST['func'])) {
                   function reloadDynData() {
                     fetchData("/mmdvmhost/last_heard_table.php", "#lastHeard");
                     fetchData("/mmdvmhost/local_tx_table.php", "#localTxs");';
-                    if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) {
+                    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) {
                         echo 'fetchData("/mmdvmhost/caller_details_table.php", "#liveCallerDeets");';
                     }
                   echo '
                   }';
-                  if(isset($_SESSION['PiStarRelease']['Pi-Star']['ProcNum']) && ($_SESSION['PiStarRelease']['Pi-Star']['ProcNum'] >= 4)) {
+                  if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) {
                       echo "setInterval(reloadDynData, 1500);";
                   } else {
                       echo "setInterval(reloadDynData, 2500);";
@@ -329,6 +304,16 @@ if(empty($_POST['func'])) {
 	</div>
 <?php include $_SERVER['DOCUMENT_ROOT']. '/includes/footer.php'; ?>	
 	</div>
+    <?php
+    if($_SESSION['WPSDdashConfig']['WPSD']['PhoneticCallsigns'] == "1"){
+        echo '<script src="/js/phonetic-callsigns.js"></script>';
+    }
+    ?>
+    <?php echo wpsd()->user_js(); ?>
+    <script>
+    reloadDateTime();
+    reloadDynData();
+    </script>
     </body>
 </html>
 

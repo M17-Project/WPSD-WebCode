@@ -15,4 +15,3 @@ if (isset($_POST['unpause_modes'])) {
     }
     exit();
 }
-?>

@@ -10,13 +10,13 @@ if (file_exists('/etc/wpsd-css.ini'))
     $backupDir = "/tmp/css_backup";
     $backupZip = "/tmp/css_backup.zip";
     $hostNameInfo = exec('cat /etc/hostname');
-    
+
     exec("sudo rm -rf $backupZip 2>&1");
     exec("sudo rm -rf $backupDir 2>&1");
     exec("sudo mkdir $backupDir 2>&1");
     exec("sudo cp /etc/wpsd-css.ini $backupDir 2>&1");
     exec("sudo zip -j $backupZip $backupDir/* 2>&1");
-    
+
     if (file_exists($backupZip)) {
 	$utc_time = gmdate('Y-m-d H:i:s');
 	$utc_tz =  new DateTimeZone('UTC');
@@ -45,5 +45,3 @@ if (file_exists('/etc/wpsd-css.ini'))
 	exit;
     }
 }
-
-?>

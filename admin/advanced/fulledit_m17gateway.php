@@ -18,5 +18,3 @@ $tempfile = '/tmp/KJHi7ujkc7JKvbcgfBNM.tmp';
 $servicenames = array('mmdvmhost.service', 'm17gateway.service');
 
 require_once('fulledit_template.php');
-
-?>

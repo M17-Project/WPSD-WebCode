@@ -79,5 +79,3 @@ for($i = 1;$i < 6; $i++) {
 if($stn_is_set > 0) {
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/active_starnet_groups.php';
 }
-?>
-

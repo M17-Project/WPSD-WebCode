@@ -10,5 +10,3 @@ $gatewayConfigPath = '/etc/ircddbgateway';
 $defaultConfPath = '/etc/default';
 $sharedFilesPath = '/usr/local/etc';
 $sysConfigPath = '/etc/sysconfig';
-?>
-

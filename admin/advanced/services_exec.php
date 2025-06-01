@@ -1,7 +1,7 @@
 <?php
 if (isset($_COOKIE['PHPSESSID']))
 {
-    session_id($_COOKIE['PHPSESSID']); 
+    session_id($_COOKIE['PHPSESSID']);
 }
 if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
@@ -48,4 +48,3 @@ else {
     echo "<p tyle='font-size:larger; >!! Failure !!</p>";
 }
 echo "<br />";
-?>

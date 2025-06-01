@@ -215,4 +215,3 @@ if ( $testMMDVModeDMR == 1 ) {
         echo '  </table>'."\n";
     }
 }
-?>

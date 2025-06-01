@@ -27,5 +27,3 @@ if (empty($_SERVER['HTTP_USER_AGENT'])) {
         print "    <link rel=\"stylesheet\" type=\"text/css\" media=\"screen and (max-width: 829px)\" href=\"/css/wpsd-css.php?version=$versionCmd\" />\n";
     }
 }
-?>
-

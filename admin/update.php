@@ -3,7 +3,7 @@
 if (!isset($_SESSION) || !is_array($_SESSION)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -43,13 +43,13 @@ if ($_SERVER["PHP_SELF"] == "/admin/update.php") {
       $_SESSION['update_offset'] = 0;
     }
   }
-  
+
   if (isset($_GET['ajax'])) {
     //session_start();
     if (!file_exists('/var/log/pi-star/WPSD-update.log')) {
       exit();
     }
-    
+
     $handle = fopen('/var/log/pi-star/WPSD-update.log', 'rb');
     if (isset($_SESSION['update_offset'])) {
       fseek($handle, 0, SEEK_END);
@@ -62,10 +62,10 @@ if ($_SERVER["PHP_SELF"] == "/admin/update.php") {
     else {
       fseek($handle, 0, SEEK_END);
       $_SESSION['update_offset'] = ftell($handle);
-      } 
+      }
   exit();
   }
-  
+
 ?>
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -88,25 +88,25 @@ if ($_SERVER["PHP_SELF"] == "/admin/update.php") {
       $(function() {
         var firstUpdate = true;
         var updateCompleted = false;
-  
+
         $.repeat(1000, function() {
           $.get('/admin/update.php?ajax', function(data) {
             if (data.length < 1) return;
             var objDiv = document.getElementById("tail");
             var isScrolledToBottom = objDiv.scrollHeight - objDiv.clientHeight <= objDiv.scrollTop + 1;
-      
+
             if (firstUpdate) {
               $('#tail').html('<h3 style="color:white;margin-bottom:-5px;margin-top:-1px;">Running WPSD Software Update...</h3>');
               firstUpdate = false;
             }
-            
+
             if (data.includes("Process Finished") && !updateCompleted) {
               $('#tail h3').first().text('WPSD Software Update Completed');
               updateCompleted = true;
             }
-            
+
             $('#tail').append(data);
-            
+
             if (isScrolledToBottom)
               objDiv.scrollTop = objDiv.scrollHeight;
           });
@@ -131,7 +131,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/update.php") {
                  }
                  reloadDateTime();
               </script>
-              <div class="headerClock"> 
+              <div class="headerClock">
                 <span id="timer"></span>
             </div>
 	    <a class="menuconfig" href="/admin/configure.php"><?php echo __( 'Configuration' );?></a>
@@ -153,4 +153,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/update.php") {
 
 <?php
 }
-?>

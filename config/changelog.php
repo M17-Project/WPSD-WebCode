@@ -179,4 +179,3 @@ if (isDVmegaCast() == 1) {
     </html>
 <?php
 }
-?>

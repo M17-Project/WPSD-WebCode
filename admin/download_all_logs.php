@@ -3,7 +3,7 @@
 if (!isset($_SESSION) || !is_array($_SESSION)) {
     session_id('wpsdsession');
     session_start();
-    
+
     include_once $_SERVER['DOCUMENT_ROOT'].'/config/config.php';          // MMDVMDash Config
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDash Tools
     include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
@@ -14,7 +14,7 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
 if ($_SERVER["PHP_SELF"] == "/admin/download_all_logs.php") {
     $backupDir = "/tmp/logs_backup";
     $backupZip = "/tmp/logs_backup.zip";
-    
+
     exec("sudo rm -rf ".$backupZip." 2>&1");
     exec("sudo rm -rf ".$backupDir." 2>&1");
     exec("sudo mkdir -p ".$backupDir."/pi-star ".$backupDir."/nginx ".$backupDir."/dmesg 2>&1");
@@ -54,4 +54,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/download_all_logs.php") {
 else {
     die();
 }
-?>

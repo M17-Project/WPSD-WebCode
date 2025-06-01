@@ -316,4 +316,3 @@ if(empty($_POST['func'])) {
     </script>
     </body>
 </html>
-

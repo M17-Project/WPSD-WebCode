@@ -14,5 +14,3 @@ if ($gitBranch !== "master") {
 } else {
     $version = "$verNo";
 }
-
-?>

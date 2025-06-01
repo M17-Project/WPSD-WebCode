@@ -48,13 +48,13 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
       $_SESSION['mmdvmcal_offset'] = 0;
     }
   }
-  
+
   if (isset($_GET['ajax'])) {
     //session_start();
     if (!file_exists('/tmp/mmdvmcal.log')) {
       exit();
     }
-    
+
     $handle = fopen('/tmp/mmdvmcal.log', 'rb');
     if (isset($_SESSION['mmdvmcal_offset'])) {
       fseek($handle, 0, SEEK_END);
@@ -67,13 +67,13 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
     else {
       fseek($handle, 0, SEEK_END);
       $_SESSION['mmdvmcal_offset'] = ftell($handle);
-      } 
+      }
   exit();
   }
 
   $RXFrequency = exec('grep "RXFrequency" /etc/mmdvmhost | awk -F "=" \'{print $2}\'');
   $RXOffset = exec('grep "RXOffset" /etc/mmdvmhost | awk -F "=" \'{print $2}\'');
-  
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -110,7 +110,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
       });
       return false;
     }
-    
+
     var sendcmd_lock=false;
 
     function sendcmd(cmd='', param='') {
@@ -129,7 +129,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
       });
       return false;
     }
-    
+
     var cnt=0; tcnt=0;
     var cfrms=0; cbits=0, cberr=0;
     var tfrms=0; tbits=0, tberr=0;
@@ -157,7 +157,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
           if (isScrolledToBottom)
             objDiv.scrollTop = objDiv.scrollHeight;
 <?php } ?>
-          
+
           if (("\n"+data).includes("Version:")) {
             setTimeout(function(){ sendcmd('e', (~~'<?php echo $RXFrequency; ?>'+rxoffset).toString() ); }, 1000);
           }
@@ -221,7 +221,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
             $('#ledP25').attr("class", 'red_dot');
             $('#ledNXDN').attr("class", 'green_dot');
           }
-          
+
           if (data.includes("voice end received,")) {
             eot=true;
           }
@@ -420,7 +420,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
       </tr>
     </table></td>
   </tr>
-</table>  
+</table>
 
   </td></tr>
   <tr><td align="left">
@@ -473,4 +473,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/advanced/calibration.php") {
 
 <?php
 }
-?>

@@ -26,5 +26,3 @@ if ($osName === "buster") {
     echo $result;
 }
 */
-?>
-

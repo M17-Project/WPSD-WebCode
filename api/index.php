@@ -15,7 +15,6 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/tools.php';        // MMDVMDa
 include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
 
 header('Content-type: application/json');
-
 $json_response = array();
 
 $trans_history_count = count($lastHeard);
@@ -38,4 +37,4 @@ foreach ($transmissions as $transmission) {
     $json_response[] = $transmission_json;
 }
 echo json_encode($json_response);
-?>
+exit();

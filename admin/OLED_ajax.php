@@ -17,7 +17,7 @@ if (isset($_GET['action'])) {
     }
 
     // Determine I2C bus number
-    $i2c_bus = isNanoPi() ? 0 : 1; 
+    $i2c_bus = isNanoPi() ? 0 : 1;
 
     // Set the OLED state
     $command = ($_SESSION['oled_state'] == 'off')
@@ -28,5 +28,3 @@ if (isset($_GET['action'])) {
 
     exit;
 }
-?>
-

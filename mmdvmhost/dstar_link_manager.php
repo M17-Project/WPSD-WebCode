@@ -243,4 +243,3 @@ if ($_SERVER["PHP_SELF"] == "/admin/index.php") {
 <?php
     } //endif;
 }
-?>

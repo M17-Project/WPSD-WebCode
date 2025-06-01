@@ -122,7 +122,6 @@ if (isProcessRunning("M17Gateway")) {
 // get number of DMR Masters configged for DMRGw:
 $numDMRmasters = exec('cd /var/log/pi-star ; /usr/local/bin/RemoteCommand '.$_SESSION['DMRGatewayConfigs']['Remote Control']['Port']. ' status | grep -o "conn" | wc -l');
 ?>
-
 <div class="mode_flex" id="rptInfoTable">
   <div class="mode_flex row">
     <div class="mode_flex column">
@@ -1014,4 +1013,3 @@ if(strpos(getAPRSISserver(), 'Not Conn') !== false) {
       }
     }
 }
-?>

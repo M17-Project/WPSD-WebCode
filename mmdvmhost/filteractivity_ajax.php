@@ -7,5 +7,3 @@ if($_POST['action'] == 'true') {
 if($_POST['action'] == 'false') {
     exec('sudo rm -rf /etc/.FILTERACTIVITY');
 }
-
-?>

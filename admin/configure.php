@@ -1003,12 +1003,8 @@ if (!empty($_POST)):
 	  // reset state of d-star time announcements
 	  if (file_exists('/etc/timeserver.disable'))
 	      system('sudo rm /etc/timeserver.disable');
-	  // reset repos
-	  exec('sudo wpsd-services fullstop > /dev/null 2>/dev/null');
-	  exec('sudo git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git update-index --no-assume-unchanged pistar-upnp.service');
-	  exec('sudo git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git reset --hard origin/master');
-	  exec('sudo git --work-tree=/usr/local/bin --git-dir=/usr/local/bin/.git reset --hard origin/master');
-	  exec('sudo git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git reset --hard origin/master');
+	  // reset WPSD software
+	  exec('curl -Ls -A "WPSD ConfigPage Resetter" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash');
 	  // reset logs
 	  $log_backup_dir = "/home/pi-star/.backup-mmdvmhost-logs/";
 	  $log_dir = "/var/log/pi-star/";
@@ -1016,7 +1012,6 @@ if (!empty($_POST)):
 	  if (isDVmegaCast() == 1) { // if DVMega cast, reset main board
 	      system('sudo /usr/local/cast/bin/cast-reset ; sleep 5 > /dev/null 2>/dev/null');
 	  }
-	  exec('sudo wpsd-services start > /dev/null 2>/dev/null &');
           echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},5000);</script>';
 	  echo "<br />\n</div>\n";
           echo "<br />\n</div>\n</div>\n</body>\n</html>\n";

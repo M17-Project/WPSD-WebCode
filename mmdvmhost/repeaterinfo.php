@@ -507,23 +507,26 @@ if ( $testMMDVModeDMR == 1 || isPaused("DMR") ) { //Hide the DMR information whe
             if (getEnabled("DMR Network", $_SESSION['MMDVMHostConfigs']) == 1) {
                 if ($dmrMasterHost == '127.0.0.1') {
                     if (isProcessRunning("DMRGateway")) {
+                        $sectionNameToStatusName = array_flip($_SESSION['DMRNetStatusAliases']);
+                        // ^^ map section name to network status name
+
                         if ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] == 1) {
-                            echo "<div class='divTableRow center'><div class='divTableCell'><div " .GetActiveConnectionStyle($remoteDMRgwResults, "net1")." title=\"".$dmrMasterHost1Tooltip."\">".$dmrMasterHost1."</div></div></div>\n";
+                            echo "<div class='divTableRow center'><div class='divTableCell'><div " .GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 1'])." title=\"".$dmrMasterHost1Tooltip."\">".$dmrMasterHost1."</div></div></div>\n";
                         }
                         if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == 1) {
-                            echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, "net2")." title=\"".$dmrMasterHost2Tooltip."\">".$dmrMasterHost2."</div></div></div>\n";
+                            echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 2'])." title=\"".$dmrMasterHost2Tooltip."\">".$dmrMasterHost2."</div></div></div>\n";
                         }
                         if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Enabled'] == 1) {
-                            echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, "net3")." title=\"".$dmrMasterHost3Tooltip."\">".$dmrMasterHost3."</div></div></div>\n";
+                            echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 3'])." title=\"".$dmrMasterHost3Tooltip."\">".$dmrMasterHost3."</div></div></div>\n";
                         }
                         if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'])) {
                             if ($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'] == 1) {
-                                echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, "net4")." title=\"".$dmrMasterHost4Tooltip."\">".$dmrMasterHost4."</div></div></div>\n";
+                                echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 4'])." title=\"".$dmrMasterHost4Tooltip."\">".$dmrMasterHost4."</div></div></div>\n";
                             }
                         }
                         if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'])) {
                             if ($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'] == 1) {
-                                echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, "net5")." title=\"".$dmrMasterHost5Tooltip."\">".$dmrMasterHost5."</div></div></div>\n";
+                                echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 5'])." title=\"".$dmrMasterHost5Tooltip."\">".$dmrMasterHost5."</div></div></div>\n";
                             }
                         }
                         if ( !isset($_SESSION['DMRGatewayConfigs']['XLX Network 1']['Enabled']) && isset($_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled']) && $_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled'] == 1) {

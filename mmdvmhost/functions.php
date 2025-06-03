@@ -17,64 +17,64 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/config/config.php');
 
 function loadSessionConfigFile($key, $configFile, $minEntries = 2) {
     if ((!isset($_SESSION[$key]) || (count($_SESSION[$key], COUNT_RECURSIVE) < $minEntries)) && file_exists($configFile)) {
-	$_SESSION[$key] = parse_ini_file($configFile, true);
+        $_SESSION[$key] = parse_ini_file($configFile, true);
     }
 }
 
 function checkSessionValidity() {
     if (!isset($_SESSION['MYCALL'])) {
-	global $callsign;
-	
-	if (empty($callsign)) {
-	    include $_SERVER['DOCUMENT_ROOT'].'/config/config.php';
-	    $_SESSION['MYCALL'] = strtoupper($callsign);
-	}
-	else {
-	    $_SESSION['MYCALL'] = strtoupper($callsign);
-	}
+        global $callsign;
+
+        if (empty($callsign)) {
+            include $_SERVER['DOCUMENT_ROOT'].'/config/config.php';
+            $_SESSION['MYCALL'] = strtoupper($callsign);
+        }
+        else {
+            $_SESSION['MYCALL'] = strtoupper($callsign);
+        }
     }
 
-	// get the name of the current profile
-	$profile_dir = '/etc/WPSD_config_mgr';
-	if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
-		if (is_dir("$profile_dir" . "/" ."$current_profile") != false ) {
-			$_SESSION['CURRENT_PROFILE'] = trim(file_get_contents('/etc/.WPSD_config'));
-		} else {
-			$_SESSION['CURRENT_PROFILE'] = false;
-		}
-	} else {
-		$_SESSION['CURRENT_PROFILE'] = false;
-	}
+    // get the name of the current profile
+    $profile_dir = '/etc/WPSD_config_mgr';
+    if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
+        if (is_dir("$profile_dir" . "/" ."$current_profile") != false ) {
+            $_SESSION['CURRENT_PROFILE'] = trim(file_get_contents('/etc/.WPSD_config'));
+        } else {
+            $_SESSION['CURRENT_PROFILE'] = false;
+        }
+    } else {
+        $_SESSION['CURRENT_PROFILE'] = false;
+    }
 
     if ( ! isset( $_SESSION['BMAPIKey'] ) || ( is_countable( $_SESSION['BMAPIKey'] ) && count( $_SESSION['BMAPIKey'], COUNT_RECURSIVE) < 1 ) && @file_exists( '/etc/bmapi.key' ) ) {
-	$configBMapi = @parse_ini_file('/etc/bmapi.key', true);
-	if (isset($configBMapi['key']['apikey']) && !empty($configBMapi['key']['apikey'])) {
-	    $_SESSION['BMAPIKey'] = $configBMapi['key']['apikey'];
-	    // Check the BM API Key
-	    if ( strlen($_SESSION['BMAPIKey']) <= 20 ) {
-		unset($_SESSION['BMAPIKey']);
-	    }
-	}
+        $configBMapi = @parse_ini_file('/etc/bmapi.key', true);
+        if (isset($configBMapi['key']['apikey']) && !empty($configBMapi['key']['apikey'])) {
+            $_SESSION['BMAPIKey'] = $configBMapi['key']['apikey'];
+            // Check the BM API Key
+            if ( strlen($_SESSION['BMAPIKey']) <= 20 ) {
+                unset($_SESSION['BMAPIKey']);
+            }
+        }
     }
 
     loadSessionConfigFile('DAPNETAPIKeyConfigs', '/etc/dapnetapi.key');
     loadSessionConfigFile('WPSDdashConfig', '/etc/WPSD-Dashboard-Config.ini');
     loadSessionConfigFile('WPSDrelease', '/etc/WPSD-release');
     if (!isset($_SESSION['MMDVMHostConfigs']) || (count($_SESSION['MMDVMHostConfigs'], COUNT_RECURSIVE) < 2)) {
-	$_SESSION['MMDVMHostConfigs'] = getMMDVMConfigContent();
+        $_SESSION['MMDVMHostConfigs'] = getMMDVMConfigContent();
     }
     if (!isset($_SESSION['ircDDBConfigs']) || (count($_SESSION['ircDDBConfigs'], COUNT_RECURSIVE) < 2)) {
-	global $gatewayConfigPath;
+        global $gatewayConfigPath;
 
-	if (empty($gatewayConfigPath)) {
-	    include $_SERVER['DOCUMENT_ROOT'].'/config/ircddblocal.php';
-	    $_SESSION['ircDDBConfigs'] = getNoSectionsConfigContent($gatewayConfigPath);
-	    $_SESSION['timeServerConfigs'] = getNoSectionsConfigContent('/etc/timeserver');
-	}
-	else {
-	    $_SESSION['ircDDBConfigs'] = getNoSectionsConfigContent($gatewayConfigPath);
-	    $_SESSION['timeServerConfigs'] = getNoSectionsConfigContent('/etc/timeserver');
-	}
+        if (empty($gatewayConfigPath)) {
+            include $_SERVER['DOCUMENT_ROOT'].'/config/ircddblocal.php';
+            $_SESSION['ircDDBConfigs'] = getNoSectionsConfigContent($gatewayConfigPath);
+            $_SESSION['timeServerConfigs'] = getNoSectionsConfigContent('/etc/timeserver');
+        }
+        else {
+            $_SESSION['ircDDBConfigs'] = getNoSectionsConfigContent($gatewayConfigPath);
+            $_SESSION['timeServerConfigs'] = getNoSectionsConfigContent('/etc/timeserver');
+        }
     }
 
     loadSessionConfigFile('DMRGatewayConfigs', '/etc/dmrgateway');
@@ -94,10 +94,10 @@ function checkSessionValidity() {
     loadSessionConfigFile('ModemConfigs', '/etc/dstar-radio.mmdvmhost');
 
     if ( ! isset( $_SESSION['DvModemFWVersion'] ) || ( is_countable( $_SESSION['DvModemFWVersion'] ) && count( $_SESSION['DvModemFWVersion'], COUNT_RECURSIVE ) < 1 ) ) {
-	$_SESSION['DvModemFWVersion'] = $_SESSION['WPSDrelease']['WPSD']['ModemFW'];
+        $_SESSION['DvModemFWVersion'] = $_SESSION['WPSDrelease']['WPSD']['ModemFW'];
     }
     if ( ! isset( $_SESSION['DvModemTCXOFreq'] ) || ( is_countable( $_SESSION['DvModemTCXOFreq'] ) && count( $_SESSION['DvModemTCXOFreq'], COUNT_RECURSIVE) < 1 ) ) {
-	$_SESSION['DvModemTCXOFreq'] = $_SESSION['WPSDrelease']['WPSD']['TCXO'];;
+        $_SESSION['DvModemTCXOFreq'] = $_SESSION['WPSDrelease']['WPSD']['TCXO'];;
     }
 }
 
@@ -115,7 +115,7 @@ function get_string_between($string, $start, $end) {
     $string = " ".$string;
     $ini = strpos($string,$start);
     if ($ini == 0) {
-	return "";
+        return "";
     }
     $ini += strlen($start);   
     $len = strpos($string,$end,$ini) - $ini;
@@ -125,10 +125,10 @@ function get_string_between($string, $start, $end) {
 function getMMDVMConfigContent() {
     $confs = array();
     if ($handle = @fopen('/etc/mmdvmhost', 'r')) {
-	while ($configs = fgets($handle)) {
-	    array_push($confs, trim($configs, " \t\n\r\0\x0B"));
-	}
-	fclose($handle);
+        while ($configs = fgets($handle)) {
+            array_push($confs, trim($configs, " \t\n\r\0\x0B"));
+        }
+        fclose($handle);
     }
     return $confs;
 }
@@ -137,15 +137,15 @@ function getMMDVMConfigContent() {
 function getNoSectionsConfigContent($configFile) {
     $confs = array();
     if ($handle = @fopen($configFile, 'r')) {
-	while ($line = fgets($handle)) {
-	    if (strpos($line, '=') !== FALSE) {
-		list($key, $value) = explode('=', $line, 2);
-		$value = trim(str_replace('"', '', $value));
-		
-		$confs[$key] = $value;
-	    }
-	}
-	fclose($handle);
+        while ($line = fgets($handle)) {
+            if (strpos($line, '=') !== FALSE) {
+                list($key, $value) = explode('=', $line, 2);
+                $value = trim(str_replace('"', '', $value));
+                
+                $confs[$key] = $value;
+            }
+        }
+        fclose($handle);
     }
     return $confs;
 }
@@ -247,22 +247,22 @@ function getAPRSISserver() {
     $server_list = "/usr/local/etc/aprs_servers.json";
 
     if (file_exists($logAPRSISNow) || file_exists($logAPRSISPrevious)) {
-	$logLine = exec("tail -2 $logAPRSISNow | grep \"".$logSearchString."\" ");
-	if (!$logLine) {
-	    $logLine = exec("tail -2 $logAPRSISPrevious | grep \"".$logSearchString."\" ");
-       	}
+        $logLine = exec("tail -2 $logAPRSISNow | grep \"".$logSearchString."\" ");
+        if (!$logLine) {
+            $logLine = exec("tail -2 $logAPRSISPrevious | grep \"".$logSearchString."\" ");
+        }
     } else
-	{
-	return $LogError;
+        {
+        return $LogError;
     }
 
     if ($logLine) {
-	if (strpos($logLine, 'Response from APRS server: # logresp')) {
-	    preg_match('/(?<=, server )\S+/i', $logLine, $match); // find server name in log line after "verified, server" string.
-	    $APRSISserver = str_replace(",", "", $match[0]); // remove occasional commas after server name
-	    $FQDN = exec("cat $server_list | jq '.[]' | grep -B 10 $APRSISserver | grep fqdn | sed -r 's/\"fqdn\"://g;s/\s+//g;s/\"//g;s/,//g'");
-	    $APRSISserver = "<a href='http://$FQDN:14501' target='_new'>$APRSISserver</a>";
-	}
+        if (strpos($logLine, 'Response from APRS server: # logresp')) {
+            preg_match('/(?<=, server )\S+/i', $logLine, $match); // find server name in log line after "verified, server" string.
+            $APRSISserver = str_replace(",", "", $match[0]); // remove occasional commas after server name
+            $FQDN = exec("cat $server_list | jq '.[]' | grep -B 10 $APRSISserver | grep fqdn | sed -r 's/\"fqdn\"://g;s/\s+//g;s/\"//g;s/,//g'");
+            $APRSISserver = "<a href='http://$FQDN:14501' target='_new'>$APRSISserver</a>";
+        }
     }
     return $APRSISserver;
 }
@@ -290,8 +290,8 @@ function isDAPNETGatewayConnected() {
     
     // Collect last 20 lines  - see getDAPNETGatewayLog() down below for no. of line values (array_slice)
     if (file_exists("/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log")) {
-	$logPath1 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log";
-	$logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 5 $logPath1 | cut -d" " -f2- | tac`);
+        $logPath1 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log";
+        $logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 5 $logPath1 | cut -d" " -f2- | tac`);
     }
     
     $logLines1 = array_filter($logLines1);
@@ -301,7 +301,7 @@ function isDAPNETGatewayConnected() {
             $logPath2 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `tail -n 5 $logPath2 | cut -d" " -f2- | tac`);
         }
-	
+        
         $logLines2 = array_filter($logLines2);
     }
 
@@ -310,10 +310,10 @@ function isDAPNETGatewayConnected() {
     $errorMessages = array('Cannot connect', 'Login failed', 'Error returned from recv');
     
     foreach($logLines as $dapnetMessageLine) {
-	foreach($errorMessages as $errorLine) {
-	    if (strpos($dapnetMessageLine, $errorLine) != FALSE)
-		return false;
-	}
+        foreach($errorMessages as $errorLine) {
+            if (strpos($dapnetMessageLine, $errorLine) != FALSE)
+                return false;
+        }
     }
 
     return true;
@@ -409,8 +409,8 @@ function isM17GatewayConnected() {
     
     // Collect last 20 lines  - see down below for no. of line values (array_slice)
     if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log")) {
-	$logPath1 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log";
-	$logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 1 $logPath1 | cut -d" " -f2- | tac`);
+        $logPath1 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log";
+        $logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 1 $logPath1 | cut -d" " -f2- | tac`);
     }
     
     $logLines1 = array_filter($logLines1);
@@ -420,7 +420,7 @@ function isM17GatewayConnected() {
             $logPath2 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `tail -n 1 $logPath2 | cut -d" " -f2- | tac`);
         }
-	
+        
         $logLines2 = array_filter($logLines2);
     }
 
@@ -429,10 +429,10 @@ function isM17GatewayConnected() {
     $errorMessages = array('Received a DISC from reflector' , 'Received a NACK from reflector' , 'Link lost' , 'Link refused');
     
     foreach($logLines as $m17MessageLine) {
-		foreach($errorMessages as $errorLine) {
-	    	if (strpos($m17MessageLine, $errorLine) != FALSE)
-			return false;
-		}
+                foreach($errorMessages as $errorLine) {
+                if (strpos($m17MessageLine, $errorLine) != FALSE)
+                        return false;
+                }
     }
     return true;
 }
@@ -444,21 +444,21 @@ function isM17GatewayConnected() {
 function getM17GatewayLog() {
     // Open Logfile and copy loglines into LogLines-Array()
     $logLines = array();
-	$logLines1 = array();
-	$logLines2 = array();
+        $logLines1 = array();
+        $logLines2 = array();
     if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log")) {
-		$logPath1 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log";
-		$logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
+                $logPath1 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log";
+                $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
-	$logLines1 = array_filter($logLines1);
+        $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
         if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-    		$logPath2 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
-			$logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath2 | cut -d" " -f2- | tail -1`);
+                $logPath2 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
+                        $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath2 | cut -d" " -f2- | tail -1`);
         }
-		$logLines2 = array_filter($logLines2);
+                $logLines2 = array_filter($logLines2);
    }
-	if (sizeof($logLines1) == 0) { $logLines = $logLines2; } else { $logLines = $logLines1; }
+        if (sizeof($logLines1) == 0) { $logLines = $logLines2; } else { $logLines = $logLines1; }
         return array_filter($logLines);
 }
 
@@ -494,21 +494,21 @@ function getM17GatewayLog() {
 function getDGIdGatewayLog() {
     // Open Logfile and copy loglines into LogLines-Array()
     $logLines = array();
-	$logLines1 = array();
-	$logLines2 = array();
+        $logLines1 = array();
+        $logLines2 = array();
     if (file_exists("/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d").".log")) {
-		$logPath1 = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d").".log";
-		$logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Added|via)" $logPath1 | cut -d" " -f2- | tail -1`);
+                $logPath1 = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d").".log";
+                $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Added|via)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
-	$logLines1 = array_filter($logLines1);
+        $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
         if (file_exists("/var/log/pi-star/DGiDGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-    		$logPath2 = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d", time() - 86340).".log";
-			$logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Added|via)" $logPath2 | cut -d" " -f2- | tail -1`);
+                $logPath2 = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d", time() - 86340).".log";
+                        $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Added|via)" $logPath2 | cut -d" " -f2- | tail -1`);
         }
-		$logLines2 = array_filter($logLines2);
+                $logLines2 = array_filter($logLines2);
    }
-	if (sizeof($logLines1) == 0) { $logLines = $logLines2; } else { $logLines = $logLines1; }
+        if (sizeof($logLines1) == 0) { $logLines = $logLines2; } else { $logLines = $logLines1; }
         return array_filter($logLines);
 }
 
@@ -553,7 +553,7 @@ function isWPSDrepeater() {
     if (file_exists('/etc/.wpsd-repeater')) {
         return 1;
     } else {
-	return 0;
+        return 0;
     }
 }
 
@@ -563,17 +563,17 @@ function isDVmegaCast() {
     if (is_dir('/opt/cast/.git')) {
         return 1;
     } else {
-	return 0;
+        return 0;
     }
 }
 
 // status classes used in sysinfo.php
 function getStatusClass($status, $disabled = false) {
     if ($status) {
-	echo '<td class="active-service-cell" align="left" title="Service Active">';
+        echo '<td class="active-service-cell" align="left" title="Service Active">';
     }
     else {
- 	if ($disabled)
+        if ($disabled)
         echo '<td class="disabled-service-cell" align="left" title="Service Disabled">';
     else
         echo '<td class="inactive-service-cell" align="left" title="Service Not Active">';
@@ -615,15 +615,15 @@ function getPSWState () {
 
 function getModeClass($status, $disabled = false) {
     if ($status) {
-	    echo '<div class="active-mode-cell" title="Active">';
+            echo '<div class="active-mode-cell" title="Active">';
     }
     else {
-	    if ($disabled) {
-	        echo '<div class="disabled-mode-cell" title="Disabled">';
-	    }
-	    else {
-	        echo '<div class="inactive-mode-cell" title="Inactive">';
-	    }
+            if ($disabled) {
+                echo '<div class="disabled-mode-cell" title="Disabled">';
+            }
+            else {
+                echo '<div class="inactive-mode-cell" title="Inactive">';
+            }
     }
 }
 
@@ -642,72 +642,72 @@ function showMode($mode, $configs) {
         }
     } else
         if (getEnabled($mode, $configs) == 1) {
-	        if ($mode == "D-Star Network") {
-	            getModeClass(isProcessRunning("ircddbgatewayd"));
-	        }
-	        else if ($mode == "System Fusion Network") {
-	            getModeClass(isProcessRunning("YSFGateway"));
-	        }
-	        else if ($mode == "P25 Network") {
-	            getModeClass(isProcessRunning("P25Gateway"));
-	        }
-	        else if ($mode == "NXDN Network") {
-	            getModeClass(isProcessRunning("NXDNGateway"));
-	        }
-	        else if ($mode == "M17 Network") {
-	            getModeClass(isProcessRunning("M17Gateway") && (isM17GatewayConnected() == 1));
-	        }
-	        else if ($mode == "POCSAG Network") {
-	            getModeClass(isProcessRunning("DAPNETGateway") && (isDAPNETGatewayConnected() == 1));
-	        }
-	        else if ($mode == "DMR Network") {
-	            if (getConfigItem("DMR Network", "Address", $configs) == '127.0.0.1') {
-		            getModeClass(isProcessRunning("DMRGateway"));
-	            }
-	            else {
-		            getModeClass(isProcessRunning("MMDVMHost"));
-	            }
-	        }
-	        else {
-	            if ($mode == "D-Star" || $mode == "DMR" || $mode == "System Fusion" || $mode == "P25" || $mode == "NXDN" || $mode == "POCSAG" || $mode == "M17" || $mode == "AX.25") {
-		            getModeClass(isProcessRunning("MMDVMHost"));
-	            }
-	        }
+                if ($mode == "D-Star Network") {
+                    getModeClass(isProcessRunning("ircddbgatewayd"));
+                }
+                else if ($mode == "System Fusion Network") {
+                    getModeClass(isProcessRunning("YSFGateway"));
+                }
+                else if ($mode == "P25 Network") {
+                    getModeClass(isProcessRunning("P25Gateway"));
+                }
+                else if ($mode == "NXDN Network") {
+                    getModeClass(isProcessRunning("NXDNGateway"));
+                }
+                else if ($mode == "M17 Network") {
+                    getModeClass(isProcessRunning("M17Gateway") && (isM17GatewayConnected() == 1));
+                }
+                else if ($mode == "POCSAG Network") {
+                    getModeClass(isProcessRunning("DAPNETGateway") && (isDAPNETGatewayConnected() == 1));
+                }
+                else if ($mode == "DMR Network") {
+                    if (getConfigItem("DMR Network", "Address", $configs) == '127.0.0.1') {
+                            getModeClass(isProcessRunning("DMRGateway"));
+                    }
+                    else {
+                            getModeClass(isProcessRunning("MMDVMHost"));
+                    }
+                }
+                else {
+                    if ($mode == "D-Star" || $mode == "DMR" || $mode == "System Fusion" || $mode == "P25" || $mode == "NXDN" || $mode == "POCSAG" || $mode == "M17" || $mode == "AX.25") {
+                            getModeClass(isProcessRunning("MMDVMHost"));
+                    }
+                }
         }
-    	else if ( ($mode == "YSF X-Mode") && (getEnabled("System Fusion", $configs) == 1) ) {
-			getModeClass((isProcessRunning("MMDVMHost") && (isProcessRunning("YSF2DMR") || isProcessRunning("YSF2NXDN") || isProcessRunning("YSF2P25"))),
-		    	($_SESSION['YSF2DMRConfigs']['Enabled']['Enabled'] || $_SESSION['YSF2NXDNConfigs']['Enabled']['Enabled'] || $_SESSION['YSF2P25Configs']['Enabled']['Enabled']) == false);
-    	}
-    	else if ( ($mode == "DMR X-Mode") && (getEnabled("DMR", $configs) == 1) ) {
-			getModeClass((isProcessRunning("MMDVMHost") && (isProcessRunning("DMR2YSF") || isProcessRunning("DMR2NXDN"))),
-		    	($_SESSION['DMR2YSFConfigs']['Enabled']['Enabled'] || $_SESSION['DMR2NXDNConfigs']['Enabled']['Enabled']) == false);
-    	}
-    	else if ( ($mode == "YSF2DMR Network") && (getEnabled("System Fusion", $configs) == 1) ) {
-			getModeClass(isProcessRunning("YSF2DMR"), ($_SESSION['YSF2DMRConfigs']['Enabled']['Enabled']) == false);
-    	}
-    	else if ( ($mode == "YSF2NXDN Network") && (getEnabled("System Fusion", $configs) == 1) ) {
-			getModeClass(isProcessRunning("YSF2NXDN"), ($_SESSION['YSF2NXDNConfigs']['Enabled']['Enabled']) == false);
-    	}
-    	else if ( ($mode == "YSF2P25 Network") && (getEnabled("System Fusion", $configs) == 1) ) {
-			getModeClass(isProcessRunning("YSF2P25"), ($_SESSION['YSF2P25Configs']['Enabled']['Enabled']) == false);
-    	}
-    	else if ( ($mode == "DMR2NXDN Network") && (getEnabled("DMR", $configs) == 1) ) {
-			getModeClass(isProcessRunning("DMR2NXDN"), ($_SESSION['DMR2NXDNConfigs']['Enabled']['Enabled']) == false);
-    	}
-    	else if ( ($mode == "DMR2YSF Network") && (getEnabled("DMR", $configs) == 1) ) {
-			getModeClass(isProcessRunning("DMR2YSF"), ($_SESSION['DMR2YSFConfigs']['Enabled']['Enabled']) == false);
-    	}
-    	else {
-			getModeClass(false, true);
-    	}
+        else if ( ($mode == "YSF X-Mode") && (getEnabled("System Fusion", $configs) == 1) ) {
+                        getModeClass((isProcessRunning("MMDVMHost") && (isProcessRunning("YSF2DMR") || isProcessRunning("YSF2NXDN") || isProcessRunning("YSF2P25"))),
+                        ($_SESSION['YSF2DMRConfigs']['Enabled']['Enabled'] || $_SESSION['YSF2NXDNConfigs']['Enabled']['Enabled'] || $_SESSION['YSF2P25Configs']['Enabled']['Enabled']) == false);
+        }
+        else if ( ($mode == "DMR X-Mode") && (getEnabled("DMR", $configs) == 1) ) {
+                        getModeClass((isProcessRunning("MMDVMHost") && (isProcessRunning("DMR2YSF") || isProcessRunning("DMR2NXDN"))),
+                        ($_SESSION['DMR2YSFConfigs']['Enabled']['Enabled'] || $_SESSION['DMR2NXDNConfigs']['Enabled']['Enabled']) == false);
+        }
+        else if ( ($mode == "YSF2DMR Network") && (getEnabled("System Fusion", $configs) == 1) ) {
+                        getModeClass(isProcessRunning("YSF2DMR"), ($_SESSION['YSF2DMRConfigs']['Enabled']['Enabled']) == false);
+        }
+        else if ( ($mode == "YSF2NXDN Network") && (getEnabled("System Fusion", $configs) == 1) ) {
+                        getModeClass(isProcessRunning("YSF2NXDN"), ($_SESSION['YSF2NXDNConfigs']['Enabled']['Enabled']) == false);
+        }
+        else if ( ($mode == "YSF2P25 Network") && (getEnabled("System Fusion", $configs) == 1) ) {
+                        getModeClass(isProcessRunning("YSF2P25"), ($_SESSION['YSF2P25Configs']['Enabled']['Enabled']) == false);
+        }
+        else if ( ($mode == "DMR2NXDN Network") && (getEnabled("DMR", $configs) == 1) ) {
+                        getModeClass(isProcessRunning("DMR2NXDN"), ($_SESSION['DMR2NXDNConfigs']['Enabled']['Enabled']) == false);
+        }
+        else if ( ($mode == "DMR2YSF Network") && (getEnabled("DMR", $configs) == 1) ) {
+                        getModeClass(isProcessRunning("DMR2YSF"), ($_SESSION['DMR2YSFConfigs']['Enabled']['Enabled']) == false);
+        }
+        else {
+                        getModeClass(false, true);
+        }
 
         $mode = str_replace("System Fusion", "YSF", $mode);
         $mode = str_replace("Network", "Net", $mode);
         if (strpos($mode, 'YSF2') > -1) {
-	        $mode = str_replace(" Net", "", $mode);
+                $mode = str_replace(" Net", "", $mode);
         }
         if (strpos($mode, 'DMR2') > -1) {
-	        $mode = str_replace(" Net", "", $mode);
+                $mode = str_replace(" Net", "", $mode);
         }
     echo $mode."</div>\n";
 }
@@ -719,51 +719,51 @@ function getMMDVMLog() {
     $logLines2 = array();
     $lineNos = "";
     if (file_exists(constant('MMDVMLOGPATH')."/".constant('MMDVMLOGPREFIX')."-".gmdate("Y-m-d").".log")) {
-	$logPath = constant('MMDVMLOGPATH')."/".constant('MMDVMLOGPREFIX')."-".gmdate("Y-m-d").".log";
-	$fileList = array_filter(array("/etc/.GETNAMES", "/etc/.CALLERDETAILS", "/etc/.SHOWDMRTA", "/etc/.TGNAMES"), 'file_exists');
+        $logPath = constant('MMDVMLOGPATH')."/".constant('MMDVMLOGPREFIX')."-".gmdate("Y-m-d").".log";
+        $fileList = array_filter(array("/etc/.GETNAMES", "/etc/.CALLERDETAILS", "/etc/.SHOWDMRTA", "/etc/.TGNAMES"), 'file_exists');
         if (!$file = array_shift($fileList)) { // no caller names/last caller selected
-	    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
-		if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) { // more than 40 rows selected
-		    $logLines1 = explode("\n", `tail -1500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
-	        } else {
-		    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
-	        }
-	    } else { 
-		$logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
-	    }
-	    $lineNos = sizeof($logLines1);
-	    $logLines1 = array_slice($logLines1, -1500);
+            if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
+                if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) { // more than 40 rows selected
+                    $logLines1 = explode("\n", `tail -1500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
+                } else {
+                    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
+                }
+            } else { 
+                $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
+            }
+            $lineNos = sizeof($logLines1);
+            $logLines1 = array_slice($logLines1, -1500);
         } else { // caller names/last caller selected! keep perf. in check..
-	    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
-		if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) {  // more than 40 rows selected
-		    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // search last 500 lines
-		} else {
-		    $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // 40 or less rows selected
-		}
-	    } else {
-		$logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
-	    }
-	    $lineNos = sizeof($logLines1);
-	    $logLines1 = array_slice($logLines1, -1500);
-	}
+            if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
+                if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) {  // more than 40 rows selected
+                    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // search last 500 lines
+                } else {
+                    $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // 40 or less rows selected
+                }
+            } else {
+                $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
+            }
+            $lineNos = sizeof($logLines1);
+            $logLines1 = array_slice($logLines1, -1500);
+        }
     }
 
     // current log is less than 150 lines; check previous log...
     if ($lineNos < 150) {
         if (file_exists(MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log")) {
-	    $logPath = MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
-	    if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
-		$logLines2 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);
-	    } else {
-		$logLines2 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
-	    }
-	    $logLines2 = array_slice($logLines2, -1500);
+            $logPath = MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
+            if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
+                $logLines2 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);
+            } else {
+                $logLines2 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
+            }
+            $logLines2 = array_slice($logLines2, -1500);
         }
     }
     if ($lineNos < 150) {
-	$logLines = $logLines1 + $logLines2;
+        $logLines = $logLines1 + $logLines2;
     } else {
- 	$logLines = $logLines1;
+        $logLines = $logLines1;
     }
     $logLines = array_slice($logLines, -1500);
     return $logLines;
@@ -775,22 +775,22 @@ function getYSFGatewayLog() {
     $logLines1 = array();
     $logLines2 = array();
     if (file_exists(YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d").".log")) {
-	$logPath1 = YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d").".log";
-	$logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^(M|W).*(Link has failed|Closing|onnection to|onnect to|ink|isconnect|Opening YSF network)" $logPath1 | sed '/Linked to MMDVM/d' | sed '/Link successful to MMDVM/d' | sed '/*Link/d' | tail -1`);
+        $logPath1 = YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d").".log";
+        $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^(M|W).*(Link has failed|Closing|onnection to|onnect to|ink|isconnect|Opening YSF network)" $logPath1 | sed '/Linked to MMDVM/d' | sed '/Link successful to MMDVM/d' | sed '/*Link/d' | tail -1`);
     }
     $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
-	if (file_exists(YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log")) {
-	    $logPath2 = YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
-	    $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^(M|W).*(Link has failed|Closing|onnection to|onnect to|ink|isconnect|Opening YSF network)" $logPath2 | sed '/Linked to MMDVM/d' | sed '/Link successful to MMDVM/d' | sed '/*Link/d' | tail -1`);
-	}
-	$logLines2 = array_filter($logLines2);
+        if (file_exists(YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log")) {
+            $logPath2 = YSFGATEWAYLOGPATH."/".YSFGATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
+            $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^(M|W).*(Link has failed|Closing|onnection to|onnect to|ink|isconnect|Opening YSF network)" $logPath2 | sed '/Linked to MMDVM/d' | sed '/Link successful to MMDVM/d' | sed '/*Link/d' | tail -1`);
+        }
+        $logLines2 = array_filter($logLines2);
     }
     if (sizeof($logLines1) == 0) {
-	$logLines = $logLines2;
+        $logLines = $logLines2;
     }
     else {
-	$logLines = $logLines1;
+        $logLines = $logLines1;
     }
     return array_filter($logLines);
 }
@@ -801,22 +801,22 @@ function getP25GatewayLog() {
     $logLines1 = array();
     $logLines2 = array();
     if (file_exists(P25GATEWAYLOGPATH."/".P25GATEWAYLOGPREFIX."-".gmdate("Y-m-d").".log")) {
-	$logPath1 = P25GATEWAYLOGPATH."/".P25GATEWAYLOGPREFIX."-".gmdate("Y-m-d").".log";
-	$logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
+        $logPath1 = P25GATEWAYLOGPATH."/".P25GATEWAYLOGPREFIX."-".gmdate("Y-m-d").".log";
+        $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
     $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
         if (file_exists(P25GATEWAYLOGPATH."/".P25GATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log")) {
-	    $logPath2 = P25GATEWAYLOGPATH."/".P25GATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
-	    $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
+            $logPath2 = P25GATEWAYLOGPATH."/".P25GATEWAYLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
+            $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
         }
-	$logLines2 = array_filter($logLines2);
+        $logLines2 = array_filter($logLines2);
     }
     if (sizeof($logLines1) == 0) {
-	$logLines = $logLines2;
+        $logLines = $logLines2;
     }
     else {
-	$logLines = $logLines1;
+        $logLines = $logLines1;
     }
     return array_filter($logLines);
 }
@@ -827,22 +827,22 @@ function getNXDNGatewayLog() {
     $logLines1 = array();
     $logLines2 = array();
     if (file_exists("/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d").".log")) {
-	$logPath1 = "/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d").".log";
+        $logPath1 = "/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d").".log";
     $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|witched|Starting)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
     $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
         if (file_exists("/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-	    $logPath2 = "/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log";
+            $logPath2 = "/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log";
         $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|witched|Starting)" $logPath2 | cut -d" " -f2- | tail -1`);
         }
-	$logLines2 = array_filter($logLines2);
+        $logLines2 = array_filter($logLines2);
     }
     if (sizeof($logLines1) == 0) {
-	$logLines = $logLines2;
+        $logLines = $logLines2;
     }
     else {
-	$logLines = $logLines1;
+        $logLines = $logLines1;
     }
     return array_filter($logLines);
 }
@@ -854,8 +854,8 @@ function getDAPNETGatewayLog($myRIC) {
     $logLines2 = array();
     
     if (file_exists("/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log")) {
-	$logPath1 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log";
-	$logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(Sending message)" $logPath1 | cut -d" " -f2- | tail -n 200 | tac`);
+        $logPath1 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log";
+        $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(Sending message)" $logPath1 | cut -d" " -f2- | tail -n 200 | tac`);
     }
     
     $logLines1 = array_filter($logLines1);
@@ -865,7 +865,7 @@ function getDAPNETGatewayLog($myRIC) {
             $logPath2 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(Sending message)" $logPath2 | cut -d" " -f2- | tail -n 200 | tac`);
         }
-	
+        
         $logLines2 = array_filter($logLines2);
     }
 
@@ -876,35 +876,35 @@ function getDAPNETGatewayLog($myRIC) {
 
         // Traverse the whole array to extract personal RIC messages
         foreach($logLines as $key => $entry) {
-	    
+            
             // Extract RIC number
             $dMsgArr = explode(" ", $entry);
             $pocsag_ric = str_replace(',', '', $dMsgArr["8"]);
             
             // if RICs matches, move entry to Personal array
             if ($pocsag_ric == $myRIC) {
-		$logLinesPersonal['X'.$key] = $entry;
-		$logLines[$key] = '';
+                $logLinesPersonal['X'.$key] = $entry;
+                $logLines[$key] = '';
             }
         }
 
         $logLines = array_filter($logLines);
         $logLinesPersonal = array_filter($logLinesPersonal);
-	// last 30
+        // last 30
         $logLines = array_slice($logLines, 0, 20);
-	
+        
         // Is there any message for my RIC ?
         if (sizeof($logLinesPersonal) > 0) {
 
             // Add that special separator entry
             array_push($logLines, '<MY_RIC>');
-	    // last 30
+            // last 30
             $logLinesPersonal = array_slice($logLinesPersonal, 0, 20);
             $logLines = array_merge($logLines, $logLinesPersonal);
         }
     }
     else {
-	// last 20
+        // last 20
         $logLines = array_slice($logLines, 0, 20);
     }
     
@@ -949,346 +949,346 @@ function getDAPNETGatewayLog($myRIC) {
 // M: 2000-00-00 00:00:00.000 M17, received RF end of transmission from W0CHP  H to ALL, 5.1 seconds, BER: 0.2%
 function getHeardList($logLines) {
     //array_multisort($logLines,SORT_DESC);
-    $heardList = array();
-    $ts1duration = "";
-    $ts1loss	 = "";
-    $ts1ber	 = "";
-    $ts1rssi	 = "";
-    $ts2duration = "";
-    $ts2loss	 = "";
-    $ts2ber	 = "";
-    $ts2rssi	 = "";
-    $dstarduration = "";
-    $dstarloss	 = "";
-    $dstarber	 = "";
-    $dstarrssi	 = "";
-    $ysfduration = "";
-    $ysfloss	 = "";
-    $ysfber	 = "";
-    $ysfrssi	 = "";
-    $p25duration = "";
-    $p25loss	 = "";
-    $p25ber	 = "";
-    $p25rssi	 = "";
-    $nxdnduration= "";
-    $nxdnloss	 = "";
-    $nxdnber	 = "";
-    $nxdnrssi	 = "";
-    $m17duration = "";
-    $m17loss	 = "---";
-    $m17ber	 = "";
-    $m17rssi	 = "---";
+    $heardList      = array();
+    $ts1duration    = "";
+    $ts1loss        = "";
+    $ts1ber         = "";
+    $ts1rssi        = "";
+    $ts2duration    = "";
+    $ts2loss        = "";
+    $ts2ber         = "";
+    $ts2rssi        = "";
+    $dstarduration  = "";
+    $dstarloss      = "";
+    $dstarber       = "";
+    $dstarrssi      = "";
+    $ysfduration    = "";
+    $ysfloss        = "";
+    $ysfber         = "";
+    $ysfrssi        = "";
+    $p25duration    = "";
+    $p25loss        = "";
+    $p25ber         = "";
+    $p25rssi        = "";
+    $nxdnduration   = "";
+    $nxdnloss       = "";
+    $nxdnber        = "";
+    $nxdnrssi       = "";
+    $m17duration    = "";
+    $m17loss        = "---";
+    $m17ber         = "";
+    $m17rssi        = "---";
     $pocsagduration = "";
-    $ts1alias    = "---";
-    $ts2alias    = "---";
-    $alias       = "";
+    $ts1alias       = "---";
+    $ts2alias       = "---";
+    $alias          = "";
     foreach ($logLines as $logLine) {
-	$duration	= "";
-	$loss		= "";
-	$ber		= "";
-	$rssi		= "";
-	//removing invalid lines
-	if(strpos($logLine,"BS_Dwn_Act")) {
-	    continue;
-	}
-	else if(strpos($logLine,"invalid access")) {
-	    continue;
-	}
-	else if(strpos($logLine,"packet received from an invalid source")) {
-	    continue;
-	}
-	else if(strpos($logLine,"received RF header for wrong repeater")) {
-	    continue;
-	}
-	else if(strpos($logLine,"unable to decode the network CSBK")) {
-	    continue;
-	}
-	else if(strpos($logLine,"overflow in the DMR slot RF queue")) {
-	    continue;
-	}
-	else if(strpos($logLine,"overflow in the System Fusion RF queue")) {
- 	    continue;
-	}
-	else if(strpos($logLine,"overflow in the M17 RF queue")) {
-	    continue;
-	}
-	else if(strpos($logLine,"non repeater RF header received")) {
-	    continue;
-	}
-	else if(strpos($logLine,"Embedded Talker Alias")) {
+        $duration       = "";
+        $loss           = "";
+        $ber            = "";
+        $rssi           = "";
+        //removing invalid lines
+        if(strpos($logLine,"BS_Dwn_Act")) {
             continue;
-	}
-	else if(strpos($logLine,"DMR Talker Alias")) {
-	    continue;
-	}
-	else if(strpos($logLine,", Talker Alias ")) {
-	    continue;
-	}
-	else if(strpos($logLine,", text Data: ")) {
-	    continue;
-	}
-	else if(strpos($logLine,", data text")) {
-	    continue;
-	}
-	else if(strpos($logLine,"CSBK Preamble")) {
-            continue;
-	}
-	else if(strpos($logLine,"Preamble CSBK")) {
-            continue;
-	}
-
-      if(strpos($logLine, "0000")){
-      	$decodedAlias = $decodedAlias = preg_replace('/[\x00-\x1F\x7F-\xA0\xAD]/u', '', decodeAlias($logLine));
-        if ($decodedAlias == "" && $alias == "") $decodedAlias="---";
-        else if ($alias!="---") $alias = str_replace("---", "", $alias);
-      	if ($alias == "")
-	      	$alias = $decodedAlias;
-	    else
-	    	$alias = $decodedAlias.$alias;
-      }
-      if (strpos($logLine,"Embedded Talker Alias")) {
-      	switch (substr($logLine, 27, strpos($logLine,",") - 27)) {
-          case "DMR Slot 1":
-            $ts1alias = $alias;
-            break;
-          case "DMR Slot 2":
-            $ts2alias = $alias;
-            break;
         }
-      }
+        else if(strpos($logLine,"invalid access")) {
+            continue;
+        }
+        else if(strpos($logLine,"packet received from an invalid source")) {
+            continue;
+        }
+        else if(strpos($logLine,"received RF header for wrong repeater")) {
+            continue;
+        }
+        else if(strpos($logLine,"unable to decode the network CSBK")) {
+            continue;
+        }
+        else if(strpos($logLine,"overflow in the DMR slot RF queue")) {
+            continue;
+        }
+        else if(strpos($logLine,"overflow in the System Fusion RF queue")) {
+            continue;
+        }
+        else if(strpos($logLine,"overflow in the M17 RF queue")) {
+            continue;
+        }
+        else if(strpos($logLine,"non repeater RF header received")) {
+            continue;
+        }
+        else if(strpos($logLine,"Embedded Talker Alias")) {
+            continue;
+        }
+        else if(strpos($logLine,"DMR Talker Alias")) {
+            continue;
+        }
+        else if(strpos($logLine,", Talker Alias ")) {
+            continue;
+        }
+        else if(strpos($logLine,", text Data: ")) {
+            continue;
+        }
+        else if(strpos($logLine,", data text")) {
+            continue;
+        }
+        else if(strpos($logLine,"CSBK Preamble")) {
+            continue;
+        }
+        else if(strpos($logLine,"Preamble CSBK")) {
+            continue;
+        }
 
-       if(strpos($logLine, "end of") || strpos($logLine, "watchdog has expired") || strpos($logLine, "ended RF data") || strpos($logLine, "d network data") || strpos($logLine, "RF user has timed out") || strpos($logLine, "transmission lost") || strpos($logLine, "POCSAG")) {
-           $lineTokens = explode(", ",$logLine);
-           if (array_key_exists(2,$lineTokens)) {
-               $duration = strtok($lineTokens[2], " ");
-           }
-           if (array_key_exists(3,$lineTokens)) {
-               $loss = $lineTokens[3];
-           }
-           // The change to this code was causing all FCS traffic to always show TOut rather than the timer.
-           // This version should still show time-out when needed, AND show the time if it exists.
-           if (strpos($logLine,"RF user has timed out") || strpos($logLine,"watchdog has expired") || strpos($logLine, "Mode set")) {
-               if (array_key_exists(2, $lineTokens) && strpos($lineTokens[2], "seconds")) {
-                   $duration = strtok($lineTokens[2], " "); 
-               }
-               else { 
-                   $duration = "Timeout";
-               }
-               $ber = "---";
-           }
-	    // if RF-Packet with no BER reported (e.g. YSF Wires-X commands) then RSSI is in LOSS position
-	    if (startsWith($loss,"RSSI")) {
-		$lineTokens[4] = $loss; //move RSSI to the position expected on code below
-		$loss = 'BER: ---';
-	    }
-	    
-	    // if RF-Packet, no LOSS would be reported, so BER is in LOSS position
-	    if (startsWith($loss,"BER")) {
-		$ber = substr($loss, 5);
-		$loss = "0%";
-		if (array_key_exists(4,$lineTokens) && startsWith($lineTokens[4],"RSSI")) {
-		    $rssi = substr($lineTokens[4], 6);
-		    $dBraw = substr($rssi, strrpos($rssi,'/')+1); //average only
-		    $relint = intval($dBraw) + 93;
-		    $signal = round(($relint/6)+9, 0);
-		    $meterVal = str_replace("-","", $dBraw);
-		    $meterVal = str_replace(" dBm","", $meterVal);
-		    if ($signal < 0) {
-			$signal = 0;
-		    }
-		    if ($signal >= 9) {
-			$signal = 9;
-		    }
-		    if ($relint > 0) {
-			if ($meterVal <= 67) {
-			    $rssi = "<meter id='S-meter' value=\"1\" high=\"1\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
-			} elseif ($meterVal >= 68 && $meterVal < 70) {
-			    $rssi = "<meter id='S-meter' value=\".8\" low=\".8\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
-			} elseif ($meterVal >= 70 && $meterVal < 80) {
-			    $rssi = "<meter id='S-meter' value=\".6\" high=\".5\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
-			} elseif ($meterVal >= 80  && $meterVal < 90) {
-			    $rssi = "<meter id='S-meter' low=\".5\" optimum=\".8\" high=\".75\" value=\".3\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
-			} elseif ($dBraw >= 90) {
-			    $rssi = "<meter id='S-meter' low=\".25\" optimum=\".8\" high=\".75\" value=\".15\"> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
-			} else {
-			    $rssi = "S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
-			}
-		    } else {
-			$rssi = "S{$signal} <span class='noMob'>({$dBraw})</span>";
-		    }
-		}
-	    }
-	    else {
-		$loss = strtok($loss, " ");
-		if (array_key_exists(4,$lineTokens)) {
-		    $ber = substr($lineTokens[4], 5);
-		    $ber = preg_replace('/ - Name(.*)/', '', $ber);
-		}
-	    }
+        if (strpos($logLine, "0000")) {
+            $decodedAlias = $decodedAlias = preg_replace('/[\x00-\x1F\x7F-\xA0\xAD]/u', '', decodeAlias($logLine));
+            if ($decodedAlias == "" && $alias == "") $decodedAlias="---";
+            else if ($alias!="---") $alias = str_replace("---", "", $alias);
+            if ($alias == "")
+                $alias = $decodedAlias;
+            else
+                $alias = $decodedAlias.$alias;
+        }
+        if (strpos($logLine,"Embedded Talker Alias")) {
+            switch (substr($logLine, 27, strpos($logLine,",") - 27)) {
+                case "DMR Slot 1":
+                    $ts1alias = $alias;
+                    break;
+                case "DMR Slot 2":
+                    $ts2alias = $alias;
+                    break;
+            }
+        }
 
-	    if (strpos($logLine,"ended RF data") || strpos($logLine,"d network data")) {
-		switch (substr($logLine, 27, strpos($logLine,",") - 27)) {
-		    case "DMR Slot 1":
-			$ts1duration = "DMR Data";
-			break;
-		    case "DMR Slot 2":
-			$ts2duration = "DMR Data";
-			break;
-		}
-	    }
-	    else {
-		switch (substr($logLine, 27, strpos($logLine,",") - 27)) {
-		    case "D-Star":
-			$dstarduration	= $duration;
-			$dstarloss	= $loss;
-			$dstarber	= $ber;
-			$dstarrssi	= $rssi;
-			break;
-		    case "DMR Slot 1":
-			$ts1duration	= $duration;
-			$ts1loss	= $loss;
-			$ts1ber		= $ber;
-			$ts1rssi	= $rssi;
-			break;
-		    case "DMR Slot 2":
-			$ts2duration	= $duration;
-			$ts2loss	= $loss;
-			$ts2ber		= $ber;
-			$ts2rssi	= $rssi;
-			break;
-		    case "YSF":
-			$ysfduration	= $duration;
-			$ysfloss	= $loss;
-			$ysfber		= $ber;
-			$ysfrssi	= $rssi;
-			break;
-		    case "P25":
-			$p25duration	= $duration;
-			$p25loss	= $loss;
-			$p25ber		= $ber;
-			$p25rssi	= $rssi;
-			break;
-		    case "NXDN":
-			$nxdnduration	= $duration;
-			$nxdnloss	= $loss;
-			$nxdnber	= $ber;
-			$nxdnrssi	= $rssi;
-			break;
-		case "M17":
-			$m17duration	= $duration;
-			$m17loss	= "---";
-			$m17ber		= $ber;
-			$m17rssi	= "---";
-			break;
-		    case "POCSAG":
-			$alias = "";
-			$pocsagduration	= "POCSAG Data";
-			break;
-		}
-	    }
-	}
-	
-	$timestamp = substr($logLine, 3, 19);
-	$mode = substr($logLine, 27, strpos($logLine,",") - 27);
-	$callsign2 = substr($logLine, strpos($logLine,"from") + 5, strpos($logLine,"to") - strpos($logLine,"from") - 6);                                                                   
-	// strip prefixes from M17 calls...e.g. "??/W0CHP"
-	if ($mode == "M17") {
-	    $callsign2 = preg_replace('/.*\//', '', $callsign2);
-	}
-	$callsign = $callsign2;
-	if (strpos($callsign2,"/") > 0) {
-	    $callsign = substr($callsign2, 0, strpos($callsign2,"/"));
-	}
-	$callsign = trim($callsign);
-	$id ="";
-	if ($mode == "D-Star") {
-	    $id = substr($callsign2, strpos($callsign2,"/") + 1);
-	}
+        if(strpos($logLine, "end of") || strpos($logLine, "watchdog has expired") || strpos($logLine, "ended RF data") || strpos($logLine, "d network data") || strpos($logLine, "RF user has timed out") || strpos($logLine, "transmission lost") || strpos($logLine, "POCSAG")) {
+            $lineTokens = explode(", ",$logLine);
+            if (array_key_exists(2,$lineTokens)) {
+                $duration = strtok($lineTokens[2], " ");
+            }
+            if (array_key_exists(3,$lineTokens)) {
+                $loss = $lineTokens[3];
+            }
+            // The change to this code was causing all FCS traffic to always show TOut rather than the timer.
+            // This version should still show time-out when needed, AND show the time if it exists.
+            if (strpos($logLine,"RF user has timed out") || strpos($logLine,"watchdog has expired") || strpos($logLine, "Mode set")) {
+                if (array_key_exists(2, $lineTokens) && strpos($lineTokens[2], "seconds")) {
+                    $duration = strtok($lineTokens[2], " "); 
+                }
+                else { 
+                    $duration = "Timeout";
+                }
+                $ber = "---";
+            }
+            // if RF-Packet with no BER reported (e.g. YSF Wires-X commands) then RSSI is in LOSS position
+            if (startsWith($loss,"RSSI")) {
+                $lineTokens[4] = $loss; //move RSSI to the position expected on code below
+                $loss = 'BER: ---';
+            }
+            
+            // if RF-Packet, no LOSS would be reported, so BER is in LOSS position
+            if (startsWith($loss,"BER")) {
+                $ber = substr($loss, 5);
+                $loss = "0%";
+                if (array_key_exists(4,$lineTokens) && startsWith($lineTokens[4],"RSSI")) {
+                    $rssi = substr($lineTokens[4], 6);
+                    $dBraw = substr($rssi, strrpos($rssi,'/')+1); //average only
+                    $relint = intval($dBraw) + 93;
+                    $signal = round(($relint/6)+9, 0);
+                    $meterVal = str_replace("-","", $dBraw);
+                    $meterVal = str_replace(" dBm","", $meterVal);
+                    if ($signal < 0) {
+                        $signal = 0;
+                    }
+                    if ($signal >= 9) {
+                        $signal = 9;
+                    }
+                    if ($relint > 0) {
+                        if ($meterVal <= 67) {
+                            $rssi = "<meter id='S-meter' value=\"1\" high=\"1\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
+                        } elseif ($meterVal >= 68 && $meterVal < 70) {
+                            $rssi = "<meter id='S-meter' value=\".8\" low=\".8\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
+                        } elseif ($meterVal >= 70 && $meterVal < 80) {
+                            $rssi = "<meter id='S-meter' value=\".6\" high=\".5\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
+                        } elseif ($meterVal >= 80  && $meterVal < 90) {
+                            $rssi = "<meter id='S-meter' low=\".5\" optimum=\".8\" high=\".75\" value=\".3\"></meter> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
+                        } elseif ($dBraw >= 90) {
+                            $rssi = "<meter id='S-meter' low=\".25\" optimum=\".8\" high=\".75\" value=\".15\"> S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
+                        } else {
+                            $rssi = "S{$signal}+{$relint}dB <span class='noMob'>({$dBraw})</span>";
+                        }
+                    } else {
+                        $rssi = "S{$signal} <span class='noMob'>({$dBraw})</span>";
+                    }
+                }
+            }
+            else {
+                $loss = strtok($loss, " ");
+                if (array_key_exists(4,$lineTokens)) {
+                    $ber = substr($lineTokens[4], 5);
+                    $ber = preg_replace('/ - Name(.*)/', '', $ber);
+                }
+            }
 
-	$target = trim(substr($logLine, strpos($logLine, "to") + 3));
-	$target = preg_replace('/ - Name(.*)/', '', $target);
-	// Handle more verbose logging from MMDVMHost
+            if (strpos($logLine,"ended RF data") || strpos($logLine,"d network data")) {
+                switch (substr($logLine, 27, strpos($logLine,",") - 27)) {
+                    case "DMR Slot 1":
+                        $ts1duration = "DMR Data";
+                        break;
+                    case "DMR Slot 2":
+                        $ts2duration = "DMR Data";
+                        break;
+                }
+            }
+            else {
+                switch (substr($logLine, 27, strpos($logLine,",") - 27)) {
+                    case "D-Star":
+                        $dstarduration  = $duration;
+                        $dstarloss      = $loss;
+                        $dstarber       = $ber;
+                        $dstarrssi      = $rssi;
+                        break;
+                    case "DMR Slot 1":
+                        $ts1duration    = $duration;
+                        $ts1loss        = $loss;
+                        $ts1ber         = $ber;
+                        $ts1rssi        = $rssi;
+                        break;
+                    case "DMR Slot 2":
+                        $ts2duration    = $duration;
+                        $ts2loss        = $loss;
+                        $ts2ber         = $ber;
+                        $ts2rssi        = $rssi;
+                        break;
+                    case "YSF":
+                        $ysfduration    = $duration;
+                        $ysfloss        = $loss;
+                        $ysfber         = $ber;
+                        $ysfrssi        = $rssi;
+                        break;
+                    case "P25":
+                        $p25duration    = $duration;
+                        $p25loss        = $loss;
+                        $p25ber         = $ber;
+                        $p25rssi        = $rssi;
+                        break;
+                    case "NXDN":
+                        $nxdnduration   = $duration;
+                        $nxdnloss       = $loss;
+                        $nxdnber        = $ber;
+                        $nxdnrssi       = $rssi;
+                        break;
+                    case "M17":
+                        $m17duration    = $duration;
+                        $m17loss        = "---";
+                        $m17ber         = $ber;
+                        $m17rssi        = "---";
+                        break;
+                    case "POCSAG":
+                        $alias = "";
+                        $pocsagduration = "POCSAG Data";
+                        break;
+                }
+            }
+        }
+        
+        $timestamp = substr($logLine, 3, 19);
+        $mode = substr($logLine, 27, strpos($logLine,",") - 27);
+        $callsign2 = substr($logLine, strpos($logLine,"from") + 5, strpos($logLine,"to") - strpos($logLine,"from") - 6);
+        // strip prefixes from M17 calls...e.g. "??/W0CHP"
+        if ($mode == "M17") {
+            $callsign2 = preg_replace('/.*\//', '', $callsign2);
+        }
+        $callsign = $callsign2;
+        if (strpos($callsign2,"/") > 0) {
+            $callsign = substr($callsign2, 0, strpos($callsign2,"/"));
+        }
+        $callsign = trim($callsign);
+        $id ="";
+        if ($mode == "D-Star") {
+            $id = substr($callsign2, strpos($callsign2,"/") + 1);
+        }
+
+        $target = trim(substr($logLine, strpos($logLine, "to") + 3));
+        $target = preg_replace('/ - Name(.*)/', '', $target);
+        // Handle more verbose logging from MMDVMHost
         if (strpos($target,",") !== 'false') {
-	    $target = explode(",", $target)[0];
-	}
-	
-	$source = "RF";
-	if (strpos($logLine,"network") > 0 || strpos($logLine,"POCSAG") > 0) {
-	    $source = "Net";
-	}
-	
-	switch ($mode) {
-	    case "D-Star":
-		$duration	= $dstarduration;
-		$loss		= $dstarloss;
-		$ber		= $dstarber;
-		$rssi		= $dstarrssi;
-		break;
-	    case "DMR Slot 1":
-		$duration	= $ts1duration;
-		$loss		= $ts1loss;
-		$ber		= $ts1ber;
-		$rssi		= $ts1rssi;
-		break;
-	    case "DMR Slot 2":
-		$duration	= $ts2duration;
-		$loss		= $ts2loss;
-		$ber		= $ts2ber;
-		$rssi		= $ts2rssi;
-		break;
-	    case "YSF":
-                $duration	= $ysfduration;
-                $loss		= $ysfloss;
-                $ber		= $ysfber;
-		$rssi		= $ysfrssi;
-		$target		= preg_replace('!\s+!', ' ', $target);
+            $target = explode(",", $target)[0];
+        }
+        
+        $source = "RF";
+        if (strpos($logLine,"network") > 0 || strpos($logLine,"POCSAG") > 0) {
+            $source = "Net";
+        }
+        
+        switch ($mode) {
+            case "D-Star":
+                $duration       = $dstarduration;
+                $loss           = $dstarloss;
+                $ber            = $dstarber;
+                $rssi           = $dstarrssi;
                 break;
-	    case "P25":
-		if ($source == "Net" && $target == "TG 10") {
-		    $callsign = "PARROT";
-		}
-		if ($source == "Net" && $callsign == "10999") {
-		    $callsign = "MMDVM";
-		}
-                $duration	= $p25duration;
-                $loss		= strlen($p25loss) ? $p25loss : "---";
-                $ber		= strlen($p25ber) ? $p25ber : "---";
-		$rssi		= $p25rssi;
+            case "DMR Slot 1":
+                $duration       = $ts1duration;
+                $loss           = $ts1loss;
+                $ber            = $ts1ber;
+                $rssi           = $ts1rssi;
                 break;
-	    case "NXDN":
-		if ($source == "Net" && $target == "TG 10") {
-		    $callsign = "PARROT";
-		}
-                $duration	= $nxdnduration;
+            case "DMR Slot 2":
+                $duration       = $ts2duration;
+                $loss           = $ts2loss;
+                $ber            = $ts2ber;
+                $rssi           = $ts2rssi;
+                break;
+            case "YSF":
+                $duration       = $ysfduration;
+                $loss           = $ysfloss;
+                $ber            = $ysfber;
+                $rssi           = $ysfrssi;
+                $target         = preg_replace('!\s+!', ' ', $target);
+                break;
+            case "P25":
+                if ($source == "Net" && $target == "TG 10") {
+                    $callsign = "PARROT";
+                }
+                if ($source == "Net" && $callsign == "10999") {
+                    $callsign = "MMDVM";
+                }
+                $duration       = $p25duration;
+                $loss           = strlen($p25loss) ? $p25loss : "---";
+                $ber            = strlen($p25ber) ? $p25ber : "---";
+                $rssi           = $p25rssi;
+                break;
+            case "NXDN":
+                if ($source == "Net" && $target == "TG 10") {
+                    $callsign = "PARROT";
+                }
+                $duration       = $nxdnduration;
                 $loss           = strlen($nxdnloss) ? $nxdnloss : "---";
                 $ber            = strlen($nxdnber) ? $nxdnber : "---";
-		$rssi		= $nxdnrssi;
+                $rssi           = $nxdnrssi;
                 break;
-	    case "M17":
-		$duration	= $m17duration;
-		$loss		= $m17loss;
-		$ber		= $m17ber;
-		$rssi		= $m17rssi;
-		break;
-	    case "POCSAG":
-		$callsign	= "DAPNET";
-		$target		= "";
-		$duration	= "POCSAG";
-		$loss		= "";
-                $ber		= "";
-		break;
-	}
-	
-	if ( strlen($callsign) < 11 ) {
-	    array_push($heardList, array($timestamp, $mode, $callsign, $id, $target, $source, $duration, $loss, $ber, $rssi, $alias));
-	    $duration = "";
-	    $loss ="";
-	    $ber = "";
-	    $rssi = "";
-	    $alias = "";
-	    $ts1alias   = "---";
-	    $ts2alias   = "---";
-	}
+            case "M17":
+                $duration       = $m17duration;
+                $loss           = $m17loss;
+                $ber            = $m17ber;
+                $rssi           = $m17rssi;
+                break;
+            case "POCSAG":
+                $callsign       = "DAPNET";
+                $target         = "";
+                $duration       = "POCSAG";
+                $loss           = "";
+                $ber            = "";
+                break;
+        }
+        
+        if ( strlen($callsign) < 11 ) {
+            array_push($heardList, array($timestamp, $mode, $callsign, $id, $target, $source, $duration, $loss, $ber, $rssi, $alias));
+            $duration = "";
+            $loss ="";
+            $ber = "";
+            $rssi = "";
+            $alias = "";
+            $ts1alias   = "---";
+            $ts2alias   = "---";
+        }
     }
     return $heardList;
 }
@@ -1298,18 +1298,18 @@ function getLastHeard($logLines) {
     $lastHeard = array();
     $heardCalls = array();
     $heardList = getHeardList($logLines);
-	foreach ($heardList as $listElem) {
-	if ( ($listElem[1] == "D-Star") || ($listElem[1] == "YSF") || ($listElem[1] == "P25") || ($listElem[1] == "NXDN") || ($listElem[1] == "M17") || ($listElem[1] == "POCSAG") || (startsWith($listElem[1], "DMR")) ) {
+        foreach ($heardList as $listElem) {
+        if ( ($listElem[1] == "D-Star") || ($listElem[1] == "YSF") || ($listElem[1] == "P25") || ($listElem[1] == "NXDN") || ($listElem[1] == "M17") || ($listElem[1] == "POCSAG") || (startsWith($listElem[1], "DMR")) ) {
 
-	    $callUuid = $listElem[2]."#".$listElem[1].$listElem[3].$listElem[5];
-	    if (!empty($listElem[10])) {
-		$listElem[10] = "Alias: ".$listElem[10]."";
-	    }
-	    if(!(array_search($callUuid, $heardCalls) > -1)) {
-		array_push($heardCalls, $callUuid);
-		array_push($lastHeard, $listElem);
-	    }
-	}
+            $callUuid = $listElem[2]."#".$listElem[1].$listElem[3].$listElem[5];
+            if (!empty($listElem[10])) {
+                $listElem[10] = "Alias: ".$listElem[10]."";
+            }
+            if(!(array_search($callUuid, $heardCalls) > -1)) {
+                array_push($heardCalls, $callUuid);
+                array_push($lastHeard, $listElem);
+            }
+        }
     }
     return $lastHeard;
 }
@@ -1323,72 +1323,72 @@ function getActualMode($metaLastHeard, &$configs) {
     $timestamp->setTimeZone($local_tz); 
     $mode = $listElem[1];
     if (startsWith($mode, "DMR")) {
-	$mode = "DMR";
+        $mode = "DMR";
     }
     
     $now =  new DateTime();
     $hangtime = getConfigItem("General", "ModeHang", $configs);
     
     if ($hangtime != "") {
-	$timestamp->add(new DateInterval('PT' . $hangtime . 'S'));
+        $timestamp->add(new DateInterval('PT' . $hangtime . 'S'));
     }
     else {
-	$source = $listElem[5];
-	if ($source == "RF" && $mode === "D-Star") {
-	    $hangtime = getConfigItem("D-Star", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "D-Star") {
-	    $hangtime = getConfigItem("D-Star Network", "ModeHang", $configs);
-	}
-	else if ($source == "RF" && $mode === "DMR") {
-	    $hangtime = getConfigItem("DMR", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "DMR") {
-	    $hangtime = getConfigItem("DMR Network", "ModeHang", $configs);
-	}
-	else if ($source == "RF" && $mode === "YSF") {
-	    $hangtime = getConfigItem("System Fusion", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "YSF") {
-	    $hangtime = getConfigItem("System Fusion Network", "ModeHang", $configs);
-	}
-	else if ($source == "RF" && $mode === "P25") {
-	    $hangtime = getConfigItem("P25", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "P25") {
-	    $hangtime = getConfigItem("P25 Network", "ModeHang", $configs);
-	}
-	else if ($source == "RF" && $mode === "NXDN") {
-	    $hangtime = getConfigItem("NXDN", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "NXDN") {
-	    $hangtime = getConfigItem("NXDN Network", "ModeHang", $configs);
-	}
-	else if ($source == "RF" && $mode === "M17") {
-	    $hangtime = getConfigItem("M17", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "M17") {
-	    $hangtime = getConfigItem("M17 Network", "ModeHang", $configs);
-	}
-	else if ($source == "Net" && $mode === "POCSAG") {
-	    $hangtime = getConfigItem("POCSAG Network", "ModeHang", $configs);
-	}
-	else {
-	    $hangtime = getConfigItem("General", "RFModeHang", $configs);
-	}
-	$timestamp->add(new DateInterval('PT' . $hangtime . 'S'));
+        $source = $listElem[5];
+        if ($source == "RF" && $mode === "D-Star") {
+            $hangtime = getConfigItem("D-Star", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "D-Star") {
+            $hangtime = getConfigItem("D-Star Network", "ModeHang", $configs);
+        }
+        else if ($source == "RF" && $mode === "DMR") {
+            $hangtime = getConfigItem("DMR", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "DMR") {
+            $hangtime = getConfigItem("DMR Network", "ModeHang", $configs);
+        }
+        else if ($source == "RF" && $mode === "YSF") {
+            $hangtime = getConfigItem("System Fusion", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "YSF") {
+            $hangtime = getConfigItem("System Fusion Network", "ModeHang", $configs);
+        }
+        else if ($source == "RF" && $mode === "P25") {
+            $hangtime = getConfigItem("P25", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "P25") {
+            $hangtime = getConfigItem("P25 Network", "ModeHang", $configs);
+        }
+        else if ($source == "RF" && $mode === "NXDN") {
+            $hangtime = getConfigItem("NXDN", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "NXDN") {
+            $hangtime = getConfigItem("NXDN Network", "ModeHang", $configs);
+        }
+        else if ($source == "RF" && $mode === "M17") {
+            $hangtime = getConfigItem("M17", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "M17") {
+            $hangtime = getConfigItem("M17 Network", "ModeHang", $configs);
+        }
+        else if ($source == "Net" && $mode === "POCSAG") {
+            $hangtime = getConfigItem("POCSAG Network", "ModeHang", $configs);
+        }
+        else {
+            $hangtime = getConfigItem("General", "RFModeHang", $configs);
+        }
+        $timestamp->add(new DateInterval('PT' . $hangtime . 'S'));
     }
     if ($listElem[6] != null) { //if terminated, hangtime counts after end of transmission
         $timestamp->add(new DateInterval('PT' . ceil((float)$listElem[6]) . 'S')); // $listElem[6] returns a string; convert to float for ceil()
     }
     else { // if not terminated, always return mode
-	return $mode;
+        return $mode;
     }
     if ($now->format('U') > $timestamp->format('U')) {
-	return "idle";
+        return "idle";
     } 
     else {
-	return $mode;
+        return $mode;
     }
 }
 
@@ -1398,67 +1398,67 @@ function getDSTARLinks() {
     $dstarCallsign = str_pad(getConfigItem("General", "Callsign", $_SESSION['MMDVMHostConfigs']), 7, " ", STR_PAD_RIGHT).getConfigItem("D-Star", "Module", $_SESSION['MMDVMHostConfigs']);
 
     if (filesize(LINKLOGPATH."/Links.log") == 0) {
-	return "Not Linked";
+        return "Not Linked";
     }
 
     if ($linkLog = fopen(LINKLOGPATH."/Links.log",'r')) {
-	while ($linkLine = fgets($linkLog)) {
-	    $linkDate	= "&nbsp;";
-	    $protocol	= "&nbsp;";
-	    $linkType	= "&nbsp;";
-	    $linkSource	= "&nbsp;";
-	    $linkDest	= "&nbsp;";
-	    $linkDir	= "&nbsp;";
+        while ($linkLine = fgets($linkLog)) {
+            $linkDate   = "&nbsp;";
+            $protocol   = "&nbsp;";
+            $linkType   = "&nbsp;";
+            $linkSource = "&nbsp;";
+            $linkDest   = "&nbsp;";
+            $linkDir    = "&nbsp;";
 
-	    // Reflector-Link, sample:
-	    // 2011-09-22 02:15:06: DExtra link - Type: Repeater Rptr: DB0LJ	B Refl: XRF023 A Dir: Outgoing
-	    // 2012-04-03 08:40:07: DPlus link - Type: Dongle Rptr: DB0ERK B Refl: REF006 D Dir: Outgoing
-	    // 2012-04-03 08:40:07: DCS link - Type: Repeater Rptr: DB0ERK C Refl: DCS001 C Dir: Outgoing
-	    if(preg_match_all('/^(.{19}).*(D[A-Za-z]*).*Type: ([A-Za-z]*).*Rptr: (.{8}).*Refl: (.{8}).*Dir: (.{8})/',$linkLine,$linx) > 0){
-		$linkDate	= $linx[1][0];
-		$protocol	= $linx[2][0];
-		$linkType	= $linx[3][0];
-		$linkSource	= $linx[4][0];
-		$linkDest	= $linx[5][0];
-		$linkDir	= $linx[6][0];
-		if ($linkSource != $dstarCallsign) {
-		    $linkDate	= "&nbsp;";
-		    $protocol	= "&nbsp;";
-		    $linkType	= "&nbsp;";
-		    $linkSource	= "&nbsp;";
-		    $linkDest	= "&nbsp;";
-		    $linkDir	= "&nbsp;";
-		}
-	    }
+            // Reflector-Link, sample:
+            // 2011-09-22 02:15:06: DExtra link - Type: Repeater Rptr: DB0LJ    B Refl: XRF023 A Dir: Outgoing
+            // 2012-04-03 08:40:07: DPlus link - Type: Dongle Rptr: DB0ERK B Refl: REF006 D Dir: Outgoing
+            // 2012-04-03 08:40:07: DCS link - Type: Repeater Rptr: DB0ERK C Refl: DCS001 C Dir: Outgoing
+            if(preg_match_all('/^(.{19}).*(D[A-Za-z]*).*Type: ([A-Za-z]*).*Rptr: (.{8}).*Refl: (.{8}).*Dir: (.{8})/',$linkLine,$linx) > 0){
+                $linkDate       = $linx[1][0];
+                $protocol       = $linx[2][0];
+                $linkType       = $linx[3][0];
+                $linkSource     = $linx[4][0];
+                $linkDest       = $linx[5][0];
+                $linkDir        = $linx[6][0];
+                if ($linkSource != $dstarCallsign) {
+                    $linkDate   = "&nbsp;";
+                    $protocol   = "&nbsp;";
+                    $linkType   = "&nbsp;";
+                    $linkSource = "&nbsp;";
+                    $linkDest   = "&nbsp;";
+                    $linkDir    = "&nbsp;";
+                }
+            }
 
-	    // CCS-Link, sample:
-	    // 2013-03-30 23:21:53: CCS link - Rptr: PE1AGO C Remote: PE1KZU	Dir: Incoming
-	    if(preg_match_all('/^(.{19}).*(CC[A-Za-z]*).*Rptr: (.{8}).*Remote: (.{8}).*Dir: (.{8})/',$linkLine,$linx) > 0){
-		$linkDate	= $linx[1][0];
-		$protocol	= $linx[2][0];
-		$linkType	= $linx[2][0];
-		$linkSource	= $linx[3][0];
-		$linkDest	= $linx[4][0];
-		$linkDir	= $linx[5][0];
-	    }
+            // CCS-Link, sample:
+            // 2013-03-30 23:21:53: CCS link - Rptr: PE1AGO C Remote: PE1KZU    Dir: Incoming
+            if(preg_match_all('/^(.{19}).*(CC[A-Za-z]*).*Rptr: (.{8}).*Remote: (.{8}).*Dir: (.{8})/',$linkLine,$linx) > 0){
+                $linkDate       = $linx[1][0];
+                $protocol       = $linx[2][0];
+                $linkType       = $linx[2][0];
+                $linkSource     = $linx[3][0];
+                $linkDest       = $linx[4][0];
+                $linkDir        = $linx[5][0];
+            }
 
-	    // Dongle-Link, sample: 
-	    // 2011-09-24 07:26:59: DPlus link - Type: Dongle User: DC1PIA	Dir: Incoming
-	    // 2012-03-14 21:32:18: DPlus link - Type: Dongle User: DC1PIA Dir: Incoming
-	    if(preg_match_all('/^(.{19}).*(D[A-Za-z]*).*Type: ([A-Za-z]*).*User: (.{6,8}).*Dir: (.*)$/',$linkLine,$linx) > 0){
-		$linkDate	= $linx[1][0];
-		$protocol	= $linx[2][0];
-		$linkType	= $linx[3][0];
-		$linkSource	= "&nbsp;";
-		$linkDest	= $linx[4][0];
-		$linkDir	= $linx[5][0];
-	    }
+            // Dongle-Link, sample: 
+            // 2011-09-24 07:26:59: DPlus link - Type: Dongle User: DC1PIA      Dir: Incoming
+            // 2012-03-14 21:32:18: DPlus link - Type: Dongle User: DC1PIA Dir: Incoming
+            if(preg_match_all('/^(.{19}).*(D[A-Za-z]*).*Type: ([A-Za-z]*).*User: (.{6,8}).*Dir: (.*)$/',$linkLine,$linx) > 0){
+                $linkDate       = $linx[1][0];
+                $protocol       = $linx[2][0];
+                $linkType       = $linx[3][0];
+                $linkSource     = "&nbsp;";
+                $linkDest       = $linx[4][0];
+                $linkDir        = $linx[5][0];
+            }
 
-	    if (strtolower(substr($linkDir, 0, 2)) == "in") { $linkDir = "Incoming"; }
-	    if (strtolower(substr($linkDir, 0, 3)) == "out") { $linkDir = "Outgoing"; }
-	    $out = $linkDest. " (" .$protocol ."/" .$linkDir. ")";
+            if (strtolower(substr($linkDir, 0, 2)) == "in") { $linkDir = "Incoming"; }
+            if (strtolower(substr($linkDir, 0, 3)) == "out") { $linkDir = "Outgoing"; }
+            $out = $linkDest. " (" .$protocol ."/" .$linkDir. ")";
 
-	}
+        }
     }
     fclose($linkLog);
     return $out;
@@ -1467,73 +1467,73 @@ function getDSTARLinks() {
 // returns actual link state of specific mode
 function getActualLink($logLines, $mode) {
     switch ($mode) {
-	case "D-Star":
-	    //M: 2016-05-02 07:04:10.504 D-Star link status set to "Verlinkt zu DCS002 S"
-    	    if (isProcessRunning("ircddbgatewayd")) {
-		return getDSTARLinks();
-    	    } 
-	    else {
-    		return "<div class='inactive-mode-cell'>Service Not Started</div>";
-    	    }
-            break;
-
-	case "YSF":
-	    // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
-	    // 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
-	    // M: 0000-00-00 00:00:00.000 Connect to 62829 has been requested by M1ABC
-	    // M: 0000-00-00 00:00:00.000 Automatic connection to 62829
-	    // New YSFGateway Format
-	    // M: 0000-00-00 00:00:00.000 Opening YSF network connection
-	    // M: 0000-00-00 00:00:00.000 Automatic (re-)connection to 16710 - "GB SOUTH WEST   "
-	    // M: 0000-00-00 00:00:00.000 Automatic (re-)connection to FCS00290
-	    // M: 0000-00-00 00:00:00.000 Linked to GB SOUTH WEST   
-	    // M: 0000-00-00 00:00:00.000 Linked to FCS002-90
-	    // M: 0000-00-00 00:00:00.000 Disconnect via DTMF has been requested by M1ABC
-	    // M: 0000-00-00 00:00:00.000 Connect to 00003 - "YSF2NXDN        " has been requested by M1ABC
-	    // M: 0000-00-00 00:00:00.000 Link has failed, polls lost
-	    // M: 2023-09-30 15:08:05.143 Closing YSF network connection
-	    if (isProcessRunning("YSFGateway")) {
-		$to = "";
-		foreach($logLines as $logLine) {
-		    if ( (strpos($logLine,"Linked to")) && (!strpos($logLine,"Linked to MMDVM")) ) {
-			$to = trim(substr($logLine, 37, 16));
-			if (substr($to, 0, 3) === "FCS") {
-			    $to = str_replace(' ', '', str_replace('-', '', $to));
-			}
-		    }
-		    else if (strpos($logLine,"Automatic (re-)connection to")) {
-			if (strpos($logLine,"Automatic (re-)connection to FCS")) {
-			    $to = substr($logLine, 56, 8);
-			} else {
-			    $to = substr($logLine, 56, 5);
-			}
-		    } else if (strpos($logLine,"Connect to")) {
-			$to = substr($logLine, 38, 5);
-		    }  else if (strpos($logLine,"Automatic connection to")) {
-			$to = substr($logLine, 51, 5);
-		    }  else if (strpos($logLine,"Disconnect via DTMF")) {
-			$to = "Not Linked";
-		    }  else if (strpos($logLine,"Opening YSF network connection")) {
-			$to = "Not Linked";
-		    }  else if (strpos($logLine,"Link has failed")) {
-			$to = "Not Linked";
-		    }  else if (strpos($logLine,"Closing YSF network connection")) {
-			$to = "Not Linked";
-		    }  else if (strpos($logLine,"DISCONNECT Reply")) {
-			$to = "Not Linked";
-		    }
-		    if ($to !== "") {
-			return $to;
-		    }
-		}
-		return "Not Linked";
+        case "D-Star":
+            //M: 2016-05-02 07:04:10.504 D-Star link status set to "Verlinkt zu DCS002 S"
+            if (isProcessRunning("ircddbgatewayd")) {
+                return getDSTARLinks();
             } 
-	    else {
-		return "Service Not Started";
+            else {
+                return "<div class='inactive-mode-cell'>Service Not Started</div>";
             }
             break;
-	    
-	case "NXDN":
+
+        case "YSF":
+            // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
+            // 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
+            // M: 0000-00-00 00:00:00.000 Connect to 62829 has been requested by M1ABC
+            // M: 0000-00-00 00:00:00.000 Automatic connection to 62829
+            // New YSFGateway Format
+            // M: 0000-00-00 00:00:00.000 Opening YSF network connection
+            // M: 0000-00-00 00:00:00.000 Automatic (re-)connection to 16710 - "GB SOUTH WEST   "
+            // M: 0000-00-00 00:00:00.000 Automatic (re-)connection to FCS00290
+            // M: 0000-00-00 00:00:00.000 Linked to GB SOUTH WEST   
+            // M: 0000-00-00 00:00:00.000 Linked to FCS002-90
+            // M: 0000-00-00 00:00:00.000 Disconnect via DTMF has been requested by M1ABC
+            // M: 0000-00-00 00:00:00.000 Connect to 00003 - "YSF2NXDN        " has been requested by M1ABC
+            // M: 0000-00-00 00:00:00.000 Link has failed, polls lost
+            // M: 2023-09-30 15:08:05.143 Closing YSF network connection
+            if (isProcessRunning("YSFGateway")) {
+                $to = "";
+                foreach($logLines as $logLine) {
+                    if ( (strpos($logLine,"Linked to")) && (!strpos($logLine,"Linked to MMDVM")) ) {
+                        $to = trim(substr($logLine, 37, 16));
+                        if (substr($to, 0, 3) === "FCS") {
+                            $to = str_replace(' ', '', str_replace('-', '', $to));
+                        }
+                    }
+                    else if (strpos($logLine,"Automatic (re-)connection to")) {
+                        if (strpos($logLine,"Automatic (re-)connection to FCS")) {
+                            $to = substr($logLine, 56, 8);
+                        } else {
+                            $to = substr($logLine, 56, 5);
+                        }
+                    } else if (strpos($logLine,"Connect to")) {
+                        $to = substr($logLine, 38, 5);
+                    }  else if (strpos($logLine,"Automatic connection to")) {
+                        $to = substr($logLine, 51, 5);
+                    }  else if (strpos($logLine,"Disconnect via DTMF")) {
+                        $to = "Not Linked";
+                    }  else if (strpos($logLine,"Opening YSF network connection")) {
+                        $to = "Not Linked";
+                    }  else if (strpos($logLine,"Link has failed")) {
+                        $to = "Not Linked";
+                    }  else if (strpos($logLine,"Closing YSF network connection")) {
+                        $to = "Not Linked";
+                    }  else if (strpos($logLine,"DISCONNECT Reply")) {
+                        $to = "Not Linked";
+                    }
+                    if ($to !== "") {
+                        return $to;
+                    }
+                }
+                return "Not Linked";
+            } 
+            else {
+                return "Service Not Started";
+            }
+            break;
+            
+        case "NXDN":
             // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
             // 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
             // 2000-01-01 00:00:00.000 Linked at startup to reflector 65000
@@ -1591,46 +1591,46 @@ function getActualLink($logLines, $mode) {
                 }
                 return "Not Linked";
             }
-	    else {
-		return "<div class='inactive-mode-cell'>Service Not Started</div>";
+            else {
+                return "<div class='inactive-mode-cell'>Service Not Started</div>";
             }
             break;
 
     case "M17":
             if (isProcessRunning("M17Gateway")) {
-		foreach($logLines as $logLine) {
-		    if(preg_match_all('/Linked to ((M17|URF)-.{3} [A-Z])/', $logLine, $linx) > 0) {
-			return $linx[1][0];
-		    }
-		    else if (strpos($logLine, "Switched to reflector")) {
-			return (substr($logLine, 46, 9));
-		    }
-		    else if (strpos($logLine, "Linking to reflector")) {
-			return (substr($logLine, 45, 9));
-		    }
+                foreach($logLines as $logLine) {
+                    if(preg_match_all('/Linked to ((M17|URF)-.{3} [A-Z])/', $logLine, $linx) > 0) {
+                        return $linx[1][0];
+                    }
+                    else if (strpos($logLine, "Switched to reflector")) {
+                        return (substr($logLine, 46, 9));
+                    }
+                    else if (strpos($logLine, "Linking to reflector")) {
+                        return (substr($logLine, 45, 9));
+                    }
                     else if (strpos($logLine, "Relinked from  to")) {
                         return (substr($logLine, 41, 10));
                     }
-		    else if (strpos($logLine, "Relinked from")) {
-			return (substr($logLine, 51, 9));
-		    }
-		    else if (strpos($logLine, "Relinking to reflector")) {
-			return (substr($logLine, 47, 9));
-		    }
-		    else if (strpos($logLine,"is starting") || strpos($logLine,"Unlinking") || strpos($logLine,"Unlinked")) {
-			return "Not Linked";
-		    }
-		}
-		return "Not Linked";
+                    else if (strpos($logLine, "Relinked from")) {
+                        return (substr($logLine, 51, 9));
+                    }
+                    else if (strpos($logLine, "Relinking to reflector")) {
+                        return (substr($logLine, 47, 9));
+                    }
+                    else if (strpos($logLine,"is starting") || strpos($logLine,"Unlinking") || strpos($logLine,"Unlinked")) {
+                        return "Not Linked";
+                    }
+                }
+                return "Not Linked";
             }
-	    else {
-		return "<div class='inactive-mode-cell'>Service Not Started</div>";
+            else {
+                return "<div class='inactive-mode-cell'>Service Not Started</div>";
             }
-	    break;
+            break;
  
-	case "P25":
-	// 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
-	// 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
+        case "P25":
+        // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
+        // 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
         // 2020-11-04 08:40:35.499 Statically linked to reflector 10100
         // 2020-11-04 08:40:35.499 Switched to reflector 10100 due to network activity
         // 2020-11-04 08:40:35.499 Switched to reflector 10100 due to RF activity from M1ABC
@@ -1638,9 +1638,9 @@ function getActualLink($logLines, $mode) {
         // 2020-11-04 08:40:35.499 Unlinking from 10100 due to inactivity
         // 2020-11-04 08:40:35.499 Unlinking from reflector 10100 by M1ABC
         // 2020-11-04 08:40:35.499 Unlinked from reflector 10100 by remote command
-	    if (isProcessRunning("P25Gateway")) {
-		foreach ( array_reverse($logLines) as $logLine ) {
-		    $to = "";
+            if (isProcessRunning("P25Gateway")) {
+                foreach ( array_reverse($logLines) as $logLine ) {
+                    $to = "";
                     if (strpos($logLine,"Statically linked to")) {
                         $to = preg_replace('/[^0-9]/', '', substr($logLine, 55, 5));
                         $to = preg_replace('/[^0-9]/', '', $to);
@@ -1648,307 +1648,307 @@ function getActualLink($logLines, $mode) {
                         $num = fwrite($p25cache,$to);
                         fclose($p25cache);
                         return "TG".$to;
-		    } else
-		    if (strpos($logLine,"Switched to reflector")) {
-		    	$to = preg_replace('/[^0-9]/', '', substr($logLine, 46, 5));
-		    	$to = preg_replace('/[^0-9]/', '', $to);
-		    	$p25cache = fopen("/tmp/P25Link.txt", "w");
-		    	$num = fwrite($p25cache,$to);
-		    	fclose($p25cache);
-		    	return "TG".$to;
-		    } else
-		    if (strpos($logLine,"Starting P25Gateway")) {
-		    	return "Not Linked";
-		    } else
-		    if (strpos($logLine,"Unlinking")) {
-		    	return "Not Linked";
-		    } else
-		    if (strpos($logLine,"Unlinked")) {
-		    	$num = 0;
-		    	$p25cache = fopen("/tmp/P25Link.txt", "w");
-		    	$num = fwrite($p25cache,"Not Linked");
-		    	fclose($p25cache);
-		    	return "Not Linked";
-		    } else 
-		    if(!file_exists("/tmp/P25Link.txt")) {
-		    	return "Not Linked";
-		    } else {
-			$to = file_get_contents("/tmp/P25Link.txt");
-			return "TG".$to;
-		    }
-		}
-	    } else {
-		return "<div class='inactive-mode-cell'>Service Not Started</div>";
-	    }
-	    break;
+                    } else
+                    if (strpos($logLine,"Switched to reflector")) {
+                        $to = preg_replace('/[^0-9]/', '', substr($logLine, 46, 5));
+                        $to = preg_replace('/[^0-9]/', '', $to);
+                        $p25cache = fopen("/tmp/P25Link.txt", "w");
+                        $num = fwrite($p25cache,$to);
+                        fclose($p25cache);
+                        return "TG".$to;
+                    } else
+                    if (strpos($logLine,"Starting P25Gateway")) {
+                        return "Not Linked";
+                    } else
+                    if (strpos($logLine,"Unlinking")) {
+                        return "Not Linked";
+                    } else
+                    if (strpos($logLine,"Unlinked")) {
+                        $num = 0;
+                        $p25cache = fopen("/tmp/P25Link.txt", "w");
+                        $num = fwrite($p25cache,"Not Linked");
+                        fclose($p25cache);
+                        return "Not Linked";
+                    } else 
+                    if(!file_exists("/tmp/P25Link.txt")) {
+                        return "Not Linked";
+                    } else {
+                        $to = file_get_contents("/tmp/P25Link.txt");
+                        return "TG".$to;
+                    }
+                }
+            } else {
+                return "<div class='inactive-mode-cell'>Service Not Started</div>";
+            }
+            break;
         }
 }
 
 function decodeAlias($logLine) {
-  if (substr($logLine, 34, 2) !=="04")
-    $tok1 = encode(substr($logLine, 40, 2));
-  else
-  $tok1 = "";
-  $tok2 = encode(substr($logLine, 43, 2));
-  $tok3 = encode(substr($logLine, 46, 2));
-  $tok4 = encode(substr($logLine, 49, 2));
-  $tok5 = encode(substr($logLine, 52, 2));
-  $tok6 = encode(substr($logLine, 55, 2));
-  $tok7 = encode(substr($logLine, 58, 2));
-  return $tok1.$tok2.$tok3.$tok4.$tok5.$tok6.$tok7;
+    if (substr($logLine, 34, 2) !=="04")
+        $tok1 = encode(substr($logLine, 40, 2));
+    else
+        $tok1 = "";
+    $tok2 = encode(substr($logLine, 43, 2));
+    $tok3 = encode(substr($logLine, 46, 2));
+    $tok4 = encode(substr($logLine, 49, 2));
+    $tok5 = encode(substr($logLine, 52, 2));
+    $tok6 = encode(substr($logLine, 55, 2));
+    $tok7 = encode(substr($logLine, 58, 2));
+    return $tok1.$tok2.$tok3.$tok4.$tok5.$tok6.$tok7;
 }
 
 function tgLookup($mode, $target) {
     if (strlen($target) >= 2) {
-	if (strpos($mode, 'DMR') !== false) {
-		if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "1" || $_SESSION['DMRGatewayConfigs']['General']['Primary'] == "") {
-			if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
-			$target_offset = (int) $target - 2000000;
-			} else {
-				$target_offset = $target;
-			}
-	 	} else if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "2") {
-			if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
-				$target_offset = (int) $target - 2000000;
-			} else if (substr( $target, 0, 1 ) == "8" && strlen($target) >= 7) {
-				$target_offset = $target;
-			} else {
-				if ($target < 1000000) {
-					$target_offset = 8000000 + (int) $target;
-				} else {
-					$target_offset = $target;
-				}
-			}
-		} else if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "3") {
-			if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
-				$target_offset = (int) $target - 2000000;
-			} else if (substr( $target, 0, 1 ) == "4" && strlen($target) >= 7) {
-				$target_offset = $target;
-			} else {
-				if ($target < 1000000) {
-					$target_offset = 4000000 + (int) $target;
-				} else {
-					$target_offset = $target;
-				}
-			}
-		} else if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "4") {
-			if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
-				$target_offset = (int) $target - 2000000;
-			} else if (substr( $target, 0, 1 ) == "5" && strlen($target) >= 7) {
-				$target_offset = $target;
-			} else {
-				if ($target < 1000000) {
-					$target_offset = 5000000 + (int) $target;
-				} else {
-					$target_offset = $target;
-				}
-			}
-		}
-
-	    if ($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'] == "1" && strlen($target_offset) >= 7 && substr( $target_offset, 0, 1 ) === "5" && $_SESSION['DMRGatewayConfigs']['DMR Network 4']['Name'] == "TGIF_Network") {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_TGIF.txt | awk -F';' '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "4") {
-				$target_local = " TG " . ((int) $target_offset - 5000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(TGIF:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(TGIF:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && $_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'] == "DMR+_IPSC2-FreeSTAR") {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_FreeStarIPSC.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-				$target_local = " TG " . ((int) $target_offset - 8000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(FreeSTAR:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(FreeSTAR:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "4" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Name'], "SystemX")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_SystemX.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "3") {
-				$target_local = " TG " . ((int) $target_offset - 4000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(SystemX:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(SystemX:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FreeDMR")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_FreeDMR.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-				$target_local = " TG " . ((int) $target_offset - 8000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(FreeDMR:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(FreeDMR:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-        } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FD_ADN_")) {
-            $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_ADN.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-            if (!empty($target_lookup)) {
-                if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-                    $target_local = " TG " . ((int) $target_offset - 8000000);
+        if (strpos($mode, 'DMR') !== false) {
+            if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "1" || $_SESSION['DMRGatewayConfigs']['General']['Primary'] == "") {
+                if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
+                    $target_offset = (int) $target - 2000000;
                 } else {
-                    $target_local = "";
+                    $target_offset = $target;
                 }
-                if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-                    $target = "TG $target <span style='float:right;' class='noMob'>(ADN:$target_local $target_lookup)</span>";
+            } else if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "2") {
+                if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
+                    $target_offset = (int) $target - 2000000;
+                } else if (substr( $target, 0, 1 ) == "8" && strlen($target) >= 7) {
+                    $target_offset = $target;
                 } else {
-                    $target = "TG $target <span class='noMob'>(ADN:$target_local $target_lookup)</span>";
+                    if ($target < 1000000) {
+                        $target_offset = 8000000 + (int) $target;
+                    } else {
+                        $target_offset = $target;
+                    }
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "3") {
+                if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
+                    $target_offset = (int) $target - 2000000;
+                } else if (substr( $target, 0, 1 ) == "4" && strlen($target) >= 7) {
+                    $target_offset = $target;
+                } else {
+                    if ($target < 1000000) {
+                        $target_offset = 4000000 + (int) $target;
+                    } else {
+                        $target_offset = $target;
+                    }
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] == "4") {
+                if (substr( $target, 0, 1 ) == "2" && strlen($target) >= 7) {
+                    $target_offset = (int) $target - 2000000;
+                } else if (substr( $target, 0, 1 ) == "5" && strlen($target) >= 7) {
+                    $target_offset = $target;
+                } else {
+                    if ($target < 1000000) {
+                        $target_offset = 5000000 + (int) $target;
+                    } else {
+                        $target_offset = $target;
+                    }
+                }
+            }
+
+            if ($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'] == "1" && strlen($target_offset) >= 7 && substr( $target_offset, 0, 1 ) === "5" && $_SESSION['DMRGatewayConfigs']['DMR Network 4']['Name'] == "TGIF_Network") {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_TGIF.txt | awk -F';' '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "4") {
+                        $target_local = " TG " . ((int) $target_offset - 5000000);
+                    } else {
+                        $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(TGIF:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(TGIF:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && $_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'] == "DMR+_IPSC2-FreeSTAR") {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_FreeStarIPSC.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                        $target_local = " TG " . ((int) $target_offset - 8000000);
+                    } else {
+                        $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(FreeSTAR:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(FreeSTAR:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "4" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Name'], "SystemX")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_SystemX.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "3") {
+                        $target_local = " TG " . ((int) $target_offset - 4000000);
+                    } else {
+                        $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(SystemX:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(SystemX:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FreeDMR")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_FreeDMR.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                        $target_local = " TG " . ((int) $target_offset - 8000000);
+                    } else {
+                        $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(FreeDMR:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(FreeDMR:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FD_ADN_")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_ADN.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                        $target_local = " TG " . ((int) $target_offset - 8000000);
+                    } else {
+                        $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(ADN:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(ADN:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) == "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "DMR+_IPSC2")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_DMRp.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                            $target_local = " TG " . ((int) $target_offset - 8000000);
+                    } else {
+                            $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(DMR+:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(DMR+:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "HB_US_Quadnet")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_QuadNet.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                            $target_local = " TG " . ((int) $target_offset - 8000000);
+                    } else {
+                            $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(QuadNet:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(QuadNet:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FD_AmComm")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_AmComm.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                            $target_local = " TG " . ((int) $target_offset - 8000000);
+                    } else {
+                            $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(AmComm:$target_local $target_lookup)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(AmComm:$target_local $target_lookup)</span>";
+                    }
+                } else {
+                    $target = "TG $target";
+                }
+            } else if (strlen($target) >= 6 && substr( $target, 0, 1 ) === "7" && $_SESSION['DMRGatewayConfigs']['DMR Network 3']['Enabled'] == "1") {
+                if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name'] == "DMR2YSF_Cross-Mode") {
+                    $target_offset = substr( $target, 2, 5);
+                    $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/YSFHosts.txt | awk -F';' '{print $2}' | head -1 | tr -d '\"'");
+                    if (!empty($target_lookup)) {
+                        if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
+                                $target_local = " $target_offset $target_lookup";
+                        } else {
+                                $target_local = "";
+                        }
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(DMR2YSF: $target_local)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(DMR2YSF: $target_local)</span>";
+                    }
+                } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name'] == "DMR2NXDN_Cross-Mode") {
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = "TG $target <span style='float:right;' class='noMob'>(DMR2NXDN)</span>";
+                    } else {
+                        $target = "TG $target <span class='noMob'>(DMR2NXDN)</span>";
+                    }
+                }
+            } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] == "1" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Name'], "BM")) {
+                $target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/groups.txt | awk -F, '{print $1}' | head -1 | tr -d '\"'");
+                if (!empty($target_lookup)) {
+                    // $target = $target_lookup;
+                    if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "1") {
+                            $target_local = " TG $target_offset";
+                    } else {
+                            $target_local = "";
+                    }
+                    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                        $target = $target . " " . str_replace($target_offset . ": ", " <span style='float:right;' class='noMob'>(BM:$target_local ", $target_lookup.")</span>");
+                    } else {
+                        $target = $target . " " . str_replace($target_offset . ": ", " <span class='noMob'>(BM:$target_local ", $target_lookup.")</span>");
+                    }
+                    $target = "TG $target";
+                } else {
+                    $target = "TG $target";
+                }
+            } else { // nothing found in any DMR list/network - return TG # only
+                $target = "TG $target";
+            }
+        } else if (strpos($mode, 'NXDN') !== false) {
+            $target_lookup = exec("grep -w \"$target\" /usr/local/etc/TGList_NXDN.txt | awk -F';' '{print $2}'");
+            if (!empty($target_lookup)) {
+                if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                    $target = "TG $target <span style='float:right;' class='noMob'>($target_lookup)</span>";
+                } else {
+                    $target = "TG $target <span class='noMob'>($target_lookup)</span>";
                 }
             } else {
                 $target = "TG $target";
             }
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) == "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "DMR+_IPSC2")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_DMRp.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-				$target_local = " TG " . ((int) $target_offset - 8000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(DMR+:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(DMR+:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "HB_US_Quadnet")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_QuadNet.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-				$target_local = " TG " . ((int) $target_offset - 8000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(QuadNet:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(QuadNet:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1" && strlen($target_offset) >= 6 && substr( $target_offset, 0, 1 ) === "8" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'], "FD_AmComm")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/TGList_AmComm.txt | awk -F, '{print $2}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-				$target_local = " TG " . ((int) $target_offset - 8000000);
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(AmComm:$target_local $target_lookup)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(AmComm:$target_local $target_lookup)</span>";
-		    }
-		} else {
-		    $target = "TG $target";
-		}
-	    } else if (strlen($target) >= 6 && substr( $target, 0, 1 ) === "7" && $_SESSION['DMRGatewayConfigs']['DMR Network 3']['Enabled'] == "1") {                             
-		if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name'] == "DMR2YSF_Cross-Mode") {    
-			$target_offset = substr( $target, 2, 5);
-			$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/YSFHosts.txt | awk -F';' '{print $2}' | head -1 | tr -d '\"'");
-			if (!empty($target_lookup)) {
-				if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "2") {
-					$target_local = " $target_offset $target_lookup";
-				} else {
-					$target_local = "";
-				}
-			}																			 
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(DMR2YSF: $target_local)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(DMR2YSF: $target_local)</span>";
-		    }
-		} else if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name'] == "DMR2NXDN_Cross-Mode") {                                                                     
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = "TG $target <span style='float:right;' class='noMob'>(DMR2NXDN)</span>";
-		    } else {
-		    	$target = "TG $target <span class='noMob'>(DMR2NXDN)</span>";
-		    }
-		}
-	    } else if ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] == "1" && startsWith($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Name'], "BM")) {
-		$target_lookup = exec("grep -w \"$target_offset\" /usr/local/etc/groups.txt | awk -F, '{print $1}' | head -1 | tr -d '\"'");
-		if (!empty($target_lookup)) {
-		    // $target = $target_lookup;
-			if ($_SESSION['DMRGatewayConfigs']['General']['Primary'] != "1") {
-				$target_local = " TG $target_offset";
-			} else {
-				$target_local = "";
-			}
-		    if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-		    	$target = $target . " " . str_replace($target_offset . ": ", " <span style='float:right;' class='noMob'>(BM:$target_local ", $target_lookup.")</span>");
-		    } else {
-		    	$target = $target . " " . str_replace($target_offset . ": ", " <span class='noMob'>(BM:$target_local ", $target_lookup.")</span>");
-		    }
-		    $target = "TG $target";
-		} else {
-		    $target = "TG $target";
-		}
-	    } else { // nothing found in any DMR list/network - return TG # only
-		$target = "TG $target";
-	    }
-	} else if (strpos($mode, 'NXDN') !== false) {
-	    $target_lookup = exec("grep -w \"$target\" /usr/local/etc/TGList_NXDN.txt | awk -F';' '{print $2}'");
-	    if (!empty($target_lookup)) {
-		if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-	    	    $target = "TG $target <span style='float:right;' class='noMob'>($target_lookup)</span>";
-		} else {
-	    	    $target = "TG $target <span class='noMob'>($target_lookup)</span>";
-		}
-	    } else {
-		$target = "TG $target";
-	    }
-	} else if (strpos($mode, 'P25') !== false) {
-	    $target_lookup = exec("grep -w \"$target\" /usr/local/etc/TGList_P25.txt | awk -F';' '{print $2}'");
-	    if (!empty($target_lookup)) {
-		if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
-	    	    $target = "TG $target <span style='float:right;' class='noMob'>($target_lookup)</span>";
-		} else {
-	    	    $target = "TG $target <span class='noMob'>($target_lookup)</span>";
-		}
-	    } else {
-		$target = "TG $target";
-	    }
-	} else { // nothing found in any mode - return TG # only
-	    $target = $target;
-	}
+        } else if (strpos($mode, 'P25') !== false) {
+            $target_lookup = exec("grep -w \"$target\" /usr/local/etc/TGList_P25.txt | awk -F';' '{print $2}'");
+            if (!empty($target_lookup)) {
+                if (strpos($_SERVER["PHP_SELF"], 'last_heard_table.php') || strpos($_SERVER["PHP_SELF"], 'local_tx_table.php') !== false) {
+                    $target = "TG $target <span style='float:right;' class='noMob'>($target_lookup)</span>";
+                } else {
+                    $target = "TG $target <span class='noMob'>($target_lookup)</span>";
+                }
+            } else {
+                $target = "TG $target";
+            }
+        } else { // nothing found in any mode - return TG # only
+            $target = $target;
+        }
     } else {  // ID is <= 2 digits; no lookups - return TG # only
-	$modeArray = array('DMR', 'NXDN', 'P25');
-	if (strpos($mode, $modeArray[0]) !== false) {
-	    $target = "TG $target";
-    	} else {
-	    $target = $target;
-	}
+        $modeArray = array('DMR', 'NXDN', 'P25');
+        if (strpos($mode, $modeArray[0]) !== false) {
+            $target = "TG $target";
+        } else {
+            $target = $target;
+        }
     }
     return $target;
 }
@@ -1975,11 +1975,11 @@ function getName($callsign) {
     $fp = fsockopen('ssl://callook.info', '443', $errno, $errstr, 2);
     if ($fp) {
         $options = array(
-                'http'=>array(
-                    'method'=>"GET",
-                    'header'=>"Accept-language: en\r\n" .
-                               "User-Agent: WPSD; Name Lookup Function - <https://wpsd.radio>\r\n"
-                )
+            'http'=>array(
+                'method'=>"GET",
+                'header'=>"Accept-language: en\r\n" .
+                          "User-Agent: WPSD; Name Lookup Function - <https://wpsd.radio>\r\n"
+            )
         );
         $context = stream_context_create($options);
         $api_data = file_get_contents($cl_api, false, $context);
@@ -1994,7 +1994,7 @@ function getName($callsign) {
             }
             $name = ucwords(strtolower($name)); // name result is all UPPER. Convert to Camel Case.
         }
-	// now actaully write the result/non-result to cache..
+        // now actaully write the result/non-result to cache..
         $fp = fopen($TMP_CALL_NAME .'.TMP', 'a');
         $TMP_STRING = $callsign .' '  .$name;
         fwrite($fp, $TMP_STRING.PHP_EOL);
@@ -2011,23 +2011,23 @@ if (!in_array($_SERVER["PHP_SELF"],array('/mmdvmhost/bm_links.php','/mmdvmhost/b
     $reverseLogLinesMMDVM = $logLinesMMDVM;
     array_multisort($reverseLogLinesMMDVM,SORT_DESC);
     $lastHeard = getLastHeard($reverseLogLinesMMDVM);
-    
+
     // Only need these in repeaterinfo.php
     if (strpos($_SERVER["PHP_SELF"], 'repeaterinfo.php') !== false || strpos($_SERVER["PHP_SELF"], 'index.php') !== false) {
-	$logLinesYSFGateway = getYSFGatewayLog();
-	$reverseLogLinesYSFGateway = $logLinesYSFGateway;
-	array_multisort($reverseLogLinesYSFGateway,SORT_DESC);
-	$logLinesP25Gateway = getP25GatewayLog();
-	$logLinesNXDNGateway = getNXDNGatewayLog();
-	$logLinesM17Gateway = getM17GatewayLog();
-	$reverseLogLinesM17Gateway = $logLinesM17Gateway;
-	array_multisort($reverseLogLinesM17Gateway,SORT_DESC);
+        $logLinesYSFGateway = getYSFGatewayLog();
+        $reverseLogLinesYSFGateway = $logLinesYSFGateway;
+        array_multisort($reverseLogLinesYSFGateway,SORT_DESC);
+        $logLinesP25Gateway = getP25GatewayLog();
+        $logLinesNXDNGateway = getNXDNGatewayLog();
+        $logLinesM17Gateway = getM17GatewayLog();
+        $reverseLogLinesM17Gateway = $logLinesM17Gateway;
+        array_multisort($reverseLogLinesM17Gateway,SORT_DESC);
     }
-    
+
     // Only need these in index.php
     if (strpos($_SERVER["PHP_SELF"], 'index.php') !== false || strpos($_SERVER["PHP_SELF"], 'pocsag_table.php') !== false) {
-	// Will separate personal and global messages only in Admin page, if MY_RIC is defined in dapnetapi.key.
+        // Will separate personal and global messages only in Admin page, if MY_RIC is defined in dapnetapi.key.
         $origin = (isset($_GET['origin']) ? $_GET['origin'] : (isset($myOrigin) ? $myOrigin : "unknown"));
-	$logLinesDAPNETGateway = getDAPNETGatewayLog(($origin == "admin" ? (isset($_SESSION['DAPNETAPIKeyConfigs']) ? getConfigItem("DAPNETAPI", "MY_RIC", $_SESSION['DAPNETAPIKeyConfigs']) : null) : null));
+        $logLinesDAPNETGateway = getDAPNETGatewayLog(($origin == "admin" ? (isset($_SESSION['DAPNETAPIKeyConfigs']) ? getConfigItem("DAPNETAPI", "MY_RIC", $_SESSION['DAPNETAPIKeyConfigs']) : null) : null));
     }
 }

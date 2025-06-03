@@ -93,6 +93,8 @@ function checkSessionValidity() {
     loadSessionConfigFile('CSSConfigs', '/etc/wpsd-css.ini');
     loadSessionConfigFile('ModemConfigs', '/etc/dstar-radio.mmdvmhost');
 
+    getDMRNetStatusAliases();
+
     if ( ! isset( $_SESSION['DvModemFWVersion'] ) || ( is_countable( $_SESSION['DvModemFWVersion'] ) && count( $_SESSION['DvModemFWVersion'], COUNT_RECURSIVE ) < 1 ) ) {
         $_SESSION['DvModemFWVersion'] = $_SESSION['WPSDrelease']['WPSD']['ModemFW'];
     }
@@ -100,6 +102,25 @@ function checkSessionValidity() {
         $_SESSION['DvModemTCXOFreq'] = $_SESSION['WPSDrelease']['WPSD']['TCXO'];;
     }
 }
+
+/**
+ * function supports unlimited DMR networks feature.
+ * It creates a map from DMR Gateway config to status name, like:
+ *     'net1' => 'DMR Network 1'
+ *     ....
+ *
+ * input: requires $_SESSION['DMRGatewayConfigs'] is loaded
+ * output: $_SESSION['DMRNetStatusAliases']
+*/
+function getDMRNetStatusAliases() {
+    $dmrNetStatusAliases = [];
+    $netIndex = 1;
+    foreach ($_SESSION['DMRGatewayConfigs'] as $sectionName => $sectionData)
+        if (str_starts_with($sectionName, 'DMR Network'))
+            $dmrNetStatusAliases["net" . ($netIndex++)] = $sectionName;
+    $_SESSION['DMRNetStatusAliases'] = $dmrNetStatusAliases;
+}
+
 
 /**
  * ucwords with support for places with dashes

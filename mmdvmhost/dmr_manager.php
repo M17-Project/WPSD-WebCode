@@ -38,25 +38,12 @@ if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
     // map / get net names & actionsfrom options form
     $selectedNet = $_POST['dmrNet'];
     $state = $_POST['netState'];
-    switch ($selectedNet) {
-        case 'net1':
-            $netName = $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Name'];
-            break;
-        case 'net2':
-            $netName = $_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'];
-            break;
-        case 'net3':
-            $netName = $_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name'];
-            break;
-        case 'net4':
-            $netName = $_SESSION['DMRGatewayConfigs']['DMR Network 4']['Name'];
-            break;
-        case 'net5':
-            $netName = $_SESSION['DMRGatewayConfigs']['DMR Network 5']['Name'];
-            break;
-        case 'xlx':
+
+    if (isset($_SESSION['DMRNetStatusAliases'][$selectedNet])) {
+        $netName = $_SESSION['DMRNetStatusAliases'][$selectedNet];
+    } else {
+        if ($shortName == 'xlx')
             $netName = "XLX-".$_SESSION['DMRGatewayConfigs']['XLX Network']['Startup']."";
-            break;
     }
 
     switch ($state) {
@@ -104,20 +91,10 @@ if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
       <td>
         <select name="dmrNet">
 <?php
-    if ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] == "1") {
-        echo "<option value='net1'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Name'])."</option>";
-    }
-    if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == "1") {
-        echo "<option value='net2'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'])."</option>";
-    }
-    if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Enabled'] == "1") {
-        echo "<option value='net3'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name'])."</option>";
-    }
-    if ($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'] == "1") {
-        echo "<option value='net4'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 4']['Name'])."</option>";
-    }
-    if ($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'] == "1") {
-        echo "<option value='net5'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 5']['Name'])."</option>";
+    foreach ($_SESSION['DMRNetStatusAliases'] as $shortName => $sectionName) {
+        if ($_SESSION['DMRGatewayConfigs'][$sectionName]['Enabled'] == "1") {
+            echo "<option value='" . $shortName ."'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs'][$sectionName]['Name'])."</option>";
+        }
     }
     if ($_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled'] == "1") {
         echo "<option value='xlx'>XLX-".$_SESSION['DMRGatewayConfigs']['XLX Network']['Startup']."</option>";

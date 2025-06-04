@@ -4380,8 +4380,8 @@ if (!empty($_POST)):
 		if (file_exists('/etc/dstar-radio.mmdvmhost')) {
                     if (fopen($modemConfigFileMMDVMHost,'r')) {
                         exec('sudo mv /tmp/sja7hFRkw4euG7.tmp '.$modemConfigFileMMDVMHost);		// Move the file back
-                        exec('sudo chmod 644 $modemConfigFileMMDVMHost');				// Set the correct runtime permissions
-                        exec('sudo chown root:root $modemConfigFileMMDVMHost');				// Set the owner
+                        exec('sudo chmod 644 '.$modemConfigFileMMDVMHost);				// Set the correct runtime permissions
+                        exec('sudo chown root:root '.$modemConfigFileMMDVMHost);				// Set the owner
 			// Vendor-specific hardware/disk images: mark as configured...
 			exec('sudo sed -i "s/NewInstall=1/NewInstall=0/g" '.$modemConfigFileMMDVMHost);			// Vendor-specific HW configured
 			exec("sudo sed -i 's/OnStartupSec=0/OnStartupSec=120/g' /lib/systemd/system/pistar-ap.timer");	// Vendor-specific HW configured

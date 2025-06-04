@@ -4377,7 +4377,7 @@ if (!empty($_POST)):
 	else {
                 $success = fwrite($handleModemConfig, $configModemContent);
                 fclose($handleModemConfig);
-		if (file_exists('/etc/dstar-radio.mmdvmhost')) {
+		if (file_exists($modemConfigFileMMDVMHost)) {
                     if (fopen($modemConfigFileMMDVMHost,'r')) {
                         exec('sudo mv /tmp/sja7hFRkw4euG7.tmp '.$modemConfigFileMMDVMHost);		// Move the file back
                         exec('sudo chmod 644 '.$modemConfigFileMMDVMHost);				// Set the correct runtime permissions

@@ -116,7 +116,7 @@ function getDMRNetStatusAliases() {
     $dmrNetStatusAliases = [];
     $netIndex = 1;
     foreach ($_SESSION['DMRGatewayConfigs'] as $sectionName => $sectionData)
-        if (str_starts_with($sectionName, 'DMR Network'))
+        if (startsWith($sectionName, 'DMR Network'))
             $dmrNetStatusAliases["net" . ($netIndex++)] = $sectionName;
     $_SESSION['DMRNetStatusAliases'] = $dmrNetStatusAliases;
 }

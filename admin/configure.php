@@ -1938,6 +1938,12 @@ if (!empty($is_paused)) {
                 $configdmrgateway['DMR Network 2']['Id'] = $configmmdvm['General']['Id'].$newPostdmrPlusExtendedId;
             }
 
+            // Set Custom network Extended ID
+            if (empty($_POST['custNetExtendedId']) != TRUE ) {
+                $custNetExtendedId = preg_replace('/[^0-9]/', '', $_POST['custNetExtendedId']);
+                $configdmrgateway['DMR Network Custom']['Id'] = $configmmdvm['General']['Id'].$custNetExtendedId;
+            }
+
             // Set SystemX Extended ID
             if (empty($_POST['SystemXExtendedId']) != TRUE ) {
                 $newPostSystemXExtendedId = preg_replace('/[^0-9]/', '', $_POST['SystemXExtendedId']);
@@ -2126,6 +2132,19 @@ if (!empty($is_paused)) {
                 $configdmrgateway['XLX Network 1']['Port'] = $dmrMasterHostArr3[2];
                 $configdmrgateway['XLX Network 1']['Name'] = $dmrMasterHostArr3[3];
                 $configdmrgateway['XLX Network']['Startup'] = substr($dmrMasterHostArr3[3], 4);
+            }
+
+            // Save Custom DMR Network
+            if (!empty($_POST['custNetEnable']) && $_POST['custNetEnable'] == 'ON') {
+                $configdmrgateway['DMR Network Custom']['Enabled'] = '1';
+                $configdmrgateway['DMR Network Custom']['WPSD_AutoRewrites'] =
+                    (isset($_POST['custNetAutoRewrites']) && $_POST['custNetAutoRewrites'] == 'ON')? '1': '0';
+                $configdmrgateway['DMR Network Custom']['Name'] = $_POST['custNetName'];
+                $configdmrgateway['DMR Network Custom']['Address'] = $_POST['custNetAddress'];
+                $configdmrgateway['DMR Network Custom']['Port'] = $_POST['custNetPort'];
+                $configdmrgateway['DMR Network Custom']['Password'] = '"'.$_POST['custNetSecurity'].'"';
+            } else {
+                $configdmrgateway['DMR Network Custom']['Enabled'] = '0';
             }
 
             // XLX StartUp TG
@@ -2890,8 +2909,6 @@ if (!empty($is_paused)) {
             }
 
 
-
-
             if ($dmrMastersUpdateRqd == TRUE) {
                 if ($configdmrgateway['General']['Primary'] == "1" ) {
                     unset ($configdmrgateway['DMR Network 1']['TGRewrite0']);
@@ -2995,6 +3012,57 @@ if (!empty($is_paused)) {
                     $configdmrgateway['DMR Network 2']['SrcRewrite2'] = "2,9990,2,8009990,1";
                     $configdmrgateway['DMR Network 2']['SrcRewrite3'] = "1,1,1,8000001,999999";
                     $configdmrgateway['DMR Network 2']['SrcRewrite4'] = "2,1,2,8000001,999999";
+                }
+
+                // Custom DMR Network rules
+                if ($configdmrgateway['DMR Network Custom']['WPSD_AutoRewrites'] == "1") {
+                    if ($configdmrgateway['General']['Primary'] == "6" ) {
+                        unset ($configdmrgateway['DMR Network Custom']['TGRewrite0']);
+                        unset ($configdmrgateway['DMR Network Custom']['TGRewrite1']);
+                        unset ($configdmrgateway['DMR Network Custom']['TGRewrite2']);
+                        unset ($configdmrgateway['DMR Network Custom']['TGRewrite3']);
+                        unset ($configdmrgateway['DMR Network Custom']['TGRewrite4']);
+                        unset ($configdmrgateway['DMR Network Custom']['PCRewrite0']);
+                        unset ($configdmrgateway['DMR Network Custom']['PCRewrite1']);
+                        unset ($configdmrgateway['DMR Network Custom']['PCRewrite2']);
+                        unset ($configdmrgateway['DMR Network Custom']['PCRewrite3']);
+                        unset ($configdmrgateway['DMR Network Custom']['PCRewrite4']);
+                        unset ($configdmrgateway['DMR Network Custom']['TypeRewrite0']);
+                        unset ($configdmrgateway['DMR Network Custom']['TypeRewrite1']);
+                        unset ($configdmrgateway['DMR Network Custom']['TypeRewrite2']);
+                        unset ($configdmrgateway['DMR Network Custom']['TypeRewrite3']);
+                        unset ($configdmrgateway['DMR Network Custom']['TypeRewrite4']);
+                        unset ($configdmrgateway['DMR Network Custom']['SrcRewrite0']);
+                        unset ($configdmrgateway['DMR Network Custom']['SrcRewrite1']);
+                        unset ($configdmrgateway['DMR Network Custom']['SrcRewrite2']);
+                        unset ($configdmrgateway['DMR Network Custom']['SrcRewrite3']);
+                        unset ($configdmrgateway['DMR Network Custom']['SrcRewrite4']);
+
+                        $configdmrgateway['DMR Network Custom']['TGRewrite0'] = "2,9,2,9,1";
+                        $configdmrgateway['DMR Network Custom']['PCRewrite0'] = "2,94000,2,4000,1001";
+                        $configdmrgateway['DMR Network Custom']['TypeRewrite0'] = "2,9990,2,9990";
+                        $configdmrgateway['DMR Network Custom']['SrcRewrite0'] = "2,4000,2,9,1001";
+                        $configdmrgateway['DMR Network Custom']['PassAllPC0'] = "1";
+                        $configdmrgateway['DMR Network Custom']['PassAllTG0'] = "1";
+                        $configdmrgateway['DMR Network Custom']['PassAllPC1'] = "2";
+                        $configdmrgateway['DMR Network Custom']['PassAllTG1'] = "2";
+                    } else {
+                        unset ($configdmrgateway['DMR Network Custom']['PassAllPC0']);
+                        unset ($configdmrgateway['DMR Network Custom']['PassAllTG0']);
+                        unset ($configdmrgateway['DMR Network Custom']['PassAllPC1']);
+                        unset ($configdmrgateway['DMR Network Custom']['PassAllTG1']);
+
+                        $configdmrgateway['DMR Network Custom']['TGRewrite0'] = "2,11,2,9,1";
+                        $configdmrgateway['DMR Network Custom']['TGRewrite1'] = "1,9000001,1,1,999999";
+                        $configdmrgateway['DMR Network Custom']['TGRewrite2'] = "2,9000001,2,1,999999";
+                        $configdmrgateway['DMR Network Custom']['PCRewrite0'] = "2,94000,2,4000,1001";
+                        $configdmrgateway['DMR Network Custom']['PCRewrite1'] = "1,9000001,1,1,999999";
+                        $configdmrgateway['DMR Network Custom']['PCRewrite2'] = "2,9000001,2,1,999999";
+                        $configdmrgateway['DMR Network Custom']['TypeRewrite1'] = "1,9009990,1,9990";
+                        $configdmrgateway['DMR Network Custom']['TypeRewrite2'] = "2,9009990,2,9990";
+                        $configdmrgateway['DMR Network Custom']['SrcRewrite1'] = "1,1,1,9000001,999999";
+                        $configdmrgateway['DMR Network Custom']['SrcRewrite2'] = "2,1,2,9000001,999999";
+                    }
                 }
 
                 if ($configdmrgateway['General']['Primary'] == "3" ) {
@@ -3296,6 +3364,8 @@ if (!empty($is_paused)) {
             if (!isset($configdmrgateway['DMR Network 1']['Location'])) { $configdmrgateway['DMR Network 1']['Location'] = "1"; }
             if (!isset($configdmrgateway['DMR Network 2']['Location'])) { $configdmrgateway['DMR Network 2']['Location'] = "0"; }
             if (!isset($configdmrgateway['DMR Network 2']['Debug'])) { $configdmrgateway['DMR Network 2']['Debug'] = "0"; }
+            if (!isset($configdmrgateway['DMR Network Custom']['Location'])) { $configdmrgateway['DMR Network Custom']['Location'] = "0"; }
+            if (!isset($configdmrgateway['DMR Network Custom']['Debug'])) { $configdmrgateway['DMR Network Custom']['Debug'] = "0"; }
             if (!isset($configdmrgateway['DMR Network 5']['Location'])) { $configdmrgateway['DMR Network 5']['Location'] = "0"; }
             if (!isset($configdmrgateway['DMR Network 5']['Debug'])) { $configdmrgateway['DMR Network 5']['Debug'] = "0"; }
             if (isset($configdmrgateway['DMR Network 4'])) {
@@ -3303,9 +3373,6 @@ if (!empty($is_paused)) {
             }
             if (isset($configdmrgateway['DMR Network 5'])) {
                 if (!isset($configdmrgateway['DMR Network 5']['Location'])) { $configdmrgateway['DMR Network 5']['Location'] = "0"; }
-            }
-            if (isset($configdmrgateway['DMR Network 6'])) {
-                if (!isset($configdmrgateway['DMR Network 6']['Location'])) { $configdmrgateway['DMR Network 6']['Location'] = "0"; }
             }
             if (!isset($configdmrgateway['GPSD'])) {
                 $configdmrgateway['GPSD']['Enable'] = "0";
@@ -3344,6 +3411,7 @@ if (!empty($is_paused)) {
             if ( isset($configdmrgateway['DMR Network 4']['Options']) &&  substr($configdmrgateway['DMR Network 4']['Options'], 0, 1) !== '"' ) { $configdmrgateway['DMR Network 4']['Options'] = '"'.$configdmrgateway['DMR Network 4']['Options'].'"'; }
             if ( isset($configdmrgateway['DMR Network 5']['Password']) && substr($configdmrgateway['DMR Network 5']['Password'], 0, 1) !== '"' ) { $configdmrgateway['DMR Network 5']['Password'] = '"'.$configdmrgateway['DMR Network 5']['Password'].'"'; }
             if ( isset($configdmrgateway['DMR Network 5']['Options']) &&  substr($configdmrgateway['DMR Network 5']['Options'], 0, 1) !== '"' ) { $configdmrgateway['DMR Network 5']['Options'] = '"'.$configdmrgateway['DMR Network 5']['Options'].'"'; }
+            if ( isset($configdmrgateway['DMR Network Custom']['Password']) && substr($configdmrgateway['DMR Network Custom']['Password'], 0, 1) !== '"' ) { $configdmrgateway['DMR Network Custom']['Password'] = '"'.$configdmrgateway['DMR Network Custom']['Password'].'"'; }
 
             // Add missing values to M17Gateway
             $configm17gateway['General']['RptAddress'] = '127.0.0.1';
@@ -5089,10 +5157,12 @@ document.querySelector('form').addEventListener('submit', function(e) {
     Primary DMR Network:
         <select name="dmrPrimary">
             <option <?php if (($configdmrgateway['General']['Primary'] == "1") || ($configmmdvm['General']['Primary'] == "") ) {echo 'selected="selected" ';}; ?>value="1">Brandmeister</option>
-            <option <?php if (($configdmrgateway['General']['Primary'] == "2") ) {echo 'selected="selected" ';}; ?>value="2">DMR+/FreeDMR/HBlink/Custom Network</option>
+            <option <?php if (($configdmrgateway['General']['Primary'] == "2") ) {echo 'selected="selected" ';}; ?>value="2">DMR+/FreeDMR/HBlink Network</option>
+            <option <?php if (($configdmrgateway['General']['Primary'] == "6") ) {echo 'selected="selected" ';}; ?>value="6">Custom DMR Network</option>
             <option <?php if (($configdmrgateway['General']['Primary'] == "3") ) {echo 'selected="selected" ';}; ?>value="3">SystemX</option>
             <option <?php if (($configdmrgateway['General']['Primary'] == "4") ) {echo 'selected="selected" ';}; ?>value="4">TGIF</option>
         </select>
+        <input type="hidden" name="dmrPrimaryLast" value="<?php echo $configdmrgateway['General']['Primary']?>">
         </td>
     </tr>
 
@@ -6181,14 +6251,14 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
     </td>
     </tr>
 
-    <!--DMR+/FreeDMR/HBlink/Custom Network Settings-->
+    <!--DMR+/FreeDMR/HBlink Network Settings-->
     <tr>
-    <th class='config_head' colspan="4">DMR+/FreeDMR/HBlink/Custom Network Settings</th>
+    <th class='config_head' colspan="4">DMR+/FreeDMR/HBlink Network Settings</th>
     </tr>
     <tr>
     </tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#">DMR+ / FreeDMR / HBlink / Custom Master:<span><b>DMR+ / FreeDMR / HBlink / Custom Master</b>Set your preferred DMR master here</span></a></td>
+    <td align="left"><a class="tooltip2" href="#">DMR+ / FreeDMR / HBlink Master:<span><b>DMR+ / FreeDMR / HBlink Master</b>Set your preferred DMR master here</span></a></td>
     <td style="text-align: left;" colspan="3"><select name="dmrMasterHost2" class="dmrMasterHost2">
 <?php
         $dmrMasterFile2 = fopen("/usr/local/etc/DMR_Hosts.txt", "r");
@@ -6214,13 +6284,13 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
 ?>
     </select></td></tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#">Network Options:<span><b>DMR+ / FreeDMR / HBlink / Custom Network</b>Set your options= for DMR+ / FreeDMR / HBlink / Custom Host here</span></a></td>
+    <td align="left"><a class="tooltip2" href="#">Network Options:<span><b>DMR+ / FreeDMR / HBlink Network</b>Set your options= for DMR+ / FreeDMR / HBlink Host here</span></a></td>
     <td align="left" colspan="3">
     Options=<input type="text" name="dmrNetworkOptions" size="85" maxlength="250" value="<?php if (isset($configdmrgateway['DMR Network 2']['Options'])) { echo $configdmrgateway['DMR Network 2']['Options']; } ?>" />
     </td>
     </tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#">ESSID:<span><b>DMR+ / FreeDMR / HBlink / Custom Host Extended ID</b>This is the extended ID, to make your DMR ID 8 digits long</span></a></td>
+    <td align="left"><a class="tooltip2" href="#">ESSID:<span><b>DMR+ / FreeDMR / HBlink Host Extended ID</b>This is the extended ID, to make your DMR ID 8 digits long</span></a></td>
     <td align="left" colspan="3">
 <?php
         if (isset($configdmrgateway['DMR Network 2']['Id'])) {
@@ -6256,7 +6326,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
 ?>
     </td></tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#">DMR+ / FreeDMR / HBlink / Custom Network Enable:<span><b>DMR+ / FreeDMR / HBlink / Custom Network Enable</b></span></a></td>
+    <td align="left"><a class="tooltip2" href="#">DMR+ / FreeDMR / HBlink Network Enable:<span><b>DMR+ / FreeDMR / HBlink Network Enable</b></span></a></td>
     <td align="left" colspan="2">
     <?php if ($configdmrgateway['DMR Network 2']['Enabled'] == 1) { echo "<div class=\"switch\"><input id=\"toggle-dmrGatewayNet2En\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"dmrGatewayNet2En\" value=\"ON\" checked=\"checked\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleDmrGatewayNet2EnCheckboxCr." /><label id=\"aria-toggle-dmrGatewayNet2En\" role=\"checkbox\" tabindex=\"0\" aria-label=\"Enable DMR+ / FreeDMR / HBlink\" aria-checked=\"true\" onKeyPress=\"toggleDmrGatewayNet2EnCheckbox()\" onclick=\"toggleDmrGatewayNet2EnCheckbox()\" for=\"toggle-dmrGatewayNet2En\"><font style=\"font-size:0px\">Enable DMR+ / FreeDMR / HBlink</font></label></div>\n"; }
     else { echo "<div class=\"switch\"><input id=\"toggle-dmrGatewayNet2En\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"dmrGatewayNet2En\" value=\"ON\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleDmrGatewayNet2EnCheckboxCr." /><label id=\"aria-toggle-dmrGatewayNet2En\" role=\"checkbox\" tabindex=\"0\" aria-label=\"Enable DMR+ / FreeDMR / HBlink\" aria-checked=\"false\" onKeyPress=\"toggleDmrGatewayNet2EnCheckbox()\" onclick=\"toggleDmrGatewayNet2EnCheckbox()\" for=\"toggle-dmrGatewayNet2En\"><font style=\"font-size:0px\">Enable DMR+ / FreeDMR / HBlink</font></label></div>\n"; } ?>
@@ -6270,6 +6340,138 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
         ?>
     </tr>
 
+    <!--Custom Network Settings-->
+    <tr>
+    <th class='config_head' colspan="4">Custom DMR Network Settings</th>
+    </tr>
+
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">
+        Custom DMR Network Enable:
+        <span><b>Custom DMR Network Enable</b></span>
+      </a></td>
+      <td align="left" colspan="3">
+        <?php $custNetEnable = $configdmrgateway['DMR Network Custom']['Enabled'] == 1; ?>
+        <div class="switch">
+          <input id="toggle-custNetEnable" class="toggle toggle-round-flat" type="checkbox" name="custNetEnable" value="ON" <?php echo $custNetEnable? 'checked="checked"': ''?> aria-hidden="true" tabindex="-1" />
+          <label id="aria-toggle-custNetEnable" role="checkbox" tabindex="0" aria-label="Enable Custom Network" aria-checked="<?php echo $custNetEnable? 'true': 'false'?>" for="toggle-custNetEnable"><font style="font-size:0px">Enable Custom Network</font></label>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">
+        Server Name:
+        <span><b>Custom DMR Network Server Name</b>Readable name for this network to show in WPSD dialogs</span>
+      </a></td>
+      <td align="left" colspan="3">
+        <input type="text"
+          name="custNetName" id="custNetName" size="60"
+          value="<?php if (isset($configdmrgateway['DMR Network Custom']['Name'])) {echo $configdmrgateway['DMR Network Custom']['Name'];} ?>">
+      </td>
+    </tr>
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">
+        Server Address:
+        <span><b>Custom DMR Network Server Address</b>Enter IP address or domain name of the Custom DMR Network master server.</span>
+      </a></td>
+      <td align="left" colspan="3">
+        <input type="text"
+          name="custNetAddress" id="custNetAddress" size="30"
+          value="<?php if (isset($configdmrgateway['DMR Network Custom']['Address'])) {echo $configdmrgateway['DMR Network Custom']['Address'];} ?>">
+      </td>
+    </tr>
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">
+        Port:
+        <span><b>Custom DMR Network Port</b>Enter the port number to connect to (often port is 62031).</span>
+      </a></td>
+      <td align="left" colspan="3">
+        <input type="text"
+          name="custNetPort" id="custNetPort" size="6"
+          value="<?php if (isset($configdmrgateway['DMR Network Custom']['Port'])) {echo $configdmrgateway['DMR Network Custom']['Port'];} ?>">
+      </td>
+    </tr>
+
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">ESSID:<span><b>Custom DMR Network Host Extended ID</b>This is the extended ID, to make your DMR ID 8 digits long</span></a></td>
+      <td align="left" colspan="3">
+<?php
+        if (isset($configdmrgateway['DMR Network Custom']['Id'])) {
+            if (strlen($configdmrgateway['DMR Network Custom']['Id']) > strlen($configmmdvm['General']['Id'])) {
+                $custNetESSID = substr($configdmrgateway['DMR Network Custom']['Id'], -2);
+            } else {
+                $custNetESSID = "None";
+            }
+        } else {
+            if (isset($configmmdvm['General']['Id'])) {
+                if (strlen($configmmdvm['General']['Id']) == 9) {
+                    $custNetESSID = substr($configmmdvm['General']['Id'], -2);
+                } else {
+                    $custNetESSID = "None";
+                }
+            } else {
+                $custNetESSID = "None";
+            }
+        }
+
+        if (isset($configmmdvm['General']['Id'])) { if ($configmmdvm['General']['Id'] !== "1234567") { echo substr($configmmdvm['General']['Id'], 0, 7); } }
+        echo "<select name=\"custNetExtendedId\">\n";
+        if ($custNetESSID == "None") { echo "      <option value=\"None\" selected=\"selected\">None</option>\n"; } else { echo "      <option value=\"None\">None</option>\n"; }
+        for ($custNetESSIDInput = 1; $custNetESSIDInput <= 99; $custNetESSIDInput++) {
+            $custNetESSIDInput = str_pad($custNetESSIDInput, 2, "0", STR_PAD_LEFT);
+            if ($custNetESSID === $custNetESSIDInput) {
+                echo "      <option value=\"$custNetESSIDInput\" selected=\"selected\">$custNetESSIDInput</option>\n";
+            } else {
+                echo "      <option value=\"$custNetESSIDInput\">$custNetESSIDInput</option>\n";
+            }
+        }
+        echo "</select>\n";
+?>
+      </td></tr>
+    <tr>
+
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">
+        Password:
+        <span><b>Custom DMR Network Password</b>Enter your Security password for Custom DMR Network.</span>
+      </a></td>
+      <td align="left" colspan="3">
+        <input type="password"
+          name="custNetSecurity" id="custNetSecurity" size="30"
+          value="<?php if (isset($configdmrgateway['DMR Network Custom']['Password'])) {echo $configdmrgateway['DMR Network Custom']['Password'];} ?>">
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-bm-password"></span>
+      </td>
+    </tr>
+
+    <tr>
+      <td align="left"><a class="tooltip2" href="#">
+        Automatic Rewrite Rules:
+        <span><b>Custom DMR Network Automatic Rewrite Rules</b>Uncheck this to turn of automatic *Rewrite generation</span>
+      </a></td>
+      <td align="left" colspan="2">
+        <?php $custNetAutoRewrites = !isset($configdmrgateway['DMR Network Custom']['WPSD_AutoRewrites']) || $configdmrgateway['DMR Network Custom']['WPSD_AutoRewrites'] == 1; ?>
+        <div class="switch">
+          <input id="toggle-custNetAutoRewrites" class="toggle toggle-round-flat" type="checkbox" name="custNetAutoRewrites" value="ON" <?php echo $custNetAutoRewrites? 'checked="checked"': ''?> aria-hidden="true" tabindex="-1" />
+          <label id="aria-toggle-custNetAutoRewrites" role="checkbox" tabindex="0" aria-label="Enable Custom Network" aria-checked="<?php echo $custNetAutoRewrites? 'true': 'false'?>" for="toggle-custNetAutoRewrites"><font style="font-size:0px">Enable Custom Network</font></label>
+        </div>
+      </td>
+        <td align="left">
+          <i class="fa fa-exclamation-circle"></i>
+            <?php 
+                if ($custNetAutoRewrites) {
+                    echo $configdmrgateway['General']['Primary'] != "6"?
+                        'Uses "9" talkgroup prefix':
+                        'Primary Network - No talkgroup prefix';
+                } else {
+                    echo "Custom rules: <a href=\"/admin/advanced/fulledit_dmrgateway.php\" target=\"_blank\">DMRGateway config</a> &raquo; [DMR Network Custom] section";
+                }
+            ?>
+      </td>
+    </tr>
+
+
+    <!--SystemX Network Settings-->
     <tr>
     <th class='config_head' colspan="4">SystemX Network Settings</th>
     </tr>

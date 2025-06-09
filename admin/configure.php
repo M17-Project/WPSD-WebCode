@@ -565,30 +565,11 @@ $MYCALL=strtoupper($callsign);
           $('.M17Ref').select2({searchInputPlaceholder: 'Search...',width: '125px'});
         });
 
-        $(document).on('click', '.toggle-bm-password', function() {
+        // eye icon - toggle password (for all boxes)
+        $(document).on('click', '.click-toggle-password', function() {
           $(this).toggleClass("fa-eye fa-eye-slash");
-          var input = $("#bmHSSecurity");
-          input.attr('type') === 'password' ? input.attr('type','text') : input.attr('type','password')
-        });
-        $(document).on('click', '.toggle-bm-password_YSF', function() {
-          $(this).toggleClass("fa-eye fa-eye-slash");
-          var input = $("#bmHSSecurity_YSF");
-          input.attr('type') === 'password' ? input.attr('type','text') : input.attr('type','password')
-        });
-        $(document).on('click', '.toggle-tgif-password', function() {
-          $(this).toggleClass("fa-eye fa-eye-slash");
-          var input = $("#tgifHSSecurity");
-          input.attr('type') === 'password' ? input.attr('type','text') : input.attr('type','password')
-        });
-        $(document).on('click', '.toggle-ircddb-password', function() {
-          $(this).toggleClass("fa-eye fa-eye-slash");
-          var input = $("#ircddbPass");
-          input.attr('type') === 'password' ? input.attr('type','text') : input.attr('type','password')
-        });
-        $(document).on('click', '.toggle-dapnet-password', function() {
-          $(this).toggleClass("fa-eye fa-eye-slash");
-          var input = $("#pocsagAuthKey");
-          input.attr('type') === 'password' ? input.attr('type','text') : input.attr('type','password')
+          var input = $(this).parent().find('input').first();
+          input.attr('type', input.attr('type') === 'password' ? 'text': 'password');
         });
 
         /*
@@ -5517,7 +5498,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Remote Password' );?>:<span><b>Remote Password</b>Used for ircDDBGateway remote control access</span></a></td>
     <td align="left" colspan="2"><input type="password" name="confPassword" id="ircddbPass" size="30" value="<?php echo $configs['remotePassword'] ?>" />
-    <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-ircddb-password"></span></td>
+    <span toggle="#password-field" class="fa fa-fw fa-eye field_icon click-toggle-password"></span></td>
     </tr>
     <tr>
     <td align="left"><a class="tooltip2" href="#"><?php echo __( 'Default Reflector' );?>:<span><b>Default Reflector</b>Used for setting the default reflector.</span></a></td>
@@ -5873,7 +5854,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
       <td align="left"><a class="tooltip2" href="#">Hotspot Security:<span><b>DMR Master Password</b>Override the Password for DMR with your own custom password, make sure you already configured this on your chosed DMR Master. Empty the field to use the default.</span></a></td>
       <td align="left" colspan="2">
         <input type="password" name="bmHSSecurity_YSF" id="bmHSSecurity_YSF" size="30" value="<?php if (isset($configModem['BrandMeister']['Password'])) {echo $configModem['BrandMeister']['Password'];} ?>"></input>
-        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-bm-password_YSF"></span>
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon click-toggle-password"></span>
       </td>
     </tr>
     <tr>
@@ -6175,7 +6156,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
       <td align="left"><a class="tooltip2" href="#">BM Hotspot Security:<span><b>BrandMeister Password</b>Enter your Security password for BrandMeister, and make sure you already configured this using BM Self Care.</span></a></td>
       <td align="left" colspan="2">
         <input type="password" name="bmHSSecurity" id="bmHSSecurity" size="30" value="<?php if (isset($configModem['BrandMeister']['Password'])) {echo $configModem['BrandMeister']['Password'];} ?>"></input>
-        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-bm-password"></span>
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon click-toggle-password"></span>
       </td>
       <td align="left"><a href="https://brandmeister.network/?page=register" target="_new">Register for a Brandmeister Account...</a></td>
     </tr>
@@ -6440,7 +6421,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
         <input type="password"
           name="custNetSecurity" id="custNetSecurity" size="30"
           value="<?php if (isset($configdmrgateway['DMR Network Custom']['Password'])) {echo $configdmrgateway['DMR Network Custom']['Password'];} ?>">
-        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-bm-password"></span>
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon click-toggle-password"></span>
       </td>
     </tr>
 
@@ -6606,7 +6587,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
       <td align="left"><a class="tooltip2" href="#">TGIF Security Key:<span><b>TGIF Security Key</b>Override the default login with your own TGIF security key, Make sure you already configured this using TGIF Self Care. Empty the field to use the default.</span></a></td>
       <td align="left" colspan="2">
         <input type="password" name="tgifHSSecurity" id="tgifHSSecurity" size="30" value="<?php if (isset($configModem['TGIF']['Password'])) {echo $configModem['TGIF']['Password'];} ?>"></input>
-        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-tgif-password"></span>
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon click-toggle-password"></span>
       </td>
       <td align="left"><a href="https://tgif.network/profile.php?tab=Security" target="_new">Get your TGIF Security Key here...</a></td>
     </tr>
@@ -6971,7 +6952,7 @@ $p25Hosts = fopen("/usr/local/etc/P25Hosts.txt", "r");
       <tr>
         <td align="left"><a class="tooltip2" href="#">DAPNET AuthKey:<span><b>DAPNET AuthKey</b>Set your DAPNET AuthKey here</span></a></td>
         <td align="left"><input type="password" name="pocsagAuthKey" id="pocsagAuthKey" size="30" maxlength="50" value="<?php echo $configdapnetgw['DAPNET']['AuthKey'];?>" />
-        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-dapnet-password"></span>
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon click-toggle-password"></span>
       </tr>
       <tr>
         <td align="left"><a class="tooltip2" href="#">POCSAG Whitelist:<span><b>POCSAG Whitelist</b>Set your POCSAG RIC Whitelist here, if these are set ONLY these RICs will be transmitted. List is comma seperated.</span></a></td>

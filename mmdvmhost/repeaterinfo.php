@@ -357,30 +357,13 @@ if ( $testMMDVModeDMR == 1 || isPaused("DMR") ) { //Hide the DMR information whe
         $dmrMasterFile = fopen("/usr/local/etc/DMR_Hosts.txt", "r");
         $dmrMasterHost = getConfigItem("DMR Network", "Address", $_SESSION['MMDVMHostConfigs']);
         $dmrMasterPort = getConfigItem("DMR Network", "Port", $_SESSION['MMDVMHostConfigs']);
+
         if ($dmrMasterHost == '127.0.0.1') {
             if (isset($_SESSION['DMRGatewayConfigs']['XLX Network 1']['Address'])) {
                 $xlxMasterHost1 = $_SESSION['DMRGatewayConfigs']['XLX Network 1']['Address'];
             }
             else {
                 $xlxMasterHost1 = "";
-            }
-            $dmrMasterHost1 = $_SESSION['DMRGatewayConfigs']['DMR Network 1']['Address'];
-            $dmrMasterHost2 = $_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'];
-            if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name'])) {
-                $dmrMasterHost2 = str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 2']['Name']);
-            }
-            $dmrMasterHost3 = str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 3']['Name']);
-            if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Name'])) {
-                $dmrMasterHost4 = str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 4']['Name']);
-            }
-            if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Name'])) {
-                $dmrMasterHost5 = str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 5']['Name']);
-            }
-            if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 6']['Name'])) {
-                $dmrMasterHost6 = str_replace('_', ' ', $_SESSION['DMRGatewayConfigs']['DMR Network 6']['Name']);
-            }
-            if (isset($configdmrgateway['DMR Network 6']['Name'])) {
-                $dmrMasterHost6 = str_replace('_', ' ', $configdmrgateway['DMR Network 6']['Name']);
             }
             while (!feof($dmrMasterFile)) {
                 $dmrMasterLine = fgets($dmrMasterFile);
@@ -389,57 +372,16 @@ if ( $testMMDVModeDMR == 1 || isPaused("DMR") ) { //Hide the DMR information whe
                     if ((strpos($dmrMasterHostF[0], 'XLX_') === 0) && ($xlxMasterHost1 == $dmrMasterHostF[2])) {
                         $xlxMasterHost1 = str_replace('_', ' ', $dmrMasterHostF[0]);
                     }
-                    if ((strpos($dmrMasterHostF[0], 'BM_') === 0) && ($dmrMasterHost1 == $dmrMasterHostF[2])) {
-                        $dmrMasterHost1 = str_replace('_', ' ', $dmrMasterHostF[0]);
-                    }
-                    if ((strpos($dmrMasterHostF[0], 'DMR+_') === 0) && ($dmrMasterHost2 == $dmrMasterHostF[2])) {
-                        $dmrMasterHost2 = str_replace('_', ' ', $dmrMasterHostF[0]);
-                    }
                 }
             }
 
             $xlxMasterHost1Tooltip = $xlxMasterHost1;
-            $dmrMasterHost1Tooltip = $dmrMasterHost1;
-            $dmrMasterHost2Tooltip = $dmrMasterHost2;
-            $dmrMasterHost3Tooltip = $dmrMasterHost3;
-            if (isset($dmrMasterHost4)) {
-                $dmrMasterHost4Tooltip = $dmrMasterHost4;
-            }
-            if (isset($dmrMasterHost5)) {
-                $dmrMasterHost5Tooltip = $dmrMasterHost5;
-            }
-            if (isset($dmrMasterHost6)) {
-                $dmrMasterHost6Tooltip = $dmrMasterHost6;
-            }
             if (strlen($xlxMasterHost1) > 20) {
                 $xlxMasterHost1 = substr($xlxMasterHost1, 0, 17) . '...';
             }
-            if (strlen($dmrMasterHost1) > 20) {
-                $dmrMasterHost1 = substr($dmrMasterHost1, 0, 17) . '...';
-            }
-            if (strlen($dmrMasterHost2) > 20) {
-                $dmrMasterHost2 = substr($dmrMasterHost2, 0, 17) . '...';
-            }
-            if (strlen($dmrMasterHost3) > 20) {
-                $dmrMasterHost3 = substr($dmrMasterHost3, 0, 17) . '...';
-            }
-            if (isset($dmrMasterHost4)) {
-                if (strlen($dmrMasterHost4) > 20) {
-                        $dmrMasterHost4 = substr($dmrMasterHost4, 0, 17) . '...';
-                }
-            }
-            if (isset($dmrMasterHost5)) {
-                if (strlen($dmrMasterHost5) > 20) {
-                        $dmrMasterHost5 = substr($dmrMasterHost5, 0, 17) . '...';
-                }
-            }
-            if (isset($dmrMasterHost6)) {
-                if (strlen($dmrMasterHost6) > 20) {
-                    $dmrMasterHost6 = substr($dmrMasterHost6, 0, 17) . '...';
-                }
-            }
         }
         else {
+            // !! MMDVMHost direct mode legacy code? Consider removing.
             while (!feof($dmrMasterFile)) {
                 $dmrMasterLine = fgets($dmrMasterFile);
                 $dmrMasterHostF = preg_split('/\s+/', $dmrMasterLine);
@@ -507,28 +449,24 @@ if ( $testMMDVModeDMR == 1 || isPaused("DMR") ) { //Hide the DMR information whe
             if (getEnabled("DMR Network", $_SESSION['MMDVMHostConfigs']) == 1) {
                 if ($dmrMasterHost == '127.0.0.1') {
                     if (isProcessRunning("DMRGateway")) {
-                        $sectionNameToStatusName = array_flip($_SESSION['DMRNetStatusAliases']);
-                        // ^^ map section name to network status name
+                        // List DMR networks according to their statuses
+                        foreach ($_SESSION['DMRNetStatusAliases'] as $statusName => $sectionName) {
+                            if (!isset($_SESSION['DMRGatewayConfigs'][$sectionName])) continue;
+                            $sectionVars = $_SESSION['DMRGatewayConfigs'][$sectionName];
+                            if ($sectionVars['Enabled'] == 1) {
+                                $name = str_replace("_", " ", $sectionVars['Name']);
+                                $tooltipInfo = "$name: DMR $statusName ({$sectionVars['Address']}:{$sectionVars['Port']})";
 
-                        if ($_SESSION['DMRGatewayConfigs']['DMR Network 1']['Enabled'] == 1) {
-                            echo "<div class='divTableRow center'><div class='divTableCell'><div " .GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 1'])." title=\"".$dmrMasterHost1Tooltip."\">".$dmrMasterHost1."</div></div></div>\n";
-                        }
-                        if ($_SESSION['DMRGatewayConfigs']['DMR Network 2']['Enabled'] == 1) {
-                            echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 2'])." title=\"".$dmrMasterHost2Tooltip."\">".$dmrMasterHost2."</div></div></div>\n";
-                        }
-                        if ($_SESSION['DMRGatewayConfigs']['DMR Network 3']['Enabled'] == 1) {
-                            echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 3'])." title=\"".$dmrMasterHost3Tooltip."\">".$dmrMasterHost3."</div></div></div>\n";
-                        }
-                        if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'])) {
-                            if ($_SESSION['DMRGatewayConfigs']['DMR Network 4']['Enabled'] == 1) {
-                                echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 4'])." title=\"".$dmrMasterHost4Tooltip."\">".$dmrMasterHost4."</div></div></div>\n";
+                                if (strlen($name) > 20)
+                                    $name = substr($name, 0, 17) . '...';
+
+                                echo "<div class='divTableRow center'><div class='divTableCell'><div " .
+                                     GetActiveConnectionStyle($remoteDMRgwResults, $statusName) .
+                                     " title=\"" . htmlentities($tooltipInfo) . "\">" . htmlentities($name) .
+                                     "</div></div></div>\n";
                             }
                         }
-                        if (isset($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'])) {
-                            if ($_SESSION['DMRGatewayConfigs']['DMR Network 5']['Enabled'] == 1) {
-                                echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, $sectionNameToStatusName['DMR Network 5'])." title=\"".$dmrMasterHost5Tooltip."\">".$dmrMasterHost5."</div></div></div>\n";
-                            }
-                        }
+
                         if ( !isset($_SESSION['DMRGatewayConfigs']['XLX Network 1']['Enabled']) && isset($_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled']) && $_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled'] == 1) {
                             $xlxMasterHostLinkState = "";
                             
@@ -569,6 +507,7 @@ if ( $testMMDVModeDMR == 1 || isPaused("DMR") ) { //Hide the DMR information whe
                     }
                 }
                 else {
+                    // !! MMDVMHost direct mode legacy code? Consider removing.
                     echo "<div class='divTableRow center'><div class='divTableCell'><div ".GetActiveConnectionStyle($remoteDMRgwResults, "dmr")." title=\"".$dmrMasterHostTooltip."\">".$dmrMasterHost."</div></div></div>\n";
                 }
             }

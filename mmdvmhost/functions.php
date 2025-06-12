@@ -227,15 +227,15 @@ function isAPRSISGatewayConnected() {
     $logLines1 = array();
     $logLines2 = array();
 
-    if (file_exists("/var/log/pi-star/APRSGateway-".gmdate("Y-m-d").".log")) {
-        $logPath1 = "/var/log/pi-star/APRSGateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/APRSGateway-".gmdate("Y-m-d").".log")) {
+        $logPath1 = "/var/log/WPSD/APRSGateway-".gmdate("Y-m-d").".log";
         $logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 4 $logPath1 | cut -d" " -f2- | tac`);
     }
     $logLines1 = array_filter($logLines1);
 
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/APRSGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-            $logPath2 = "/var/log/pi-star/APRSGateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/APRSGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+            $logPath2 = "/var/log/WPSD/APRSGateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `tail -n 4 $logPath2 | cut -d" " -f2- | tac`);
         }
 
@@ -259,8 +259,8 @@ function isAPRSISGatewayConnected() {
 //M: 2021-02-21 13:22:24.692 Response from APRS server: # logresp W0CHP verified, server T2CAEAST
 //M: 2021-02-21 13:22:24.693 Connected to the APRS server
 function getAPRSISserver() {
-    $logAPRSISNow = "/var/log/pi-star/APRSGateway-" . gmdate("Y-m-d") . ".log";
-    $logAPRSISPrevious = "/var/log/pi-star/APRSGateway-" . gmdate("Y-m-d", time() - 86400) . ".log";
+    $logAPRSISNow = "/var/log/WPSD/APRSGateway-" . gmdate("Y-m-d") . ".log";
+    $logAPRSISPrevious = "/var/log/WPSD/APRSGateway-" . gmdate("Y-m-d", time() - 86400) . ".log";
     $logSearchString = "verified, server";
     $logLine = '';
     $serverID = null;
@@ -334,16 +334,16 @@ function isDAPNETGatewayConnected() {
     $logLines2 = array();
     
     // Collect last 20 lines  - see getDAPNETGatewayLog() down below for no. of line values (array_slice)
-    if (file_exists("/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log")) {
-        $logPath1 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d").".log")) {
+        $logPath1 = "/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d").".log";
         $logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 5 $logPath1 | cut -d" " -f2- | tac`);
     }
     
     $logLines1 = array_filter($logLines1);
 
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-            $logPath2 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+            $logPath2 = "/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `tail -n 5 $logPath2 | cut -d" " -f2- | tac`);
         }
         
@@ -394,8 +394,8 @@ function isDAPNETGatewayConnected() {
 //M: 2022-01-02 18:04:17.222 *** 2 bleep! 
 //M: 2022-01-02 18:05:06.413 DG-ID set to 0 (YSF: YSFGateway) via Network 
 function getDGIdLinks() {
-    $logDGIdGWNow = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d").".log";
-    $logDGIdPrevious = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d", time() - 86340).".log";
+    $logDGIdGWNow = "/var/log/WPSD/DGIdGateway-".gmdate("Y-m-d").".log";
+    $logDGIdPrevious = "/var/log/WPSD/DGIdGateway-".gmdate("Y-m-d", time() - 86340).".log";
     $logSearchString = "DG-ID";
     $logLine = '';
     $linkedDGId = 'None Set';
@@ -453,16 +453,16 @@ function isM17GatewayConnected() {
     $logLines2 = array();
     
     // Collect last 20 lines  - see down below for no. of line values (array_slice)
-    if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log")) {
-        $logPath1 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/M17Gateway-".gmdate("Y-m-d").".log")) {
+        $logPath1 = "/var/log/WPSD/M17Gateway-".gmdate("Y-m-d").".log";
         $logLines1 = preg_split('/\r\n|\r|\n/', `tail -n 1 $logPath1 | cut -d" " -f2- | tac`);
     }
     
     $logLines1 = array_filter($logLines1);
 
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-            $logPath2 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+            $logPath2 = "/var/log/WPSD/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `tail -n 1 $logPath2 | cut -d" " -f2- | tac`);
         }
         
@@ -491,14 +491,14 @@ function getM17GatewayLog() {
     $logLines = array();
         $logLines1 = array();
         $logLines2 = array();
-    if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log")) {
-                $logPath1 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/M17Gateway-".gmdate("Y-m-d").".log")) {
+                $logPath1 = "/var/log/WPSD/M17Gateway-".gmdate("Y-m-d").".log";
                 $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
         $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-                $logPath2 = "/var/log/pi-star/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+                $logPath2 = "/var/log/WPSD/M17Gateway-".gmdate("Y-m-d", time() - 86340).".log";
                         $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Starting|witched)" $logPath2 | cut -d" " -f2- | tail -1`);
         }
                 $logLines2 = array_filter($logLines2);
@@ -541,14 +541,14 @@ function getDGIdGatewayLog() {
     $logLines = array();
         $logLines1 = array();
         $logLines2 = array();
-    if (file_exists("/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d").".log")) {
-                $logPath1 = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/DGIdGateway-".gmdate("Y-m-d").".log")) {
+                $logPath1 = "/var/log/WPSD/DGIdGateway-".gmdate("Y-m-d").".log";
                 $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Added|via)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
         $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/DGiDGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-                $logPath2 = "/var/log/pi-star/DGIdGateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/DGiDGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+                $logPath2 = "/var/log/WPSD/DGIdGateway-".gmdate("Y-m-d", time() - 86340).".log";
                         $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|Added|via)" $logPath2 | cut -d" " -f2- | tail -1`);
         }
                 $logLines2 = array_filter($logLines2);
@@ -586,7 +586,7 @@ function getPSRState () {
 
 // get DMR net status
 function getDMRnetStatus($dmrNet) {
-    $remoteStat = exec("cd /var/log/pi-star ; /usr/local/bin/RemoteCommand ".$_SESSION['DMRGatewayConfigs']['Remote Control']['Port']. " status | tail -n +2 | sed 's/ /\\r\\n/g' | grep ".$dmrNet." | grep -o conn");
+    $remoteStat = exec("cd /var/log/WPSD ; /usr/local/bin/RemoteCommand ".$_SESSION['DMRGatewayConfigs']['Remote Control']['Port']. " status | tail -n +2 | sed 's/ /\\r\\n/g' | grep ".$dmrNet." | grep -o conn");
     if ($remoteStat !== 'conn' && file_exists("/etc/.dmr-".$dmrNet."_disabled")) {
         return "disabled";
     } else {
@@ -871,14 +871,14 @@ function getNXDNGatewayLog() {
     $logLines = array();
     $logLines1 = array();
     $logLines2 = array();
-    if (file_exists("/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d").".log")) {
-        $logPath1 = "/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/NXDNGateway-".gmdate("Y-m-d").".log")) {
+        $logPath1 = "/var/log/WPSD/NXDNGateway-".gmdate("Y-m-d").".log";
     $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|witched|Starting)" $logPath1 | cut -d" " -f2- | tail -1`);
     }
     $logLines1 = array_filter($logLines1);
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-            $logPath2 = "/var/log/pi-star/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+            $logPath2 = "/var/log/WPSD/NXDNGateway-".gmdate("Y-m-d", time() - 86340).".log";
         $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(ink|witched|Starting)" $logPath2 | cut -d" " -f2- | tail -1`);
         }
         $logLines2 = array_filter($logLines2);
@@ -898,16 +898,16 @@ function getDAPNETGatewayLog($myRIC) {
     $logLines1 = array();
     $logLines2 = array();
     
-    if (file_exists("/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log")) {
-        $logPath1 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d").".log";
+    if (file_exists("/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d").".log")) {
+        $logPath1 = "/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d").".log";
         $logLines1 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(Sending message)" $logPath1 | cut -d" " -f2- | tail -n 200 | tac`);
     }
     
     $logLines1 = array_filter($logLines1);
 
     if (sizeof($logLines1) == 0) {
-        if (file_exists("/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
-            $logPath2 = "/var/log/pi-star/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log";
+        if (file_exists("/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log")) {
+            $logPath2 = "/var/log/WPSD/DAPNETGateway-".gmdate("Y-m-d", time() - 86340).".log";
             $logLines2 = preg_split('/\r\n|\r|\n/', `egrep -h "^M.*(Sending message)" $logPath2 | cut -d" " -f2- | tail -n 200 | tac`);
         }
         

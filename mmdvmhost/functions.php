@@ -259,33 +259,57 @@ function isAPRSISGatewayConnected() {
 //M: 2021-02-21 13:22:24.692 Response from APRS server: # logresp W0CHP verified, server T2CAEAST
 //M: 2021-02-21 13:22:24.693 Connected to the APRS server
 function getAPRSISserver() {
-    $logAPRSISNow = "/var/log/pi-star/APRSGateway-".gmdate("Y-m-d").".log";
-    $logAPRSISPrevious = "/var/log/pi-star/APRSGateway-".gmdate("Y-m-d", time() - 86340).".log";
+    $logAPRSISNow = "/var/log/pi-star/APRSGateway-" . gmdate("Y-m-d") . ".log";
+    $logAPRSISPrevious = "/var/log/pi-star/APRSGateway-" . gmdate("Y-m-d", time() - 86400) . ".log";
     $logSearchString = "verified, server";
     $logLine = '';
-    $APRSISserver = 'Not Connected';
-    $LogError = "Cannot Open Log";
-    $server_list = "/usr/local/etc/aprs_servers.json";
+    $serverID = null;
 
-    if (file_exists($logAPRSISNow) || file_exists($logAPRSISPrevious)) {
-        $logLine = exec("tail -2 $logAPRSISNow | grep \"".$logSearchString."\" ");
-        if (!$logLine) {
-            $logLine = exec("tail -2 $logAPRSISPrevious | grep \"".$logSearchString."\" ");
-        }
-    } else
-        {
-        return $LogError;
+    if (file_exists($logAPRSISNow)) {
+        $logLine = exec("grep \"" . $logSearchString . "\" " . $logAPRSISNow . " | tail -1");
+    }
+    if (empty($logLine) && file_exists($logAPRSISPrevious)) {
+        $logLine = exec("grep \"" . $logSearchString . "\" " . $logAPRSISPrevious . " | tail -1");
     }
 
-    if ($logLine) {
-        if (strpos($logLine, 'Response from APRS server: # logresp')) {
-            preg_match('/(?<=, server )\S+/i', $logLine, $match); // find server name in log line after "verified, server" string.
-            $APRSISserver = str_replace(",", "", $match[0]); // remove occasional commas after server name
-            $FQDN = exec("cat $server_list | jq '.[]' | grep -B 10 $APRSISserver | grep fqdn | sed -r 's/\"fqdn\"://g;s/\s+//g;s/\"//g;s/,//g'");
-            $APRSISserver = "<a href='http://$FQDN:14501' target='_new'>$APRSISserver</a>";
+    if ($logLine && strpos($logLine, 'Response from APRS server: # logresp')) {
+        preg_match('/(?<=, server )\S+/i', $logLine, $matches);
+        if (isset($matches[0])) {
+            $serverID = str_replace(",", "", $matches[0]); // Clean up the ID
         }
     }
-    return $APRSISserver;
+
+    if (!$serverID) {
+        return 'Not Connected'; // Return if no server ID was found in the logs
+    }
+
+    // IMPORTANT: Make sure this path points to your new, simplified JSON file
+    $server_list_path = "/usr/local/etc/aprs_servers.json";
+    $FQDN = null;
+
+    if (!file_exists($server_list_path)) {
+        // If the server list doesn't exist, we can't get the FQDN.
+        // Return the server ID without a link.
+        return $serverID;
+    }
+
+    $json_data = file_get_contents($server_list_path);
+    $servers = json_decode($json_data, true);
+
+    if (is_array($servers)) {
+        foreach ($servers as $server) {
+            if (isset($server['id']) && $server['id'] === $serverID) {
+                $FQDN = $server['fqdn'];
+                break;
+            }
+        }
+    }
+
+    if ($FQDN) {
+        return "<a href='http://{$FQDN}:14501' target='_new'>{$serverID}</a>";
+    } else {
+        return $serverID;
+    }
 }
 
 //M: 2019-03-06 11:17:25.804 Opening DAPNET connection

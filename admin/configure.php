@@ -771,6 +771,11 @@ $MYCALL=strtoupper($callsign);
 input[type=number] {
     font: 0.8em 'Inconsolata', monospace !important;
 }
+select:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: #f0f0f0;
+}
 </style>
 </head>
 <body onload="checkFrequency(); return false;">
@@ -816,6 +821,21 @@ if (!is_dir($config_dir) || count(glob("$config_dir/*")) < 1) { // no saved conf
             setTimeout(reloadDateTime,1000);
           }
           reloadDateTime();
+
+          // Display port selection logic
+          function handleDisplayPortState() {
+            var displayTypeSelect = document.querySelector('select[name="mmdvmDisplayType"]');
+            var portSelect = document.querySelector('select[name="mmdvmDisplayPort"]');
+
+            if (displayTypeSelect && portSelect) {
+                var selectedValue = displayTypeSelect.value;
+                if (selectedValue === 'None' || selectedValue.startsWith('OLED')) {
+                    portSelect.disabled = true;
+                } else {
+                    portSelect.disabled = false;
+                }
+            }
+        }
         </script>
         <div class="headerClock">
             <span id="timer"></span>
@@ -5323,7 +5343,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
             <input type="hidden" name="mmdvmDisplayType" value="CAST" />
             <div>DVMega-CAST Built-In Display <small>(Cannot be changed)</small></div>
         <?php } else { ?>
-        <select name="mmdvmDisplayType">
+        <select name="mmdvmDisplayType" onchange="handleDisplayPortState()">
             <option <?php if (($configmmdvm['General']['Display'] == "None") || ($configmmdvm['General']['Display'] == "") ) {echo 'selected="selected" ';}; ?>value="None">None</option>
             <option <?php if (($configmmdvm['General']['Display'] == "OLED") && ($configmmdvm['OLED']['Type'] == "3")) {echo 'selected="selected" ';}; ?>value="OLED3">OLED Type 3 (0.96" screen)</option>
             <option <?php if (($configmmdvm['General']['Display'] == "OLED") && ($configmmdvm['OLED']['Type'] == "6")) {echo 'selected="selected" ';}; ?>value="OLED6">OLED Type 6 (1.3" screen)</option>
@@ -7281,12 +7301,16 @@ echo'
             aprsGatewayCheckbox.addEventListener('change', toggleAPRSGatewayCheckbox);
         }
     });
+
+    window.addEventListener('load', function() {
+        setTimeout(handleDisplayPortState, 150);
+    });
 </script>
 </body>
 </html>
 
 <?php
-    } else { //$_SERVER["PHP_SELF"] == "/admin/configure.php"
+    } else {
 ?>
 <br />
 <br />

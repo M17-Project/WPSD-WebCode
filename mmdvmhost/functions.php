@@ -769,24 +769,24 @@ function getMMDVMLog() {
         if (!$file = array_shift($fileList)) { // no caller names/last caller selected
             if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
                 if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) { // more than 40 rows selected
-                    $logLines1 = explode("\n", `tail -1500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
+                    $logLines1 = explode("\n", `tail -1500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`);  // 40 or less rows selected
                 } else {
-                    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);  // 40 or less rows selected
+                    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`);  // 40 or less rows selected
                 }
             } else { 
-                $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
+                $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`); // single-core crap
             }
             $lineNos = sizeof($logLines1);
             $logLines1 = array_slice($logLines1, -1500);
         } else { // caller names/last caller selected! keep perf. in check..
             if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
                 if ($_SESSION['CSSConfigs']['ExtraSettings']['LastHeardRows'] > 40 ) {  // more than 40 rows selected
-                    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // search last 500 lines
+                    $logLines1 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`); // search last 500 lines
                 } else {
-                    $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // 40 or less rows selected
+                    $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`); // 40 or less rows selected
                 }
             } else {
-                $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
+                $logLines1 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`); // single-core crap
             }
             $lineNos = sizeof($logLines1);
             $logLines1 = array_slice($logLines1, -1500);
@@ -798,9 +798,9 @@ function getMMDVMLog() {
         if (file_exists(MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log")) {
             $logPath = MMDVMLOGPATH."/".MMDVMLOGPREFIX."-".gmdate("Y-m-d", time() - 86340).".log";
             if(isset($_SESSION['WPSDrelease']['WPSD']['ProcNum']) && ($_SESSION['WPSDrelease']['WPSD']['ProcNum'] >= 4)) { // multi-core
-                $logLines2 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`);
+                $logLines2 = explode("\n", `tail -500 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`);
             } else {
-                $logLines2 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data)"`); // single-core crap
+                $logLines2 = explode("\n", `tail -250 $logPath | sed '/\(CSBK\|overflow\|Downlink\|Valid\|Invalid\|invalid\)/d' | egrep -h "^M.*(from|end|watchdog|lost|fast data|timed)"`); // single-core crap
             }
             $logLines2 = array_slice($logLines2, -1500);
         }
@@ -1102,7 +1102,7 @@ function getHeardList($logLines) {
             }
         }
 
-        if(strpos($logLine, "end of") || strpos($logLine, "watchdog has expired") || strpos($logLine, "ended RF data") || strpos($logLine, "d network data") || strpos($logLine, "RF user has timed out") || strpos($logLine, "transmission lost") || strpos($logLine, "POCSAG")) {
+        if (strpos($logLine, "end of") || strpos($logLine, "watchdog has expired") || strpos($logLine, "ended RF data") || strpos($logLine, "d network data") || strpos($logLine, "user has timed out") || strpos($logLine, "transmission lost") || strpos($logLine, "POCSAG")) {
             $lineTokens = explode(", ",$logLine);
             if (array_key_exists(2,$lineTokens)) {
                 $duration = strtok($lineTokens[2], " ");
@@ -1112,7 +1112,7 @@ function getHeardList($logLines) {
             }
             // The change to this code was causing all FCS traffic to always show TOut rather than the timer.
             // This version should still show time-out when needed, AND show the time if it exists.
-            if (strpos($logLine,"RF user has timed out") || strpos($logLine,"watchdog has expired") || strpos($logLine, "Mode set")) {
+            if (strpos($logLine,"user has timed out") || strpos($logLine,"watchdog has expired") || strpos($logLine, "Mode set")) {
                 if (array_key_exists(2, $lineTokens) && strpos($lineTokens[2], "seconds")) {
                     $duration = strtok($lineTokens[2], " "); 
                 }
@@ -1646,6 +1646,9 @@ function getActualLink($logLines, $mode) {
                 foreach($logLines as $logLine) {
                     if(preg_match_all('/Linked to ((M17|URF)-.{3} [A-Z])/', $logLine, $linx) > 0) {
                         return $linx[1][0];
+                    }
+                    else if (strpos($logLine, "Linked to")) {
+                        return (substr($logLine, 34, 9));
                     }
                     else if (strpos($logLine, "Switched to reflector")) {
                         return (substr($logLine, 46, 9));

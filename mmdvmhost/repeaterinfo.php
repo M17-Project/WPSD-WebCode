@@ -93,6 +93,7 @@ if (isProcessRunning("DMRGateway")) {
     $remoteCommandEnabled = (isset($_SESSION['DMRGatewayConfigs']['Remote Control']) ? $_SESSION['DMRGatewayConfigs']['Remote Control']['Enable'] : 0);
     $remoteCommandPort = (isset($_SESSION['DMRGatewayConfigs']['Remote Control']) ? $_SESSION['DMRGatewayConfigs']['Remote Control']['Port'] : 0);
     FillConnectionStatus($remoteDMRgwResults, $remoteCommandEnabled, $remoteCommandPort);
+    $_SESSION['remoteDMRgwResults'] = $remoteDMRgwResults;
 }
 
 if (isProcessRunning("YSFGateway")) {

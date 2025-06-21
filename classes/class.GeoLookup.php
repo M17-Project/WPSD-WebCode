@@ -35,7 +35,7 @@ class xGeoLookup {
       foreach ($data as $country_data) {
          $country_index = count($this->Flagarray);
          $this->Flagarray[$country_index] = [
-            'Country' => $country_data['country_name'],
+            'Name' => $country_data['country_name'],
             'ISO' => $country_data['country_code']
          ];
 
@@ -47,8 +47,10 @@ class xGeoLookup {
             foreach ($country_data['sub_entities'] as $sub_entity_data) {
                $sub_entity_index = count($this->Flagarray);
                $this->Flagarray[$sub_entity_index] = [
-                  'Country' => $sub_entity_data['name'],
-                  'ISO' => $country_data['country_code']
+                  'Name' => $sub_entity_data['name'],
+                  'ISO' => $country_data['country_code'], // Sub-entities use parent country's ISO for flag
+                  'IsSubEntity' => true,
+                  'ParentName' => $country_data['country_name']
                ];
                foreach ($sub_entity_data['prefixes'] as $prefix_entry) {
                   $this->addPrefixToDXCC($prefix_entry, $sub_entity_index);
@@ -99,13 +101,29 @@ class xGeoLookup {
          
          if (isset($this->Flagarray_DXCC[$Prefix])) {
             $index = $this->Flagarray_DXCC[$Prefix];
-            $Image = $this->Flagarray[$index]['ISO'];
-            $Name  = $this->Flagarray[$index]['Country'];
-            return array(strtolower($Image), $Name);
+            $matched_entry = $this->Flagarray[$index];
+
+            if (isset($matched_entry['IsSubEntity']) && $matched_entry['IsSubEntity'] === true) {
+                if ($matched_entry['ParentName'] === 'United States' || $matched_entry['ParentName'] === 'Canada') {
+                    // For US and Canadian sub-entities, return parent country name and flag
+                    $Name = $matched_entry['ParentName'];
+                    $Image = $matched_entry['ISO'];
+                } else {
+                    // For other sub-entities (e.g., UK, France), return sub-entity name and parent country flag
+                    $Name = $matched_entry['Name'];
+                    $Image = $matched_entry['ISO'];
+                }
+            } else {
+                // This is a main country entry
+                $Name = $matched_entry['Name'];
+                $Image = $matched_entry['ISO'];
+            }
+            
+            return [strtolower($Image), $Name];
          }
       }
       
-      return array("undefined", "Undefined"); 
+      return ["undefined", "Undefined"]; 
    }
 } 
 

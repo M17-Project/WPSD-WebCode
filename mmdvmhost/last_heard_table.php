@@ -38,7 +38,7 @@ if ($callsignLookupSvc == "QRZ") {
 // geoLookup/flags
 if (!class_exists('xGeoLookup')) require_once($_SERVER['DOCUMENT_ROOT'].'/classes/class.GeoLookup.php');
 $Flags = new xGeoLookup();
-$Flags->SetFlagFile("/usr/local/etc/countries.json");
+$Flags->SetFlagFile("/usr/local/etc/country.csv");
 $Flags->LoadFlags();
 
 // for name column

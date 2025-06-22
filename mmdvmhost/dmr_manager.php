@@ -46,36 +46,23 @@ if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
             $netName = "XLX-".$_SESSION['DMRGatewayConfigs']['XLX Network']['Startup']."";
     }
 
-    switch ($state) {
-        case 'disable':
-            $action = "touch";
-            break;
-        case 'enable':
-            $action = "rm -rf";
-            break;
-    }
-
     if (empty($_POST['netState'])) {
         echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";
         echo "<p>ERROR: You must select Disable/Enable!";
         echo "<br />Reloading page...";
         echo "</p>\n";
-        exec($remoteCommand);
         echo "</td></tr>\n</table>\n";
         unset($_POST);
         echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
     } else {
-        $remoteCommand = "sudo systemctl stop cron  && sudo ".$action." /etc/.dmr-".$selectedNet."_disabled && cd /var/log/pi-star ; /usr/local/bin/RemoteCommand ".$_SESSION['DMRGatewayConfigs']['Remote Control']['Port']. " $state $selectedNet && sudo systemctl start cron";
-        if (isset($remoteCommand)) {
-            echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";
-            echo "<p>Selected DMR Network, \"".str_replace('_', ' ' , $netName)."\" set to \"".ucfirst($state)."d\"";
-            echo "<br />Reloading page...";
-            echo "</p>\n";
-            exec($remoteCommand);
-            echo "</td></tr>\n</table>\n";
-            unset($_POST);
-            echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
-        }
+        echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td><pre>";
+        echo dmrGwSetNetStatus($selectedNet, $state != 'disable');
+        echo "</pre><p>Selected DMR Network, \"".str_replace('_', ' ' , $netName)."\" set to \"".ucfirst($state)."d\"";
+        echo "<br />Reloading page...";
+        echo "</p>\n";
+        echo "</td></tr>\n</table>\n";
+        unset($_POST);
+        echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
     }
 } else {
 ?>

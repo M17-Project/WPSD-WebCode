@@ -2006,7 +2006,7 @@ function dmrGwSetNetStatus($netId, $newState = false) {
     $state = $newState? "enable": "disable";
     $remotePort = $_SESSION['DMRGatewayConfigs']['Remote Control']['Port'];
 
-    $remoteCommand = "sudo systemctl stop cron  && sudo {$action} /etc/.dmr-{$netId}_disabled && cd /var/log/pi-star ; /usr/local/bin/RemoteCommand {$remotePort} {$state} {$netId} && sudo systemctl start cron";
+    $remoteCommand = "sudo {$action} /etc/.dmr-{$netId}_disabled && cd /var/log/pi-star ; /usr/local/bin/RemoteCommand {$remotePort} {$state} {$netId}";
 
     $commandOutput = "";
     $resultCode = 0;

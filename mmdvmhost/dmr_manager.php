@@ -58,8 +58,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';        // Transla
 <table id="dmrNetManTable">
   <tr>
     <th>DMR Network</th>
-    <th width="1%"></th>
-    <th></th>
+    <th colspan="2"></th>
   </tr>
 <?php
         foreach ($dmrNets as $net) {
@@ -120,10 +119,10 @@ $(function() {
             $startupModule = $_POST['dmrMasterHost3StartupModule'];
             $xlxLinkToHost = "";
             if ($xlxLinkHost == "None") { // Unlinking
-                $remoteCommand = 'sudo systemctl stop cron  ; sudo sed -i "/Module=/c\\Module=@" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service ; sudo systemctl start cron';
+                $remoteCommand = 'sudo sed -i "/Module=/c\\Module=@" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service';
                 $xlxLinkToHost = "Unlinking";
             } elseif ($xlxLinkHost != "None") {
-                $remoteCommand = 'sudo systemctl stop cron  ; sudo sed -i "/Module=/c\\Module='.$startupModule.'" /etc/dmrgateway ; sudo sed -i "/Startup=/c\\Startup='.$xlxLinkHost.'" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service ; sudo systemctl start cron';
+                $remoteCommand = 'sudo sed -i "/Module=/c\\Module='.$startupModule.'" /etc/dmrgateway ; sudo sed -i "/Startup=/c\\Startup='.$xlxLinkHost.'" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service';
                 $xlxLinkToHost = "Link set to XLX-".$xlxLinkHost.", Module ".$startupModule."";
             } else {
                     echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";

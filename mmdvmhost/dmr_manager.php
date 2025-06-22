@@ -29,43 +29,6 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';        // Transla
 ?>
 
 <div style="text-align:left;font-weight:bold;">DMR Network Manager</div>
-
-<?php
-if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
-    $remoteCommand = "";
-    $state = "";
-
-    // map / get net names & actionsfrom options form
-    $selectedNet = $_POST['dmrNet'];
-    $state = $_POST['netState'];
-
-    if (isset($_SESSION['DMRNetStatusAliases'][$selectedNet])) {
-        $netName = $_SESSION['DMRNetStatusAliases'][$selectedNet];
-    } else {
-        if ($shortName == 'xlx')
-            $netName = "XLX-".$_SESSION['DMRGatewayConfigs']['XLX Network']['Startup']."";
-    }
-
-    if (empty($_POST['netState'])) {
-        echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";
-        echo "<p>ERROR: You must select Disable/Enable!";
-        echo "<br />Reloading page...";
-        echo "</p>\n";
-        echo "</td></tr>\n</table>\n";
-        unset($_POST);
-        echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
-    } else {
-        echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td><pre>";
-        echo dmrGwSetNetStatus($selectedNet, $state != 'disable');
-        echo "</pre><p>Selected DMR Network, \"".str_replace('_', ' ' , $netName)."\" set to \"".ucfirst($state)."d\"";
-        echo "<br />Reloading page...";
-        echo "</p>\n";
-        echo "</td></tr>\n</table>\n";
-        unset($_POST);
-        echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
-    }
-} else {
-?>
 <?php
     $remoteDMRgwResults = isset($_SESSION['remoteDMRgwResults'])? $_SESSION['remoteDMRgwResults']: [];
 
@@ -148,7 +111,6 @@ $(function() {
 ?>
 
 <?php
-}
     // Check if XLX is Enabled
     if ( !isset($_SESSION['DMRGatewayConfigs']['XLX Network 1']['Enabled']) && isset($_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled']) && $_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled'] == 1) {
         if (!empty($_POST) && isset($_POST["xlxMgrSubmit"])) {

@@ -2001,6 +2001,22 @@ function tgLookup($mode, $target) {
     return $target;
 }
 
+function dmrGwSetNetStatus($netId, $newState = false) {
+    $action = $newState? "rm -rf": "touch";
+    $state = $newState? "enable": "disable";
+    $remotePort = $_SESSION['DMRGatewayConfigs']['Remote Control']['Port'];
+
+    $remoteCommand = "sudo systemctl stop cron  && sudo {$action} /etc/.dmr-{$netId}_disabled && cd /var/log/pi-star ; /usr/local/bin/RemoteCommand {$remotePort} {$state} {$netId} && sudo systemctl start cron";
+
+    $commandOutput = "";
+    $resultCode = 0;
+
+    exec($remoteCommand, $commandOutput, $resultCode);
+    if (is_array($commandOutput))
+        $commandOutput = implode("\n", $commandOutput);
+    return $commandOutput;
+}
+
 function getName($callsign) {
     ini_set('default_socket_timeout', 2);
     $name = array();

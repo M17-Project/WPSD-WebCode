@@ -18,6 +18,8 @@
 //
 */
 
+include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
+
 function executeCommand($command) {
     $output = null;
     $exit_status = null;
@@ -83,6 +85,14 @@ switch ($action) {
 
     case 'reload_wifi':
         $result = executeCommand("sudo /usr/local/sbin/.wpsd-reload-wifi");
+        break;
+
+    case 'dmrnet_set_status':
+        $selectedNet = $_GET['dmrNet'];
+        $state = $_GET['netState'];
+        $result = [
+            'commandOutput' => dmrGwSetNetStatus($selectedNet, $state != 'disable'),
+        ];
         break;
 
     default:

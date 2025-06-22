@@ -29,95 +29,87 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';        // Transla
 ?>
 
 <div style="text-align:left;font-weight:bold;">DMR Network Manager</div>
-
 <?php
-if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
-    $remoteCommand = "";
-    $state = "";
+    $remoteDMRgwResults = isset($_SESSION['remoteDMRgwResults'])? $_SESSION['remoteDMRgwResults']: [];
 
-    // map / get net names & actionsfrom options form
-    $selectedNet = $_POST['dmrNet'];
-    $state = $_POST['netState'];
+    $dmrNets = [];
+    foreach ($_SESSION['DMRNetStatusAliases'] as $netId => $sectionName) {
+        if ($_SESSION['DMRGatewayConfigs'][$sectionName]['Enabled'] != "1") continue;
 
-    if (isset($_SESSION['DMRNetStatusAliases'][$selectedNet])) {
-        $netName = $_SESSION['DMRNetStatusAliases'][$selectedNet];
-    } else {
-        if ($shortName == 'xlx')
-            $netName = "XLX-".$_SESSION['DMRGatewayConfigs']['XLX Network']['Startup']."";
+        $dmrNets[] = [
+            'input-id' => 'toggle-' . $netId,
+            'id'       => $netId,
+            'enabled'  => !isset($remoteDMRgwResults[$netId]) || $remoteDMRgwResults[$netId] == 'conn',
+            'name'     => str_replace('_', ' ', $_SESSION['DMRGatewayConfigs'][$sectionName]['Name']),
+        ];
     }
 
-    switch ($state) {
-        case 'disable':
-            $action = "touch";
-            break;
-        case 'enable':
-            $action = "rm -rf";
-            break;
-    }
-
-    if (empty($_POST['netState'])) {
-        echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";
-        echo "<p>ERROR: You must select Disable/Enable!";
-        echo "<br />Reloading page...";
-        echo "</p>\n";
-        exec($remoteCommand);
-        echo "</td></tr>\n</table>\n";
-        unset($_POST);
-        echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
-    } else {
-        $remoteCommand = "sudo systemctl stop cron  && sudo ".$action." /etc/.dmr-".$selectedNet."_disabled && cd /var/log/pi-star ; /usr/local/bin/RemoteCommand ".$_SESSION['DMRGatewayConfigs']['Remote Control']['Port']. " $state $selectedNet && sudo systemctl start cron";
-        if (isset($remoteCommand)) {
-            echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";
-            echo "<p>Selected DMR Network, \"".str_replace('_', ' ' , $netName)."\" set to \"".ucfirst($state)."d\"";
-            echo "<br />Reloading page...";
-            echo "</p>\n";
-            exec($remoteCommand);
-            echo "</td></tr>\n</table>\n";
-            unset($_POST);
-            echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},2000);</script>';
-        }
-    }
-} else {
-?>
-<form action="" method="post">
-  <table>
-    <tr>
-      <th>Select DMR Network</th>
-      <th>Function</th>
-      <th>Action</th>
-      <th></th>
-    </tr>
-    <tr>
-      <td>
-        <select name="dmrNet">
-<?php
-    foreach ($_SESSION['DMRNetStatusAliases'] as $shortName => $sectionName) {
-        if ($_SESSION['DMRGatewayConfigs'][$sectionName]['Enabled'] == "1") {
-            echo "<option value='" . $shortName ."'>".str_replace('_', ' ', $_SESSION['DMRGatewayConfigs'][$sectionName]['Name'])."</option>";
-        }
-    }
     if ($_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled'] == "1") {
-        echo "<option value='xlx'>XLX-".$_SESSION['DMRGatewayConfigs']['XLX Network']['Startup']."</option>";
+        $dmrNets[] = [
+            'input-id' => 'toggle-xlx',
+            'id'       => 'xlx',
+            'enabled'  => !isset($remoteDMRgwResults['xlx']) || $remoteDMRgwResults['xlx'] == 'conn',
+            'name'     => 'XLX-' . $_SESSION['DMRGatewayConfigs']['XLX Network']['Startup'],
+        ];
+    }
+
+    if (count($dmrNets) > 1) {
+?>
+<table id="dmrNetManTable">
+  <tr>
+    <th>DMR Network</th>
+    <th colspan="2"></th>
+  </tr>
+<?php
+        foreach ($dmrNets as $net) {
+?>
+  <tr>
+    <td align="left"><?=$net['name']?></td>
+    <td>
+      <div class="switch">
+        <input id="<?=$net['input-id']?>" class="toggle toggle-round-flat dmrnetman-switch" type="checkbox" data-net-id="<?=$net['id']?>" name="<?=$net['id']?>-toggle" value="ON" <?php echo $net['enabled']? 'checked="checked"': ''?> aria-hidden="true" tabindex="-1" />
+        <label id="aria-<?=$net['input-id']?>" role="checkbox" tabindex="0" aria-label="Toggle <?=$net['name']?>" aria-checked="<?php echo $net['enabled']? 'true': 'false'?>" for="<?=$net['input-id']?>"><font style="font-size:0px">Toggle <?=$net['name']?></font></label>
+      </div>
+    </td>
+<?php
+            if (!isset($commentColumnAdded)) {
+                $commentColumnAdded = true;
+?>
+    <td style="white-space:normal;padding: 3px;" rowspan="<?=count($dmrNets)?>">
+      Instantly disable / enable DMR Networks.<br /><em>Note: networks will be re-enabed upon reboots, updates and nightly maintenance.</em>
+    </td>
+<?php
+            }
+?>
+  </tr>
+<?php
+        }
+?>
+</table>
+<script type="text/javascript">
+$(function() {
+    $('#dmrNetManTable .dmrnetman-switch').change(function() {
+        url = "/admin/system_api.php?action=dmrnet_set_status&dmrNet=" + $(this).data('net-id') +
+            "&netState=" + ($(this).prop('checked')? 'enable': 'disable');
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function (response) {
+                // console.log('Success:', response);
+            },
+            error: function (xhr, status, error) {
+                // console.error('Error:', status, error);
+            }
+        });
+    });
+});
+</script>
+<?php
     }
 ?>
-        </select>
-      </td>
-      <td>
-        <input type="radio" name="netState" value="disable" id="disableNet"/>  <label for="disableNet">Disable</label>
-        <input type="radio" name="netState" value="enable" id="enableNet"/> <label for="enableNet">Enable</label>
-      </td>
-      <td>
-        <input type="submit" value="Request Change" name="dmrNetMan" />
-      </td>
-      <td style="white-space:normal;padding: 3px;">
-        Instantly disable / enable DMR Networks.<br /><em>Note: networks will be re-enabed upon reboots, updates and nightly maintenance.</em>
-      </td>
-    </tr>
-  </table>
-</form>
 
 <?php
-}
     // Check if XLX is Enabled
     if ( !isset($_SESSION['DMRGatewayConfigs']['XLX Network 1']['Enabled']) && isset($_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled']) && $_SESSION['DMRGatewayConfigs']['XLX Network']['Enabled'] == 1) {
         if (!empty($_POST) && isset($_POST["xlxMgrSubmit"])) {
@@ -127,10 +119,10 @@ if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
             $startupModule = $_POST['dmrMasterHost3StartupModule'];
             $xlxLinkToHost = "";
             if ($xlxLinkHost == "None") { // Unlinking
-                $remoteCommand = 'sudo systemctl stop cron  ; sudo sed -i "/Module=/c\\Module=@" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service ; sudo systemctl start cron';
+                $remoteCommand = 'sudo sed -i "/Module=/c\\Module=@" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service';
                 $xlxLinkToHost = "Unlinking";
             } elseif ($xlxLinkHost != "None") {
-                $remoteCommand = 'sudo systemctl stop cron  ; sudo sed -i "/Module=/c\\Module='.$startupModule.'" /etc/dmrgateway ; sudo sed -i "/Startup=/c\\Startup='.$xlxLinkHost.'" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service ; sudo systemctl start cron';
+                $remoteCommand = 'sudo sed -i "/Module=/c\\Module='.$startupModule.'" /etc/dmrgateway ; sudo sed -i "/Startup=/c\\Startup='.$xlxLinkHost.'" /etc/dmrgateway ; sudo systemctl restart dmrgateway.service';
                 $xlxLinkToHost = "Link set to XLX-".$xlxLinkHost.", Module ".$startupModule."";
             } else {
                     echo "<table>\n<tr><th>Command Output</th></tr>\n<tr><td>";
@@ -206,8 +198,9 @@ if (!empty($_POST) && isset($_POST["dmrNetMan"])) {
     <?php if (isset($configdmrgateway['XLX Network']['TG'])) { ?>
     <td><select name="dmrMasterHost3StartupModule" class="ModSel">
 <?php
-       if ((isset($configdmrgateway['XLX Network']['Module'])) && ($configdmrgateway['XLX Network']['Module'] != "@")) {                                                 
-                echo '        <option value="'.$configdmrgateway['XLX Network']['Module'].'" selected="selected">'.$configdmrgateway['XLX Network']['Module'].'</option>'."\n";
+        if ((isset($configdmrgateway['XLX Network']['Module'])) && ($configdmrgateway['XLX Network']['Module'] != "@"))
+        {
+            echo '        <option value="'.$configdmrgateway['XLX Network']['Module'].'" selected="selected">'.$configdmrgateway['XLX Network']['Module'].'</option>'."\n";
         }
 ?>
         <option value="A">A</option>

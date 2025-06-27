@@ -57,15 +57,16 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/config/language.php';        // Transla
 ?>
 <table id="dmrNetManTable">
   <tr>
-    <th>DMR Network</th>
-    <th colspan="2"></th>
+    <th align="left">DMR Network</th>
+    <th align="left">Disable / Enable</th>
+    <th></th>
   </tr>
 <?php
         foreach ($dmrNets as $net) {
 ?>
   <tr>
     <td align="left"><?=$net['name']?></td>
-    <td>
+    <td align="left">
       <div class="switch">
         <input id="<?=$net['input-id']?>" class="toggle toggle-round-flat dmrnetman-switch" type="checkbox" data-net-id="<?=$net['id']?>" name="<?=$net['id']?>-toggle" value="ON" <?php echo $net['enabled']? 'checked="checked"': ''?> aria-hidden="true" tabindex="-1" />
         <label id="aria-<?=$net['input-id']?>" role="checkbox" tabindex="0" aria-label="Toggle <?=$net['name']?>" aria-checked="<?php echo $net['enabled']? 'true': 'false'?>" for="<?=$net['input-id']?>"><font style="font-size:0px">Toggle <?=$net['name']?></font></label>
@@ -165,14 +166,14 @@ $(function() {
                 <form action="" method="post">
                     <table>
                         <tr>
-                            <th width="150"><a class="tooltip" href="#">Select Reflector<span><b>Select Reflector</b></span></a></th>
-                            <th><a class="tooltip" href="#">Module<span><b>Module</b></span></a></th>
-                            <th><a class="tooltip" href="#">Current Link<span><b>Current Link</b></span></a></th>
-                            <th width="150"><a class="tooltip" href="#">Action<span><b>Action</b></span></a></th>
+                            <th width="150" align="left"><a class="tooltip" href="#">Select Reflector<span><b>Select Reflector</b></span></a></th>
+                            <th align="left"><a class="tooltip" href="#">Module<span><b>Module</b></span></a></th>
+                            <th align="left"><a class="tooltip" href="#">Current Link<span><b>Current Link</b></span></a></th>
+                            <th width="150" align="left"><a class="tooltip" href="#">Action<span><b>Action</b></span></a></th>
                             <th></th>
                         </tr>
                         <tr>
-                        <td><select name="dmrMasterHost3Startup" class="dmrMasterHost3Startup">
+                        <td align="left"><select name="dmrMasterHost3Startup" class="dmrMasterHost3Startup">
                             <?php
         $configdmrgateway = $_SESSION['DMRGatewayConfigs'];
         $dmrMasterFile3 = fopen("/usr/local/etc/DMR_Hosts.txt", "r");
@@ -196,7 +197,7 @@ $(function() {
 ?>
     </select></td>
     <?php if (isset($configdmrgateway['XLX Network']['TG'])) { ?>
-    <td><select name="dmrMasterHost3StartupModule" class="ModSel">
+    <td align="left"><select name="dmrMasterHost3StartupModule" class="ModSel">
 <?php
         if ((isset($configdmrgateway['XLX Network']['Module'])) && ($configdmrgateway['XLX Network']['Module'] != "@"))
         {
@@ -246,11 +247,11 @@ if(getDMRnetStatus("xlx") == "disabled") {
             });
 </script>
                             <?php if (!empty($target)) { ?>
-                            <td><strong class="CheckLink"><?php echo $target; ?></strong></td>
+                            <td align="left"><strong class="CheckLink"><?php echo $target; ?></strong></td>
                             <?php } else { ?>
-                            <td><strong class="CheckLink">Unlinked</strong></td>
+                            <td align="left"><strong class="CheckLink">Unlinked</strong></td>
                             <?php } ?>
-                            <td>
+                            <td align="left">
                                 <input type="hidden" name="Link" value="LINK" />
                                 <input type="submit" name="xlxMgrSubmit" value="Request Change" />
                             </td>

@@ -6,7 +6,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDa
 // geoLookup/flags
 if (!class_exists('xGeoLookup')) require_once($_SERVER['DOCUMENT_ROOT'].'/classes/class.GeoLookup.php');                                                              
 $Flags = new xGeoLookup();
-$Flags->SetFlagFile("/usr/local/etc/country.csv");
+$Flags->SetFlagFile("/usr/local/etc/countries.json");
 $Flags->LoadFlags();
 if (constant("TIME_FORMAT") == "24") {
     $local_time = date('H:i:s M j');

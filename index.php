@@ -773,7 +773,7 @@ echo wpsd()->user_js();
 <script>
 executeBackgroundTasks();
 reloadDateTime();
-reloadDynData();
+if (typeof reloadDynData === 'function') reloadDynData();
 </script>
     <?php
     if($_SESSION['WPSDdashConfig']['WPSD']['PhoneticCallsigns'] == "1"){

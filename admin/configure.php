@@ -142,65 +142,6 @@ if (file_exists('/etc/dstar-radio.mmdvmhost')) {
     system('sudo touch /etc/dstar-radio.mmdvmhost');
 }
 
-//
-// Old Mobile GPS conf conversion stuff
-//
-// Delete the old MobileGPS config file
-if (file_exists('/etc/mobilegps'))
-{
-    exec('sudo rm -f /etc/mobilegps');
-}
-// Convert MMDVMHost config file
-if (isset($configmmdvm['Mobile GPS'])) {
-    if (isset($configmmdvm['Mobile GPS']['Enable'])) {
-        $configmmdvm['GPSD']['Enable'] = $configmmdvm['Mobile GPS']['Enable'];
-        unset($configmmdvm['Mobile GPS']['Enable']);
-    }
-
-    if (isset($configmmdvm['Mobile GPS']['Address'])) {
-        unset($configmmdvm['Mobile GPS']['Address']);
-    }
-
-    if (isset($configmmdvm['Mobile GPS']['Port'])) {
-        unset($configmmdvm['Mobile GPS']['Port']);
-    }
-
-    unset($configmmdvm['Mobile GPS']);
-}
-
-// YSF Gateway config file
-if (isset($configysfgateway['Mobile GPS'])) {
-    if (isset($configysfgateway['Mobile GPS']['Enable'])) {
-        unset($configysfgateway['Mobile GPS']['Enable']);
-    }
-
-    if (isset($configysfgateway['Mobile GPS']['Address'])) {
-        unset($configysfgateway['Mobile GPS']['Address']);
-    }
-
-    if (isset($configysfgateway['Mobile GPS']['Port'])) {
-        unset($configysfgateway['Mobile GPS']['Port']);
-    }
-
-    unset($configysfgateway['Mobile GPS']);
-}
-// NXDN Gateway config file
-if (isset($confignxdngateway['Mobile GPS'])) {
-    if (isset($confignxdngateway['Mobile GPS']['Enable'])) {
-        unset($confignxdngateway['Mobile GPS']['Enable']);
-    }
-
-    if (isset($confignxdngateway['Mobile GPS']['Address'])) {
-        unset($confignxdngateway['Mobile GPS']['Address']);
-    }
-
-    if (isset($confignxdngateway['Mobile GPS']['Port'])) {
-        unset($confignxdngateway['Mobile GPS']['Port']);
-    }
-
-    unset($confignxdngateway['Mobile GPS']);
-}
-
 // GPSd
 if (!isset($configdmrgateway['GPSD']) || !isset($configdmrgateway['GPSD']['Enable']) || !isset($configdmrgateway['GPSD']['Address']) ||!isset($configdmrgateway['GPSD']['Port'])) {
     $configdmrgateway['GPSD']['Enable'] = 0;
@@ -370,53 +311,6 @@ if (($configmmdvm['General']['Display'] == "Nextion") && ($configmmdvm['NextionD
 // special (on init) handling for DV-Mega CAST's display udp service, which uses Transpaent Data from MMDVMhost...
 if (isDVmegaCast() == 1) {
     $configmmdvm['Transparent Data']['Enable'] = "1";
-}
-
-/*
-// New MMDVMHost uart stuff
-if (!isset($configmmdvm['Modem']['Protocol']) ||
-!isset($configmmdvm['Modem']['UARTPort']) ||
-!isset($configmmdvm['Modem']['UARTSpeed'])) {
-    $configmmdvm['Modem']['Protocol'] = "uart";
-    $configmmdvm['Modem']['UARTPort'] = $configmmdvm['Modem']['Port'];
-    $configmmdvm['Modem']['UARTSpeed'] = 115200;
-}
-*/
-
-// Convert [aprs.fi] sections to new [APRS] format
-function clearAprsDotFi(&$cfgFile, $suffix) {
-    $cfgAprsEnabled = 0;
-    $cfgAprsSuffix = $suffix;
-    $cfgAprsDescription = (isset($configysfgateway['APRS']['Description']) && !empty($configysfgateway['APRS']['Description'])) ? $configysfgateway['APRS']['Description'] : "APRS Description";
-
-    // Old config if present, get rid of it
-    if (isset($cfgFile['aprs.fi']))
-    {
-        $cfgAprsEnabled = $cfgFile['aprs.fi']['Enable'];
-        if (isset($cfgFile['aprs.fi']['Suffix']) && !empty($cfgFile['aprs.fi']['Suffix']))
-        {
-            $cfgAprsSuffix = $cfgFile['aprs.fi']['Suffix'];
-        }
-        $cfgAprsDescription = $cfgFile['aprs.fi']['Description'];
-        unset($cfgFile['aprs.fi']);
-    }
-
-    // Add default APRS config
-    $cfgFile['APRS']['Enable'] = "0";
-    $cfgFile['APRS']['Address'] = "127.0.0.1";
-    $cfgFile['APRS']['Port'] = "8673";
-    $cfgFile['APRS']['Suffix'] = $cfgAprsSuffix;
-    $cfgFile['APRS']['Description'] = $cfgAprsDescription;
-    $cfgFile['APRS']['Symbol'] = "\"Wi\"";
-}
-
-// Ensure NXDNGateway file contains the new APRS configuration
-if (isset($confignxdngateway['aprs.fi']) || !isset($confignxdngateway['APRS'])) {
-    clearAprsDotFi($confignxdngateway, "N");
-}
-// Ensure YSFGateway file contains the new APRS configuration
-if (isset($configysfgateway['aprs.fi']) || !isset($configysfgateway['APRS'])) {
-    clearAprsDotFi($configysfgateway, "Y");
 }
 
 //

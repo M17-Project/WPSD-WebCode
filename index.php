@@ -411,51 +411,7 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 		}
 
 		if ($_SERVER["PHP_SELF"] == "/admin/index.php" && $_POST["func"] == "bm_man" || $_GET["func"] == "bm_man") { 		// Admin Only Option (BM manager )
-		    $bmAPIkeyFile = '/etc/bmapi.key';
-		    if (!file_exists($bmAPIkeyFile)) { // no API key file at all; warn, instruct  and bail.
-		    ?>
-			<div>
-			  <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
-			    <tr>
-				<td align="center" valign="top" style="background-color: #ffff90; color: crimson; word-wrap: break-all;padding:20px;">Notice! You do not have a BrandMeister API key defined! Read the announcement on how create one: <a href="https://news.brandmeister.network/introducing-user-api-keys/" target="new" alt="BM API Keys">BM API Key Announcement and Migration Instructions</a>; and then <a href="/admin/advanced/fulledit_bmapikey.php">Enter your API Key</a> to enable this page.</td>
-			    </tr>
-			  </table>
-			</div>
-		    <?php
-		    } else if (file_exists($bmAPIkeyFile) && fopen($bmAPIkeyFile,'r')) { // yay we have am API key file
-			$configBMapi = parse_ini_file($bmAPIkeyFile, true);
-			$bmAPIkey = $configBMapi['key']['apikey'];
-			// Check the BM API Key
-			if ( strlen($bmAPIkey) <= 20 ) { // malformed api key file/contents; warn, instruct and bail!
-		     ?>
-			<div>
-			  <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
-			    <tr>
-				<td align="center" valign="top" style="background-color: #ffff90; color: crimson; word-wrap: break-all;padding:20px;">Notice! You do not have a BrandMeister API key defined! Read the announcement on how create one: <a href="https://news.brandmeister.network/introducing-user-api-keys/" target="new" alt="BM API Keys">BM API Key Announcement and Migration Instructions</a>; and then <a href="/admin/advanced/fulledit_bmapikey.php">Enter your API Key</a>. to enable this page.</td>
-			    </tr>
-			  </table>
-			</div>
-		    <?php
-		        } elseif ( strlen($bmAPIkey) <= 200 ) { // Legacy API v1 key; warn, instruct and bail
-		    ?>
-			   <div>
-			     <table align="center"style="margin: 0px 0px 10px 0px; width: 100%;border-collapse:collapse; table-layout:fixed;white-space: normal!important;">
-			       <tr>
-			         <td align="center" valign="top" style="background-color: #ffff90; color: #906000; word-wrap: break-all;padding:20px;">Notice! You have a legacy Brandmeister API Key, which will not work any longer. Read the announcement on how to migrate: <a href="https://news.brandmeister.network/introducing-user-api-keys/" target="new" alt="BM API Keys">BM API Key Announcement and Migration Instructions</a>; and then <a href="/admin/advanced/fulledit_bmapikey.php">Update your API Key</a> to enable this page.</td>
-			       </tr>
-			     </table>
-			   </div>
-		    <?php
-		        } else { // Yay! good API key!
-		            if (!isset($_POST["tgSubmit"])) {
-		                include 'mmdvmhost/bm_common.php'; // BM Common func
-		                echo '<div id="bmConnects">'."\n";
-		                include 'mmdvmhost/bm_links.php';  // BM Links
-		                echo '</div>'."\n";
-		            }
-		            include 'mmdvmhost/bm_manager.php';    // BM DMR Link Manager
-		        }
-		    }
+		    include "admin/bm-manager.php";
 		}
 
 		// Will re-enable if/when TGIF provides a public API for

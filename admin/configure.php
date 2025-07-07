@@ -142,65 +142,6 @@ if (file_exists('/etc/dstar-radio.mmdvmhost')) {
     system('sudo touch /etc/dstar-radio.mmdvmhost');
 }
 
-//
-// Old Mobile GPS conf conversion stuff
-//
-// Delete the old MobileGPS config file
-if (file_exists('/etc/mobilegps'))
-{
-    exec('sudo rm -f /etc/mobilegps');
-}
-// Convert MMDVMHost config file
-if (isset($configmmdvm['Mobile GPS'])) {
-    if (isset($configmmdvm['Mobile GPS']['Enable'])) {
-        $configmmdvm['GPSD']['Enable'] = $configmmdvm['Mobile GPS']['Enable'];
-        unset($configmmdvm['Mobile GPS']['Enable']);
-    }
-
-    if (isset($configmmdvm['Mobile GPS']['Address'])) {
-        unset($configmmdvm['Mobile GPS']['Address']);
-    }
-
-    if (isset($configmmdvm['Mobile GPS']['Port'])) {
-        unset($configmmdvm['Mobile GPS']['Port']);
-    }
-
-    unset($configmmdvm['Mobile GPS']);
-}
-
-// YSF Gateway config file
-if (isset($configysfgateway['Mobile GPS'])) {
-    if (isset($configysfgateway['Mobile GPS']['Enable'])) {
-        unset($configysfgateway['Mobile GPS']['Enable']);
-    }
-
-    if (isset($configysfgateway['Mobile GPS']['Address'])) {
-        unset($configysfgateway['Mobile GPS']['Address']);
-    }
-
-    if (isset($configysfgateway['Mobile GPS']['Port'])) {
-        unset($configysfgateway['Mobile GPS']['Port']);
-    }
-
-    unset($configysfgateway['Mobile GPS']);
-}
-// NXDN Gateway config file
-if (isset($confignxdngateway['Mobile GPS'])) {
-    if (isset($confignxdngateway['Mobile GPS']['Enable'])) {
-        unset($confignxdngateway['Mobile GPS']['Enable']);
-    }
-
-    if (isset($confignxdngateway['Mobile GPS']['Address'])) {
-        unset($confignxdngateway['Mobile GPS']['Address']);
-    }
-
-    if (isset($confignxdngateway['Mobile GPS']['Port'])) {
-        unset($confignxdngateway['Mobile GPS']['Port']);
-    }
-
-    unset($confignxdngateway['Mobile GPS']);
-}
-
 // GPSd
 if (!isset($configdmrgateway['GPSD']) || !isset($configdmrgateway['GPSD']['Enable']) || !isset($configdmrgateway['GPSD']['Address']) ||!isset($configdmrgateway['GPSD']['Port'])) {
     $configdmrgateway['GPSD']['Enable'] = 0;
@@ -370,53 +311,6 @@ if (($configmmdvm['General']['Display'] == "Nextion") && ($configmmdvm['NextionD
 // special (on init) handling for DV-Mega CAST's display udp service, which uses Transpaent Data from MMDVMhost...
 if (isDVmegaCast() == 1) {
     $configmmdvm['Transparent Data']['Enable'] = "1";
-}
-
-/*
-// New MMDVMHost uart stuff
-if (!isset($configmmdvm['Modem']['Protocol']) ||
-!isset($configmmdvm['Modem']['UARTPort']) ||
-!isset($configmmdvm['Modem']['UARTSpeed'])) {
-    $configmmdvm['Modem']['Protocol'] = "uart";
-    $configmmdvm['Modem']['UARTPort'] = $configmmdvm['Modem']['Port'];
-    $configmmdvm['Modem']['UARTSpeed'] = 115200;
-}
-*/
-
-// Convert [aprs.fi] sections to new [APRS] format
-function clearAprsDotFi(&$cfgFile, $suffix) {
-    $cfgAprsEnabled = 0;
-    $cfgAprsSuffix = $suffix;
-    $cfgAprsDescription = (isset($configysfgateway['APRS']['Description']) && !empty($configysfgateway['APRS']['Description'])) ? $configysfgateway['APRS']['Description'] : "APRS Description";
-
-    // Old config if present, get rid of it
-    if (isset($cfgFile['aprs.fi']))
-    {
-        $cfgAprsEnabled = $cfgFile['aprs.fi']['Enable'];
-        if (isset($cfgFile['aprs.fi']['Suffix']) && !empty($cfgFile['aprs.fi']['Suffix']))
-        {
-            $cfgAprsSuffix = $cfgFile['aprs.fi']['Suffix'];
-        }
-        $cfgAprsDescription = $cfgFile['aprs.fi']['Description'];
-        unset($cfgFile['aprs.fi']);
-    }
-
-    // Add default APRS config
-    $cfgFile['APRS']['Enable'] = "0";
-    $cfgFile['APRS']['Address'] = "127.0.0.1";
-    $cfgFile['APRS']['Port'] = "8673";
-    $cfgFile['APRS']['Suffix'] = $cfgAprsSuffix;
-    $cfgFile['APRS']['Description'] = $cfgAprsDescription;
-    $cfgFile['APRS']['Symbol'] = "\"Wi\"";
-}
-
-// Ensure NXDNGateway file contains the new APRS configuration
-if (isset($confignxdngateway['aprs.fi']) || !isset($confignxdngateway['APRS'])) {
-    clearAprsDotFi($confignxdngateway, "N");
-}
-// Ensure YSFGateway file contains the new APRS configuration
-if (isset($configysfgateway['aprs.fi']) || !isset($configysfgateway['APRS'])) {
-    clearAprsDotFi($configysfgateway, "Y");
 }
 
 //
@@ -3172,6 +3066,12 @@ if (!empty($is_paused)) {
                 if (escapeshellcmd($_POST['MMDVMModePOCSAG']) == 'OFF' ) { $configmmdvm['POCSAG']['Enable'] = "0"; $configmmdvm['POCSAG Network']['Enable'] = "0"; }
             }
 
+            // Set CW ID function
+            if (empty($_POST['MMDVMModeCWID']) != TRUE ) {
+                if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'ON' )  { $configmmdvm['CW Id']['Enable'] = "1"; }
+                if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'OFF' ) { $configmmdvm['CW Id']['Enable'] = "0"; }
+            }
+
             // Set the MMDVMHost Display Type
             $configmmdvm['NextionDriver']['Enable'] = "0";
             $configmmdvm['NextionDriver']['Port'] = "0";
@@ -4586,6 +4486,7 @@ if (!empty($is_paused)) {
                 $toggleDMR2YSFCheckboxCr                = 'onclick="toggleDMR2YSFCheckbox()"';
                 $toggleDMR2NXDNCheckboxCr               = 'onclick="toggleDMR2NXDNCheckbox()"';
                 $togglePOCSAGCheckboxCr                 = 'onclick="togglePOCSAGCheckbox()"';
+                $toggleCWIDCheckboxCr                   = 'onclick="toggleCWIDCheckbox()"';
                 $toggleAPRSGatewayCheckboxCr            = 'onclick="toggleAPRSGatewayCheckbox()"';
                 $toggleGpsdCheckboxCr                   = 'onclick="toggleGpsdCheckbox()"';
                 $toggleDmrGatewayNet1EnCheckboxCr       = 'onclick="toggleDmrGatewayNet1EnCheckbox()"';
@@ -4615,6 +4516,7 @@ if (!empty($is_paused)) {
                 $toggleDMR2YSFCheckboxCr                = "";
                 $toggleDMR2NXDNCheckboxCr               = "";
                 $togglePOCSAGCheckboxCr                 = "";
+                $toggleCWIDCheckboxCr                   = "";
                 $toggleAPRSGatewayCheckboxCr            = "";
                 $toggleGpsdCheckboxCr                   = "";
                 $toggleDmrGatewayNet1EnCheckboxCr       = "";
@@ -5091,6 +4993,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <input type="hidden" name="MMDVMModeDMR2YSF" value="OFF" />
     <input type="hidden" name="MMDVMModeDMR2NXDN" value="OFF" />
     <input type="hidden" name="MMDVMModePOCSAG" value="OFF" />
+    <input type="hidden" name="MMDVMModeCWID" value="OFF" />
     <h2 class="ConfSec"><?php echo __( 'Radio/MMDVMHost Modem Configuration' );?></h2>
     <table>
     <tr>
@@ -5323,7 +5226,23 @@ document.querySelector('form').addEventListener('submit', function(e) {
     ?>
     </tr>
     <?php } ?>
-
+    <tr>
+    <th class='config_head' colspan="3">Other MMDVM Modem Options</th>
+    </tr>
+    <tr>
+    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'CW ID' );?>:<span><b>CW ID</b>Periodically have the modem TX your callsign via CW</span></a></td>
+    <td align="left">
+    <?php
+        if ( $configmmdvm['CW Id']['Enable'] == 1 ) {
+            echo "<div class=\"switch\"><input id=\"toggle-cwid\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"MMDVMModeCWID\" value=\"ON\" checked=\"checked\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleCWIDCheckboxCr." /><label id=\"aria-toggle-cwid\" role=\"checkbox\" tabindex=\"0\" aria-label=\"CW ID Mode\" aria-checked=\"true\" onKeyPress=\"toggleCWIDCheckbox()\" onclick=\"toggleCWIDCheckbox()\" for=\"toggle-cwid\"><font style=\"font-size:0px\">CW ID Mode</font></label></div>\n";
+        }
+        else {
+            echo "<div class=\"switch\"><input id=\"toggle-cwid\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"MMDVMModeCWID\" value=\"ON\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleCWIDCheckboxCr." /><label id=\"aria-toggle-cwid\" role=\"checkbox\" tabindex=\"0\" aria-label=\"CW ID Mode\" aria-checked=\"false\" onKeyPress=\"toggleCWIDCheckbox()\" onclick=\"toggleCWIDCheckbox()\" for=\"toggle-cwid\"><font style=\"font-size:0px\">CW ID Mode</font></label></div>\n";
+        }
+    ?>
+    </td>
+    <td align="left" colspan="2" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-question-circle"></i> Enabling CW ID will periodically have the modem TX your callsign via CW for identification.</td>
+    </tr>
     </table>
 
     <br /><br />

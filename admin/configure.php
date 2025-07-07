@@ -3066,6 +3066,12 @@ if (!empty($is_paused)) {
                 if (escapeshellcmd($_POST['MMDVMModePOCSAG']) == 'OFF' ) { $configmmdvm['POCSAG']['Enable'] = "0"; $configmmdvm['POCSAG Network']['Enable'] = "0"; }
             }
 
+            // Set CW ID function
+            if (empty($_POST['MMDVMModeCWID']) != TRUE ) {
+                if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'ON' )  { $configmmdvm['CW Id']['Enable'] = "1"; }
+                if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'OFF' ) { $configmmdvm['CW Id']['Enable'] = "0"; }
+            }
+
             // Set the MMDVMHost Display Type
             $configmmdvm['NextionDriver']['Enable'] = "0";
             $configmmdvm['NextionDriver']['Port'] = "0";
@@ -4480,6 +4486,7 @@ if (!empty($is_paused)) {
                 $toggleDMR2YSFCheckboxCr                = 'onclick="toggleDMR2YSFCheckbox()"';
                 $toggleDMR2NXDNCheckboxCr               = 'onclick="toggleDMR2NXDNCheckbox()"';
                 $togglePOCSAGCheckboxCr                 = 'onclick="togglePOCSAGCheckbox()"';
+                $toggleCWIDCheckboxCr                   = 'onclick="toggleCWIDCheckbox()"';
                 $toggleAPRSGatewayCheckboxCr            = 'onclick="toggleAPRSGatewayCheckbox()"';
                 $toggleGpsdCheckboxCr                   = 'onclick="toggleGpsdCheckbox()"';
                 $toggleDmrGatewayNet1EnCheckboxCr       = 'onclick="toggleDmrGatewayNet1EnCheckbox()"';
@@ -4509,6 +4516,7 @@ if (!empty($is_paused)) {
                 $toggleDMR2YSFCheckboxCr                = "";
                 $toggleDMR2NXDNCheckboxCr               = "";
                 $togglePOCSAGCheckboxCr                 = "";
+                $toggleCWIDCheckboxCr                   = "";
                 $toggleAPRSGatewayCheckboxCr            = "";
                 $toggleGpsdCheckboxCr                   = "";
                 $toggleDmrGatewayNet1EnCheckboxCr       = "";
@@ -4985,6 +4993,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <input type="hidden" name="MMDVMModeDMR2YSF" value="OFF" />
     <input type="hidden" name="MMDVMModeDMR2NXDN" value="OFF" />
     <input type="hidden" name="MMDVMModePOCSAG" value="OFF" />
+    <input type="hidden" name="MMDVMModeCWID" value="OFF" />
     <h2 class="ConfSec"><?php echo __( 'Radio/MMDVMHost Modem Configuration' );?></h2>
     <table>
     <tr>
@@ -5217,7 +5226,23 @@ document.querySelector('form').addEventListener('submit', function(e) {
     ?>
     </tr>
     <?php } ?>
-
+    <tr>
+    <th class='config_head' colspan="3">Other MMDVM Modem Options</th>
+    </tr>
+    <tr>
+    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'CW ID' );?>:<span><b>CW ID</b>Periodically have the modem TX your callsign via CW</span></a></td>
+    <td align="left">
+    <?php
+        if ( $configmmdvm['CW Id']['Enable'] == 1 ) {
+            echo "<div class=\"switch\"><input id=\"toggle-cwid\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"MMDVMModeCWID\" value=\"ON\" checked=\"checked\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleCWIDCheckboxCr." /><label id=\"aria-toggle-cwid\" role=\"checkbox\" tabindex=\"0\" aria-label=\"CW ID Mode\" aria-checked=\"true\" onKeyPress=\"toggleCWIDCheckbox()\" onclick=\"toggleCWIDCheckbox()\" for=\"toggle-cwid\"><font style=\"font-size:0px\">CW ID Mode</font></label></div>\n";
+        }
+        else {
+            echo "<div class=\"switch\"><input id=\"toggle-cwid\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"MMDVMModeCWID\" value=\"ON\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleCWIDCheckboxCr." /><label id=\"aria-toggle-cwid\" role=\"checkbox\" tabindex=\"0\" aria-label=\"CW ID Mode\" aria-checked=\"false\" onKeyPress=\"toggleCWIDCheckbox()\" onclick=\"toggleCWIDCheckbox()\" for=\"toggle-cwid\"><font style=\"font-size:0px\">CW ID Mode</font></label></div>\n";
+        }
+    ?>
+    </td>
+    <td align="left" colspan="2" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-question-circle"></i> Enabling CW ID will periodically have the modem TX your callsign via CW for identification.</td>
+    </tr>
     </table>
 
     <br /><br />

@@ -113,6 +113,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    exec("sudo cp /etc/hosts $backupDir > /dev/null");
 			    exec("sudo cp /etc/hostname $backupDir > /dev/null");
 			    exec("sudo cp /etc/bmapi.key $backupDir > /dev/null");
+			    exec("sudo cp /etc/wpsd-bm-config.json $backupDir > /dev/null");
 			    exec("sudo cp /etc/dapnetapi.key $backupDir > /dev/null");
 			    exec("sudo cp /etc/default/gpsd $backupDir > /dev/null");
 			    exec("sudo cp /etc/*_paused $backupDir > /dev/null");
@@ -201,7 +202,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    	exec('sudo wpsd-services fullstop > /dev/null');
 
 				// Overwrite the configs
-				exec("sudo rm -rf /etc/WPSD-Dashboard-Config.ini /etc/dstar-radio.* /etc/bmapi.key /etc/dapnetapi.key /etc/timeserver.disable /etc/WPSD_config_mgr > /dev/null");
+				exec("sudo rm -rf /etc/WPSD-Dashboard-Config.ini /etc/dstar-radio.* /etc/bmapi.key /etc/wpsd-bm-config.json /etc/dapnetapi.key /etc/timeserver.disable /etc/WPSD_config_mgr > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/tmp/config_backup/* /tmp/config_restore/ > /dev/null");
 				exec("sudo rm -rf /tmp/config_restore/tmp > /dev/null");
                                 exec("sudo cp -a /tmp/config_restore/WPSD_config_mgr /etc/ > /dev/null");

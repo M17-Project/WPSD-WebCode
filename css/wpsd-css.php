@@ -279,6 +279,63 @@ table td {
     padding: 5px;
 }
 
+.info {
+    background: <?php echo $tableRowEvenBg; ?>;
+    font-size: <?php echo "$bodyFontSize"; ?>px;
+    border: .5px solid <?php echo $tableBorderColor; ?>;
+    color: <?php echo $textContent; ?>;
+    padding: 10px;
+}
+
+.full-width-hint {
+    text-align: left;
+    margin: 8px 20px;
+}
+
+.inline-switch {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+h2.page-header {
+    text-align: left;
+    margin: 10px 0;
+}
+
+h3.section-header {
+    text-align: left;
+    margin: 15px 0 10px 0;
+}
+
+.admin-table td, .admin-table th {
+    padding: 4px 8px;
+}
+
+.admin-table input[type=button],
+.admin-table input[type=submit] {
+    padding: 4px 8px;
+    margin: 2px;
+}
+
+.loader {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    border: 3px solid transparent;
+    border-top: 3px solid <?php echo $textContent; ?>;;
+    border-bottom: 3px solid <?php echo $textContent; ?>;;
+    border-radius: 50%;
+    animation: loader-spin 0.8s linear infinite;
+}
+
+@keyframes loader-spin {
+    0%   { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
 body {
     background: <?php echo $backgroundPage; ?>;
     color: <?php echo $textContent; ?>;

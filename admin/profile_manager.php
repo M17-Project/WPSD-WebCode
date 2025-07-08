@@ -150,6 +150,7 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
                             	    exec("sudo cp /etc/hosts $profileDir > /dev/null");
                             	    exec("sudo cp /etc/hostname $profileDir > /dev/null");
                             	    exec("sudo cp /etc/bmapi.key $profileDir > /dev/null");
+                            	    exec("sudo cp /etc/wpsd-bm-config.json $profileDir > /dev/null");
                             	    exec("sudo cp /etc/dapnetapi.key $profileDir > /dev/null");
                             	    exec("sudo cp /etc/default/gpsd $profileDir > /dev/null");
                             	    exec("sudo cp /etc/*_paused $profileDir > /dev/null");

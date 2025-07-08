@@ -46,17 +46,6 @@ function checkSessionValidity() {
         $_SESSION['CURRENT_PROFILE'] = false;
     }
 
-    if ( ! isset( $_SESSION['BMAPIKey'] ) || ( is_countable( $_SESSION['BMAPIKey'] ) && count( $_SESSION['BMAPIKey'], COUNT_RECURSIVE) < 1 ) && @file_exists( '/etc/bmapi.key' ) ) {
-        $configBMapi = @parse_ini_file('/etc/bmapi.key', true);
-        if (isset($configBMapi['key']['apikey']) && !empty($configBMapi['key']['apikey'])) {
-            $_SESSION['BMAPIKey'] = $configBMapi['key']['apikey'];
-            // Check the BM API Key
-            if ( strlen($_SESSION['BMAPIKey']) <= 20 ) {
-                unset($_SESSION['BMAPIKey']);
-            }
-        }
-    }
-
     loadSessionConfigFile('DAPNETAPIKeyConfigs', '/etc/dapnetapi.key');
     loadSessionConfigFile('WPSDdashConfig', '/etc/WPSD-Dashboard-Config.ini');
     loadSessionConfigFile('WPSDrelease', '/etc/WPSD-release');
@@ -2069,8 +2058,13 @@ function getName($callsign) {
     }
 }
 
+function redirectByHeader($url) {
+    header("Location: " . $url);
+    die();
+}
+
 //Some basic inits
-if (!in_array($_SERVER["PHP_SELF"],array('/mmdvmhost/bm_links.php','/mmdvmhost/bm_manager.php'),true)) {
+if (!defined('MMDVM_FUNC_DEFS_ONLY')) {
     $logLinesMMDVM = getMMDVMLog();
     $reverseLogLinesMMDVM = $logLinesMMDVM;
     array_multisort($reverseLogLinesMMDVM,SORT_DESC);

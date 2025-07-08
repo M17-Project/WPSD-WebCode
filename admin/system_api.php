@@ -17,8 +17,10 @@
 // NOTE: `get_ip` only returns the IP; no exit status (deliberate).
 //
 */
-
+define('MMDVM_FUNC_DEFS_ONLY', true);  // do not autoexecute logs reading code in mmdvmhost/functions.php
 include_once $_SERVER['DOCUMENT_ROOT'].'/mmdvmhost/functions.php';    // MMDVMDash Functions
+include_once $_SERVER['DOCUMENT_ROOT'].'/classes/class.BMApi.php';    // Brandmeister API
+
 
 function executeCommand($command) {
     $output = null;
@@ -93,6 +95,41 @@ switch ($action) {
         $result = [
             'commandOutput' => dmrGwSetNetStatus($selectedNet, $state != 'disable'),
         ];
+        break;
+
+    case 'bm_manager':
+        $bmApi = BMApi::getInstance();
+        if ($_GET['cmd'] == 'link_static') {
+            if (!isset($_GET['tg']) || !isset($_GET['slot'])) {
+                $result = ['error' => 'tg and slot params required'];
+            } else {
+                $bmApi->linkStaticTG($_GET['tg'], $_GET['slot']);
+                $result = ['success' => true];
+            }
+        } elseif ($_GET['cmd'] == 'drop_static') {
+            if (!isset($_GET['tg']) || !isset($_GET['slot'])) {
+                $result = ['error' => 'tg and slot params required'];
+            } else {
+                $bmApi->dropStaticTG($_GET['tg'], $_GET['slot']);
+                $result = ['success' => true];
+            }
+        } elseif ($_GET['cmd'] == 'drop_dynamic') {
+            if (!isset($_GET['slot'])) {
+                $result = ['error' => 'slot param required'];
+            } else {
+                $bmApi->dropDynamicTGs($_GET['slot']);
+                $result = ['success' => true];
+            }
+        } elseif ($_GET['cmd'] == 'drop_qso') {
+            if (!isset($_GET['slot'])) {
+                $result = ['error' => 'slot param required'];
+            } else {
+                $bmApi->dropQSO($_GET['slot']);
+                $result = ['success' => true];
+            }
+        } else {
+            $result = ['error' => 'Bad command: ' . $_GET['cmd']];
+        }
         break;
 
     default:

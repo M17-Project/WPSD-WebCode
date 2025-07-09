@@ -117,7 +117,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    exec("sudo cp /etc/dapnetapi.key $backupDir > /dev/null");
 			    exec("sudo cp /etc/default/gpsd $backupDir > /dev/null");
 			    exec("sudo cp /etc/*_paused $backupDir > /dev/null");
-			    exec("sudo cp /etc/.bm_tgs.json.saved $backupDir > /dev/null");
+			    exec("sudo cp /etc/wpsd-bm-config.json $backupDir > /dev/null");
 			    exec("sudo cp /etc/.WPSD_config $backupDir > /dev/null");
 			    exec("sudo cp /etc/timeserver.disable $backupDir > /dev/null");
 			    exec("sudo cp /usr/local/etc/RSSI.dat $backupDir > /dev/null");
@@ -221,7 +221,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 				exec("sudo mv -f /tmp/config_restore/wpsd-upnp-rules /etc/ > /dev/null");
                 		exec("sudo mv -f /tmp/config_restore/hostapd.conf /etc/hostapd/ > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/*_paused /etc/ > /dev/null");
-				exec("sudo cp -a /tmp/config_restore/.bm_tgs.json.saved /etc/ > /dev/null");
+				exec("sudo cp -a /tmp/config_restore/wpsd-bm-config.json /etc/ > /dev/null");
 				exec("sudo cp -a /tmp/config_restore/.WPSD_config  /etc/ > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/pistar-css.ini /etc/wpsd-css.ini > /dev/null");
 				exec("sudo mv -f /tmp/config_restore/* /etc/ > /dev/null");

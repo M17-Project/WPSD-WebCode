@@ -7,6 +7,8 @@ class BMApi {
     const BMAPI_KEY_FILE = '/etc/bmapi.key';
     const BMAPI_CONFIG = '/etc/wpsd-bm-config.json';
     const BM_GROUPS_JSON = '/usr/local/etc/BM_TGs.json';
+    const DEBUG_LOG = '/tmp/bm-debug.log';
+    // to enable debug logging, touch this file & chown www-data:www-data
 
     private static $instance = null;
 
@@ -88,6 +90,13 @@ class BMApi {
         $this->bmStatus = self::STATUS_OK;
 
         return $this->bmStatus;
+    }
+
+
+    //=========== Debug log
+    protected function debugLog($message) {
+        if (!file_exists(self::DEBUG_LOG)) return;
+        file_put_contents(self::DEBUG_LOG, date('Y-m-d H:i:s') . ' ' . $message . "\n", FILE_APPEND);
     }
 
 
@@ -210,6 +219,13 @@ class BMApi {
         $streamContext = stream_context_create(['http' => $httpContext]);
 
         $apiResult = @file_get_contents(self::BMAPI_BASEURL . $endpoint, /*use_include_path=*/false, $streamContext);
+
+        $this->debugLog("BM API call:\n" . var_export([
+            'method'      => $method,
+            'endpoint'    => self::BMAPI_BASEURL . $endpoint,
+            'httpContext' => $httpContext,
+            'result'      => $apiResult,
+        ], TRUE));
 
         return json_decode($apiResult, /*associative=*/true);
     }

@@ -111,10 +111,10 @@ if ($bmApi->getStatus() != BMApi::STATUS_OK) {
     <table class="admin-table">
         <tr>
             <th align="left">Talkgroup</th>
-            <th align="left">Name</th>
             <th align="left">Timeslot</th>
             <th>Enable</th>
             <th>Drop</th>
+            <th align="left">Name</th>
         </tr>
 <?php
     foreach ($bmApi->getFavTGs() as $tg => $favTGData) {
@@ -124,7 +124,6 @@ if ($bmApi->getStatus() != BMApi::STATUS_OK) {
 ?>
         <tr>
             <td align="left">TG <?=$tg?></td>
-            <td align="left"><?=$bmApi->resolveGroupName($tg)?></td>
             <td align="left">TS<?=$displaySlot?></td>
             <td style="padding: 2px 5px;">
                 <div class="inline-switch">
@@ -147,6 +146,7 @@ if ($bmApi->getStatus() != BMApi::STATUS_OK) {
             <td>
                 <a class="clickloader" href="<?=$dropUrl?>" title="Unlink permanently &amp; delete from this list">Drop</a>
             </td>
+            <td align="left"><?=$bmApi->resolveGroupName($tg)?></td>
         </tr>
 <?php
     }

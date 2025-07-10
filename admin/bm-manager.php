@@ -153,7 +153,7 @@ if ($bmApi->getStatus() != BMApi::STATUS_OK) {
 ?>
 	<tr>
             <td align="left">
-                <textarea id="add-bm-tg-list" rows="5" cols="12" name="TG" value="" placeholder="Enter One Talkgroup per Line"></textarea>
+                <textarea id="add-bm-tg-list" rows="2" cols="10" name="TG" value="" placeholder="One TG per Line"></textarea>
             </td>
             <td align="left">
 

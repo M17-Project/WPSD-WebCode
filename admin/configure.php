@@ -3071,6 +3071,9 @@ if (!empty($is_paused)) {
                 if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'ON' )  { $configmmdvm['CW Id']['Enable'] = "1"; }
                 if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'OFF' ) { $configmmdvm['CW Id']['Enable'] = "0"; }
             }
+            if (!empty($_POST['cwidInterval'])) {
+                $configmmdvm['CW Id']['Time'] = escapeshellcmd($_POST['cwidInterval']);
+            }
 
             // Set the MMDVMHost Display Type
             $configmmdvm['NextionDriver']['Enable'] = "0";
@@ -5230,7 +5233,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <th class='config_head' colspan="3">Other MMDVM Modem Options</th>
     </tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'CW ID' );?>:<span><b>CW ID</b>Periodically have the modem TX your callsign via CW</span></a></td>
+    <td align="left"><a class="tooltip2" href="#">CW ID:<span><b>CW ID</b>Periodically have the modem TX your callsign via CW</span></a></td>
     <td align="left">
     <?php
         if ( $configmmdvm['CW Id']['Enable'] == 1 ) {
@@ -5241,7 +5244,17 @@ document.querySelector('form').addEventListener('submit', function(e) {
         }
     ?>
     </td>
-    <td align="left" colspan="2" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-question-circle"></i> Enabling CW ID will periodically have the modem TX your callsign via CW for identification.</td>
+    <td align="left" colspan="2" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'>
+        <label for="cwidInterval">Interval:</label>
+        <select name="cwidInterval" id="cwidInterval">
+            <option value="10" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "10") { echo 'selected="selected"'; } ?>>10 Minutes</option>
+            <option value="20" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "20") { echo 'selected="selected"'; } ?>>20 Minutes</option>
+            <option value="40" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "40") { echo 'selected="selected"'; } ?>>40 Minutes</option>
+            <option value="60" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "60") { echo 'selected="selected"'; } ?>>60 Minutes</option>
+        </select>
+        <br>
+        <i class="fa fa-question-circle"></i> Enabling CW ID will periodically have the modem TX your callsign via CW for identification.
+    </td>
     </tr>
     </table>
 

@@ -3071,6 +3071,9 @@ if (!empty($is_paused)) {
                 if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'ON' )  { $configmmdvm['CW Id']['Enable'] = "1"; }
                 if (escapeshellcmd($_POST['MMDVMModeCWID']) == 'OFF' ) { $configmmdvm['CW Id']['Enable'] = "0"; }
             }
+            if (!empty($_POST['cwidInterval'])) {
+                $configmmdvm['CW Id']['Time'] = escapeshellcmd($_POST['cwidInterval']);
+            }
 
             // Set the MMDVMHost Display Type
             $configmmdvm['NextionDriver']['Enable'] = "0";
@@ -3137,6 +3140,13 @@ if (!empty($is_paused)) {
                 if (escapeshellcmd($_POST['mmdvmNextionDisplayType']) == "ON7LDSL2") { $configmmdvm['Nextion']['ScreenLayout'] = "2"; }
                 if (escapeshellcmd($_POST['mmdvmNextionDisplayType']) == "ON7LDSL3") { $configmmdvm['Nextion']['ScreenLayout'] = "3"; }
                 if (escapeshellcmd($_POST['mmdvmNextionDisplayType']) == "ON7LDSL3HS") { $configmmdvm['Nextion']['ScreenLayout'] = "4"; }
+            }
+            // Set the Nextion Idle Brightness
+            if (isset($_POST['idleBrightness']) && is_numeric($_POST['idleBrightness'])) {
+                $newIdleBrightness = intval($_POST['idleBrightness']);
+                if ($newIdleBrightness >= 10 && $newIdleBrightness <= 100) {
+                    $configmmdvm['Nextion']['IdleBrightness'] = $newIdleBrightness;
+                }
             }
 
             // Set OLED options
@@ -5230,7 +5240,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <th class='config_head' colspan="3">Other MMDVM Modem Options</th>
     </tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#"><?php echo __( 'CW ID' );?>:<span><b>CW ID</b>Periodically have the modem TX your callsign via CW</span></a></td>
+    <td align="left"><a class="tooltip2" href="#">CW ID:<span><b>CW ID</b>Periodically have the modem TX your callsign via CW</span></a></td>
     <td align="left">
     <?php
         if ( $configmmdvm['CW Id']['Enable'] == 1 ) {
@@ -5241,7 +5251,17 @@ document.querySelector('form').addEventListener('submit', function(e) {
         }
     ?>
     </td>
-    <td align="left" colspan="2" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'><i class="fa fa-question-circle"></i> Enabling CW ID will periodically have the modem TX your callsign via CW for identification.</td>
+    <td align="left" colspan="2" style='word-wrap: break-word;white-space: normal;padding-left: 5px;'>
+        <label for="cwidInterval">Interval:</label>
+        <select name="cwidInterval" id="cwidInterval">
+            <option value="10" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "10") { echo 'selected="selected"'; } ?>>10 Minutes</option>
+            <option value="20" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "20") { echo 'selected="selected"'; } ?>>20 Minutes</option>
+            <option value="40" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "40") { echo 'selected="selected"'; } ?>>40 Minutes</option>
+            <option value="60" <?php if (isset($configmmdvm['CW Id']['Time']) && $configmmdvm['CW Id']['Time'] == "60") { echo 'selected="selected"'; } ?>>60 Minutes</option>
+        </select>
+        <br>
+        <i class="fa fa-question-circle"></i> Enabling CW ID will periodically have the modem TX your callsign via CW for identification.
+    </td>
     </tr>
     </table>
 
@@ -5316,15 +5336,19 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
     </tr>
     <tr>
-    <td align="left"><a class="tooltip2" href="#">Nextion Display Settings:<span><b>Nextion Display Settings</b>If you have a Nextion display, choose your settings here.</span></a></td>
-    <td align="left" colspan="2">
+        <td align="left"><a class="tooltip2" href="#">Nextion Display Settings:<span><b>Nextion Display Settings</b>If you have a Nextion display, choose your settings here.</span></a></td>
+        <td align="left" colspan="2">
             <b>Layout Type: </b><select name="mmdvmNextionDisplayType">
             <option <?php if ($configmmdvm['Nextion']['ScreenLayout'] == "0") {echo 'selected="selected" ';}; ?>value="G4KLX">G4KLX</option>
             <option <?php if ($configmmdvm['Nextion']['ScreenLayout'] == "2") {echo 'selected="selected" ';}; ?>value="ON7LDSL2">ON7LDS L2</option>
             <option <?php if ($configmmdvm['Nextion']['ScreenLayout'] == "3") {echo 'selected="selected" ';}; ?>value="ON7LDSL3">ON7LDS L3</option>
             <option <?php if ($configmmdvm['Nextion']['ScreenLayout'] == "4") {echo 'selected="selected" ';}; ?>value="ON7LDSL3HS">ON7LDS L3 HS</option>
             </select>
-    </td></tr>
+            <br /><br /> <b>Idle Brightness:</b>
+            <input type="range" id="idleBrightness" name="idleBrightness" min="10" max="100" step="10" value="<?php echo isset($configmmdvm['Nextion']['IdleBrightness']) ? $configmmdvm['Nextion']['IdleBrightness'] : '20'; ?>" oninput="this.nextElementSibling.value = this.value + '%'" />
+            <output><?php echo isset($configmmdvm['Nextion']['IdleBrightness']) ? $configmmdvm['Nextion']['IdleBrightness'] : '20'; ?>%</output>
+        </td>
+    </tr>
     <tr>
         <td align="left" rowspan="4"><a class="tooltip2" href="#">OLED Display Options:<span><b>OLED Display Options</b>If you have an OLED display, choose your options here.</span></a></td>
         <td align="left"><strong>Display Always Active:</strong> <small><em>(Displays data even while modem is idle)</em></small></td>
@@ -5338,10 +5362,10 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <tr>
         <td align="left"><strong>Scroll Display:</strong> <small><em>(Note: OLED Type-3 [0.96"] displays only)</em></small></td>
         <td align="left">
-            <input type="radio" name="oledScrollEnable" value="ON" id="oledScroll1" <?php if ($configmmdvm['OLED']['Scroll'] == "1") { echo 'checked="checked"'; } if ($configmmdvm['OLED']['Type'] == "6") { echo 'disabled="disabled"'; } ?> />
-            <label for="oledScroll1">Enabled</label>
-            <input type="radio" name="oledScrollEnable" value="OFF" id="oledScroll0" <?php if ($configmmdvm['OLED']['Scroll'] == "0") { echo 'checked="checked"'; } if ($configmmdvm['OLED']['Type'] == "6") { echo 'disabled="disabled"'; } ?> />
-            <label for="oledScroll0">Disabled</label>
+<input type="radio" name="oledScrollEnable" value="ON" id="oledScroll1" <?php if ($configmmdvm['OLED']['Scroll'] == "1") { echo 'checked="checked"'; } if ($configmmdvm['OLED']['Type'] == "6") { echo 'disabled="disabled" data-phphandle-disabled="true"'; } ?> />
+        <label for="oledScroll1">Enabled</label>
+        <input type="radio" name="oledScrollEnable" value="OFF" id="oledScroll0" <?php if ($configmmdvm['OLED']['Scroll'] == "0") { echo 'checked="checked"'; } if ($configmmdvm['OLED']['Type'] == "6") { echo 'disabled="disabled" data-phphandle-disabled="true"'; } ?> />
+        <label for="oledScroll0">Disabled</label>
         </td>
     </tr>
     <tr>
@@ -7223,6 +7247,73 @@ echo'
 
     window.addEventListener('load', function() {
         setTimeout(handleDisplayPortState, 150);
+    });
+
+    // Function to toggle Nextion display settings and OLED options based on mmdvmDisplayType selection
+    function toggleNextionSettings() {
+        var displayTypeSelect = document.querySelector('select[name="mmdvmDisplayType"]');
+        var nextionLayoutSelect = document.querySelector('select[name="mmdvmNextionDisplayType"]');
+        var idleBrightnessSlider = document.getElementById('idleBrightness');
+
+        // Get all OLED related input elements (radio buttons for now)
+        var oledScreenSaverInputs = document.querySelectorAll('input[name="oledScreenSaverEnable"]');
+        var oledScrollInputs = document.querySelectorAll('input[name="oledScrollEnable"]');
+        var oledRotateInputs = document.querySelectorAll('input[name="oledRotateEnable"]');
+        var oledInvertInputs = document.querySelectorAll('input[name="oledInvertEnable"]');
+
+
+        if (displayTypeSelect) {
+            var selectedValue = displayTypeSelect.value;
+            var isNextionSelected = (selectedValue === 'Nextion' || selectedValue === 'NextionDriver' || selectedValue === 'NextionDriverTrans');
+            var isOLEDSelected = (selectedValue === 'OLED3' || selectedValue === 'OLED6'); // Check if any OLED type is selected
+
+            // Toggle Nextion specific settings
+            nextionLayoutSelect.disabled = !isNextionSelected;
+            idleBrightnessSlider.disabled = !isNextionSelected;
+
+            // Also disable the output element for idle brightness if disabled
+            var idleBrightnessOutput = idleBrightnessSlider.nextElementSibling;
+            if (idleBrightnessOutput) {
+                idleBrightnessOutput.disabled = !isNextionSelected;
+            }
+
+            // Toggle OLED specific settings
+            // Iterate over each set of radio buttons and disable/enable them
+            [oledScreenSaverInputs, oledScrollInputs, oledRotateInputs, oledInvertInputs].forEach(function(inputs) {
+                inputs.forEach(function(input) {
+                    // Preserve the disabled state for OLED Type 6 scroll if it was set by PHP
+                    if (input.name === 'oledScrollEnable' && input.hasAttribute('data-phphandle-disabled')) {
+                        // If it's the OLED Type 6 scroll input and PHP disabled it, keep it disabled
+                        input.disabled = true;
+                    } else {
+                        input.disabled = !isOLEDSelected;
+                    }
+
+                    // Uncheck if disabled
+                    if (input.disabled) {
+                        input.checked = false; // Optionally uncheck when disabled
+                    }
+                });
+            });
+        }
+    }
+
+    // Call the function on page load to set the initial state
+    window.addEventListener('load', toggleNextionSettings);
+
+    // Attach the function to the change event of the mmdvmDisplayType select
+    document.querySelector('select[name="mmdvmDisplayType"]').addEventListener('change', toggleNextionSettings);
+
+    // Additional: Ensure initial state of OLED Type 6 scroll is preserved when script runs
+    window.addEventListener('load', function() {
+        var oledScrollInputs = document.querySelectorAll('input[name="oledScrollEnable"]');
+        oledScrollInputs.forEach(function(input) {
+            // Check if PHP already disabled it (for OLED Type 6)
+            if (input.disabled) {
+                input.setAttribute('data-phphandle-disabled', 'true'); // Mark it as PHP-disabled
+            }
+        });
+        toggleNextionSettings(); // Call again after marking, to ensure correct re-evaluation
     });
 </script>
 </body>

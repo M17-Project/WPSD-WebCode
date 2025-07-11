@@ -121,13 +121,7 @@ for ($i = 0;  ($i <= $lastHeardRows - 1); $i++) {
                     $local_time = $dt->format('h:i:s A M j');
                 }
 		// YSF & D-Star sometimes has malformed calls with bad spaces and freeform text...address these
-		if ($listElem[1] != "M17") {
-		    if (preg_match('/ /', $listElem[2])) {
-			$listElem[2] = preg_replace('/ .*$/', "", $listElem[2]);
-		    }
-		}
 		if (preg_match('/[\s-]/', $listElem[2])) { // handle and display calls with certain suffixes:
-		    if ($listElem[1] == "M17") {  // M17 supports two suffix types: "-n" and a "/n". MMDVMHost uses multiple, spaces instead of a "/". Let's parse those suffixes...
 			$listElem[2] = preg_replace('!\s+!', ',', $listElem[2]);
 			$listElem[2] = preg_replace('/-/', ',', $listElem[2]);
 		    } else { // all other modes with dash and/or single space
@@ -274,7 +268,6 @@ for ($i = 0;  ($i <= $lastHeardRows - 1); $i++) {
 		}
 	    }
 	}
-    }
 ?>
   </table>
   <script>clear_activity();</script>

@@ -36,9 +36,6 @@ if ($_SERVER["PHP_SELF"] == "/admin/download_log.php") {
 	    case "NXDNGateway":
 		$logfile = "/var/log/pi-star/NXDNGateway-".gmdate('Y-m-d').".log";
 		break;
-	    case "M17Gateway":
-		$logfile = "/var/log/pi-star/M17Gateway-".gmdate('Y-m-d').".log";
-		break;
 	    case "DAPNETGateway":
 		$logfile = "/var/log/pi-star/DAPNETGateway-".gmdate('Y-m-d').".log";
 		break;

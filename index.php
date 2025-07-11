@@ -97,7 +97,6 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
             $('.dmrMasterHost3').select2();
             $('.dmrMasterHost3Startup').select2({searchInputPlaceholder: 'Search...', width: '125px'});
             $('.ModSel').select2();
-            $('.M17Ref').select2({searchInputPlaceholder: 'Search...', width: '125px'});
           });
           $(document).ready(function() {
             $('.menuhwinfo').click(function() {
@@ -457,12 +456,6 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 				include 'mmdvmhost/nxdn_manager.php';		// NXDN Links
 		    }
 		}
-		$testMMDVModeM17net = getConfigItem("M17 Network", "Enable", $_SESSION['MMDVMHostConfigs']);
-		if ( $testMMDVModeM17net == 1 ) {				// If M17 network is enabled, add these extra features.
-		    if ($_SERVER["PHP_SELF"] == "/admin/index.php" && $_POST["func"] == "m17_man" || $_GET["func"] == "m17_man") { 	// Admin Only Option
-			include 'mmdvmhost/m17_manager.php';		// M17 Links
-		    }
-		}
                 $dmrMasterHost = getConfigItem("DMR Network", "Address", $_SESSION['MMDVMHostConfigs']);
                 if ( $dmrMasterHost == '127.0.0.1') {
 		    if ($testMMDVModeDMR == 1) {
@@ -550,14 +543,6 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 			}
 			else {
 			    echo '		<button form="admin_sel" disabled="disabled" title="Mode is Disabled" type="submit" value="nxdn_man" name="func"><span>NXDN Manager</span></button>'."\n";
-			}
-			echo '          </div><div class="mode_flex column">'."\n";
-			$testMMDVModeM17 = getConfigItem("M17 Network", "Enable", $_SESSION['MMDVMHostConfigs']);
-			if ($testMMDVModeM17 == 1 && !isPaused("M17")) {
-			    echo '		<button form="admin_sel" type="submit" value="m17_man" name="func"><span>M17 Manager</span></button>'."\n";
-			}
-			else {
-			    echo '		<button form="admin_sel" disabled="disabled" title="Mode is Disabled" type="submit" value="m17_man" name="func"><span>M17 Manager</span></button>'."\n";
 			}
 			echo '          </div><div class="mode_flex column">'."\n";
 			$testMMDVModePOCSAG = getConfigItem("POCSAG", "Enable", $_SESSION['MMDVMHostConfigs']);

@@ -102,7 +102,6 @@ if ($_SERVER["PHP_SELF"] == "/admin/config_backup.php") {
 			    exec("sudo cp /etc/ysf2dmr $backupDir > /dev/null");
                 	    exec("sudo cp /etc/dgidgateway $backupDir > /dev/null");
                 	    exec("sudo cp /etc/nxdngateway $backupDir > /dev/null");
-                	    exec("sudo cp /etc/m17gateway $backupDir > /dev/null");
 			    exec("sudo cp /etc/ysf2nxdn $backupDir > /dev/null");
 			    exec("sudo cp /etc/ysf2p25 $backupDir > /dev/null");
 			    exec("sudo cp /etc/dmrgateway $backupDir > /dev/null");

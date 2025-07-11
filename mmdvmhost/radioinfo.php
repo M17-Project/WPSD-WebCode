@@ -123,12 +123,6 @@ if (isset($_SESSION['CSSConfigs']['Background']['TableRowBgEvenColor'])) {
                 else if (getActualMode($lastHeard, $_SESSION['MMDVMHostConfigs']) === 'P25') {
                     echo "<div class=\"divTableCell middle cell_content\" style=\"background:#ffc425;color:#000000;font-weight:bold;padding:2px;\">Standby: P25</div>\n"; 
                 }
-                else if ($listElem[2] && $listElem[6] == null && getActualMode($lastHeard, $_SESSION['MMDVMHostConfigs']) === 'M17') {
-                    echo "<div class=\"divTableCell middle cell_content active-mode-cell\" style=\"padding:2px;font-weight:bold;\">RX M17</div>\n";
-                }
-                else if (getActualMode($lastHeard, $_SESSION['MMDVMHostConfigs']) === 'M17') {
-                    echo "<div class=\"divTableCell middle cell_content\" style=\"background:#ffc425;color:#000000;padding:2px;font-weight:bold;\">Standby: M17</div>\n";
-                }
                 else if ($listElem[2] && $listElem[6] == null && getActualMode($lastHeard, $_SESSION['MMDVMHostConfigs']) === 'NXDN') {
                     echo "<div class=\"divTableCell middle cell_content active-mode-cell\" style=\"font-weight:bold;padding:2px;\">RX: NXDN</div>\n";
                 }   

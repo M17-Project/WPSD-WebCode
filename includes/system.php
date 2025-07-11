@@ -27,9 +27,6 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
   <?php } ?>
   <div class="grid-item <?php getServiceStatusClass(isSystemdServiceRunning("wpsd-nightly-tasks.timer")); ?>">WPSD Nightly Task Processor</div>
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('NXDNGateway')); ?>">NXDNGateway</div> 
-  <?php if (isDVmegaCast() == 0) { ?>
-  <div class="grid-item <?php getServiceStatusClass(isProcessRunning('M17Gateway')); ?>">M17Gateway</div> 
-  <?php } ?>
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('NXDNParrot')); ?>">NXDNParrot</div> 
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('usr/sbin/vnstatd',true)); ?>">Network Metrics (vnstat)</div> 
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('APRSGateway')); ?>">APRSGateway</div>

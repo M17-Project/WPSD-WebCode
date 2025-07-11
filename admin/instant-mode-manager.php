@@ -60,7 +60,6 @@ $DMR    = ($configmmdvm['DMR']['Enable']);
 $YSF    = ($configmmdvm['System Fusion']['Enable']);
 $P25    = ($configmmdvm['P25']['Enable']);
 $NXDN   = ($configmmdvm['NXDN']['Enable']);
-$M17    = ($configmmdvm['M17']['Enable']);
 $AX25   = ($configmmdvm['AX.25']['Enable']);
 $POCSAG = ($configmmdvm['POCSAG']['Enable']);
 $APRS   = ($configaprsgw['Enabled']['Enabled']);
@@ -179,8 +178,7 @@ if (!empty($_POST["submit_mode"]) && empty($_POST["mode_sel"])) { //handler for 
 	    if (isDVmegaCast() != 1) {
 	      echo '
             <option value="P25" ' . (($P25 == '0' && !isPaused("P25")) ? 'disabled="disabled"' : '') . '>P25</option>
-            <option value="NXDN" ' . (($NXDN == '0' && !isPaused("NXDN")) ? 'disabled="disabled"' : '') . '>NXDN</option>
-            <option value="M17" ' . (($M17 == '0' && !isPaused("M17")) ? 'disabled="disabled"' : '') . '>M17</option>';
+            <option value="NXDN" ' . (($NXDN == '0' && !isPaused("NXDN")) ? 'disabled="disabled"' : '') . '>NXDN</option>';
 	    }
 	    echo '</select>
             <br /><br />

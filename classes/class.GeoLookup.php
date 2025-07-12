@@ -46,9 +46,16 @@ class xGeoLookup {
          if (isset($country_data['sub_entities']) && is_array($country_data['sub_entities'])) {
             foreach ($country_data['sub_entities'] as $sub_entity_data) {
                $sub_entity_index = count($this->Flagarray);
+               // If a sub entity has its own flag, then we can display it instead.  
+               // Currently only Scotland, Northern Ireland, Wales and England but the code is generic
+               if (array_key_exists('country_code',$sub_entity_data)) {
+                  $sub_entity_country_code = $sub_entity_data['country_code'];
+               } else {
+                  $sub_entity_country_code = $country_data['country_code'];
+               }
                $this->Flagarray[$sub_entity_index] = [
                   'Name' => $sub_entity_data['name'],
-                  'ISO' => $country_data['country_code'], // Sub-entities use parent country's ISO for flag
+                  'ISO' => $sub_entity_country_code,
                   'IsSubEntity' => true,
                   'ParentName' => $country_data['country_name']
                ];

@@ -153,11 +153,4 @@ $lang = array (
   "D-Star Link Manager"         =>  "D-Star链接管理",
   "D-Star Link Information"     =>  "D-Star链接信息",
   "Service &amp; Process Status" =>  "服务 &amp; 流程状态",
-  // M17
-  "M17 Configuration"           =>  "M17配置",
-  "M17 Mode"                    =>  "M17模式",
-  "M17 Startup Reflector"       =>  "M17反射器启动",
-  "M17 CAN"                     =>  "M17 CAN",
-  "M17 Status"                  =>  "M17状态",
-  "M17 Network"                 =>  "M17网络",
 );

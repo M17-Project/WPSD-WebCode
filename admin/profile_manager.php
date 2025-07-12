@@ -139,7 +139,6 @@ if (file_exists('/etc/.WPSD_config') && count(glob("$profile_dir/*")) > 0) {
                             	    exec("sudo cp /etc/ysf2dmr $profileDir > /dev/null");
                             	    exec("sudo cp /etc/dgidgateway $profileDir > /dev/null");
                             	    exec("sudo cp /etc/nxdngateway $profileDir > /dev/null");
-                            	    exec("sudo cp /etc/m17gateway $profileDir > /dev/null");
                             	    exec("sudo cp /etc/ysf2nxdn $profileDir > /dev/null");
                             	    exec("sudo cp /etc/ysf2p25 $profileDir > /dev/null");
                             	    exec("sudo cp /etc/dmrgateway $profileDir > /dev/null");

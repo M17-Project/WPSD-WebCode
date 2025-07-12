@@ -81,7 +81,6 @@ $remoteDMRgwResults = [];
 $remoteYSFGResults = [];
 $remoteP25GResults = [];
 $remoteNXDNGResults = [];
-$remoteM17GWResults = [];
 
 if (isProcessRunning("MMDVMHost")) {
     $cfgItemEnabled = getConfigItem("Remote Control", "Enable", $_SESSION['MMDVMHostConfigs']);
@@ -112,12 +111,6 @@ if (isProcessRunning("NXDNGateway")) {
     $remoteCommandEnabled = (isset($_SESSION['NXDNGatewayConfigs']['Remote Commands']) ? $_SESSION['NXDNGatewayConfigs']['Remote Commands']['Enable'] : 0);
     $remoteCommandPort = (isset($_SESSION['NXDNGatewayConfigs']['Remote Commands']) ? $_SESSION['NXDNGatewayConfigs']['Remote Commands']['Port'] : 0);
     FillConnectionStatus($remoteNXDNGResults, $remoteCommandEnabled, $remoteCommandPort);
-}
-
-if (isProcessRunning("M17Gateway")) {
-    $remoteCommandEnabled = (isset($_SESSION['M17GatewayConfigs']['Remote Commands']) ? $_SESSION['M17GatewayConfigs']['Remote Commands']['Enable'] : 0);
-    $remoteCommandPort = (isset($_SESSION['M17GatewayConfigs']['Remote Commands']) ? $_SESSION['M17GatewayConfigs']['Remote Commands']['Port'] : 0);
-    FillConnectionStatus($remoteM17GResults, $remoteCommandEnabled, $remoteCommandPort);
 }
 
 // get number of DMR Masters configged for DMRGw:
@@ -160,11 +153,6 @@ $numDMRmasters = exec('cd /var/log/pi-star ; /usr/local/bin/RemoteCommand '.$_SE
 
 <?php if (isDVmegaCast() == 0) { // DVMega Cast logic... ?>
   <div class="mode_flex row">
-    <div class="mode_flex column">
-      <div class="divTableCell">
-            <?php if (isPaused("M17")) { echo '<div class="paused-mode-cell" title="Mode Paused">M17</div>'; } else { showMode("M17", $_SESSION['MMDVMHostConfigs']); } ?>
-      </div>
-    </div>
     <div class="mode_flex column">
       <div class="divTableCell">
         <?php if (isPaused("NXDN")) { echo '<div class="paused-mode-cell" title="Mode Paused">NXDN</div>'; } else { showMode("NXDN", $_SESSION['MMDVMHostConfigs']); } ?>
@@ -234,11 +222,6 @@ $numDMRmasters = exec('cd /var/log/pi-star ; /usr/local/bin/RemoteCommand '.$_SE
   </div>
 
   <div class="mode_flex row">
-    <div class="mode_flex column">
-      <div class="divTableCell">
-        <?php if(isPaused("M17")) { echo '<div class="paused-mode-cell" title="Mode Paused">M17 Net</div>'; } else { showMode("M17 Network", $_SESSION['MMDVMHostConfigs']); } ?>
-      </div>
-    </div>  
     <div class="mode_flex column">
       <div class="divTableCell">
         <?php if(isPaused("NXDN")) { echo '<div class="paused-mode-cell" title="Mode Paused">NXDN Net</div>'; } else { showMode("NXDN Network", $_SESSION['MMDVMHostConfigs']); } ?>
@@ -788,46 +771,8 @@ if ( $testMMDVModeNXDN == 1 || isset($testYSF2NXDN) || isset($testDMR2NXDN) || i
 <?php
     }
 }
-
-$testMMDVModeM17 = getConfigItem("M17", "Enable", $_SESSION['MMDVMHostConfigs']);
-$M17can = getConfigItem("M17", "CAN", $_SESSION['MMDVMHostConfigs']);
-$configm17gateway = $_SESSION['M17GatewayConfigs'];
-if ( $testMMDVModeM17 == 1 || isPaused("M17") ) { //Hide the M17 Reflector information when M17 Network not enabled.
 ?>
-<div class="divTable">
-  <div class="divTableHead">M17 Status</div>
-  <div class="divTableBody">
-    <div class="divTableRow center">
 <?php
-    echo "      <div class='divTableHeadCell'>RPT</div>\n";
-    echo "        <div class='divTableCell cell_content middle'>\n";
-    echo "          <div class='mono' style=\"background: $tableRowEvenBg;\">".str_replace(' ', '&nbsp;', $configm17gateway['General']['Callsign'])."&nbsp;".str_replace(' ', '&nbsp;', $configm17gateway['General']['Suffix'])."</div>\n";
-    echo "        </div>\n";
-    echo "      </div>\n";
-    echo "    <div class='divTableRow center'>\n";
-    echo "      <div class='divTableHeadCell'>CAN</div>\n";
-    echo "        <div class='divTableCell cell_content middle'>\n";
-    echo "          <div class='mono' style=\"background: $tableRowEvenBg;\">$M17can</div>\n";
-    echo "        </div>\n";
-    echo "      </div>\n";
-    echo "    <div class='divTableRow center'>\n";
-    echo "      <div class='divTableHeadCell'>Reflector</div>\n";
-    if (isPaused("M17")) {
-        echo "        <div class='divTableCell cell_content middle'\n";
-        echo "          <div style=\"background: $tableRowEvenBg;\">Mode Paused</div>\n";
-        echo "        </div>\n";
-    } else {
-        echo "        <div class='divTableCell cell_content middle'>\n";
-        echo "          <div>".getActualLink($reverseLogLinesM17Gateway, "M17")."</div>\n";
-        echo "        </div>\n";
-    }
-?>
-    </div>
-  </div>
-</div>
-<br />
-<?php
-}
 
 $testMMDVModePOCSAG = getConfigItem("POCSAG Network", "Enable", $_SESSION['MMDVMHostConfigs']);
 if ( $testMMDVModePOCSAG == 1 || isPaused("POCSAG")) { //Hide the POCSAG information when POCSAG Network mode not enabled.
@@ -871,7 +816,6 @@ if ( $testMMDVModePOCSAG == 1 || isPaused("POCSAG")) { //Hide the POCSAG informa
 
 $testAPRSdmr = $_SESSION['DMRGatewayConfigs']['APRS']['Enable'];
 $testAPRSysf = $_SESSION['YSFGatewayConfigs']['APRS']['Enable'];
-$testAPRSm17 = $_SESSION['M17GatewayConfigs']['APRS']['Enable'];
 $testAPRSnxdn = $_SESSION['NXDNGatewayConfigs']['APRS']['Enable'];
 $testAPRSdgid = $_SESSION['DGIdGatewayConfigs']['APRS']['Enable'];
 $testAPRSircddb = $_SESSION['ircDDBConfigs']['aprsEnabled'];
@@ -920,7 +864,7 @@ if (getServiceEnabled('/etc/aprsgateway') == 1 || isPaused("APRS"))  { // Hide A
     </div>
   </div>
 <?php
-        if ($testAPRSdmr == 0 && $testAPRSircddb == 0 && $testAPRSysf == 0 && $testAPRSdgid == 0 && $testAPRSnxdn == 0 && $testAPRSm17 == 0) {
+        if ($testAPRSdmr == 0 && $testAPRSircddb == 0 && $testAPRSysf == 0 && $testAPRSdgid == 0 && $testAPRSnxdn == 0) {
 ?>
   <div class="divTable">
     <div class="divTableBody">
@@ -953,9 +897,6 @@ if (getServiceEnabled('/etc/aprsgateway') == 1 || isPaused("APRS"))  { // Hide A
   <div class="mode_flex row">
     <div class="mode_flex column">
         <?php if ($testAPRSnxdn == 1) { echo "<div class=\"divTableCell\"><div class=\"active-mode-cell\">NXDN</div></div>\n"; } else { echo "<div class=\"divTableCell\"><div class=\"disabled-mode-cell\">NXDN</div></div>\n"; } ?>
-    </div>
-    <div class="mode_flex column">
-        <?php if ($testAPRSm17 == 1) { echo "<div class=\"divTableCell\"><div class=\"active-mode-cell\">M17</div></div>\n"; } else { echo "<div class=\"divTableCell\"><div class=\"disabled-mode-cell\">M17</div></div>\n"; } ?>
     </div>
   </div>
 

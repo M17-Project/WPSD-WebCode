@@ -152,11 +152,4 @@ $lang = array (
   "D-Star Link Manager"         =>  "Gerir a ligação DSTAR",
   "D-Star Link Information"          =>  "Informações do Link DSTAR",
   "Service &amp; Process Status"              =>  "Estado do Sistema",
-  // M17
-  "M17 Configuration"                  =>  "M17 Configuration",
-  "M17 Mode"                    =>  "M17 Mode",
-  "M17 Startup Reflector"       =>  "M17 Startup Reflector",
-  "M17 CAN"                     =>  "M17 CAN",
-  "M17 Status"                =>  "M17 Status",
-  "M17 Network"                     =>  "M17 Network"
 );

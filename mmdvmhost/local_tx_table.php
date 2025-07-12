@@ -48,7 +48,7 @@ $i = 0;
 $TXListLim = count($localTXList);
 for ($i = 0; $i < $TXListLim; $i++) {
     $listElem = $localTXList[$i];
-    if ($listElem[5] == "RF" && ($listElem[1] == "D-Star" || startsWith($listElem[1], "DMR") || $listElem[1] == "YSF" || $listElem[1]== "P25" || $listElem[1]== "NXDN" || $listElem[1] == "M17")) {
+    if ($listElem[5] == "RF" && ($listElem[1] == "D-Star" || startsWith($listElem[1], "DMR") || $listElem[1] == "YSF" || $listElem[1]== "P25" || $listElem[1]== "NXDN" )) {
 	if ($counter <= 19) {
 	    $utc_time = $listElem[0];
 	    $utc_tz =  new DateTimeZone('UTC');
@@ -61,9 +61,6 @@ for ($i = 0; $i < $TXListLim; $i++) {
 		$local_time = $dt->format('h:i:s A M j');
 	    }
 	    if (preg_match('/[\s-]/', $listElem[2])) { // handle and display calls with certain suffixes:	
-		if ($listElem[1] == "M17") {  // M17 supports two suffix types: "-n" and a "/n". MMDVMHost uses multiple, spaces instead of a "/". Let's parse those suffixes...
-		    $listElem[2] = preg_replace('!\s+.*!', ' ', $listElem[2]);
-		    $listElem[2] = preg_replace('/-/', ' ', $listElem[2]);
 		} else { // all other modes with dash and/or single space
 		    $listElem[2] = preg_replace('/[\s+-]/', ' ', $listElem[2]);
 		}
@@ -205,7 +202,6 @@ for ($i = 0; $i < $TXListLim; $i++) {
 	    $counter++;
 	}
     }
-}
 ?>
   </table>
 <br />

@@ -88,12 +88,6 @@ if (file_exists('/etc/dmr2nxdn')) {
     if (fopen($dmr2nxdnConfigFile,'r')) { $configdmr2nxdn = parse_ini_file($dmr2nxdnConfigFile, true); }
 }
 
-// Load the dmr2nxdn config file
-if (file_exists('/etc/dmr2m17')) {
-    $dmr2m17ConfigFile = '/etc/dmr2m17';
-    if (fopen($dmr2m17ConfigFile,'r')) { $configdmr2m17 = parse_ini_file($dmr2m17ConfigFile, true); }
-}
-
 // Load the p25gateway config file
 if (file_exists('/etc/p25gateway')) {
     $p25gatewayConfigFile = '/etc/p25gateway';
@@ -104,12 +98,6 @@ if (file_exists('/etc/p25gateway')) {
 if (file_exists('/etc/nxdngateway')) {
     $nxdngatewayConfigFile = '/etc/nxdngateway';
     if (fopen($nxdngatewayConfigFile,'r')) { $confignxdngateway = parse_ini_file($nxdngatewayConfigFile, true); }
-}
-
-// Load the M17Gateway config file
-if (file_exists('/etc/m17gateway')) {
-    $m17gatewayConfigFile = '/etc/m17gateway';
-    if (fopen($m17gatewayConfigFile,'r')) { $configm17gateway = parse_ini_file($m17gatewayConfigFile, true); }
 }
 
 // Load the nxdn2dmr config file
@@ -220,7 +208,6 @@ $IRCDDBGatewayAPRS  = $configs['aprsEnabled'];
 $YSFGatewayAPRS     = $configysfgateway['APRS']['Enable'];
 $DGIdGatewayAPRS    = $configdgidgateway['APRS']['Enable'];
 $NXDNGatewayAPRS    = $confignxdngateway['APRS']['Enable'];
-$M17GatewayAPRS     = $configm17gateway['APRS']['Enable'];
 
 // APRS symbol form option handler
 $aprs_symbol_map = '/var/www/dashboard/includes/aprs-symbols/aprs_symbols.txt';
@@ -311,14 +298,6 @@ if (($configmmdvm['General']['Display'] == "Nextion") && ($configmmdvm['NextionD
 // special (on init) handling for DV-Mega CAST's display udp service, which uses Transpaent Data from MMDVMhost...
 if (isDVmegaCast() == 1) {
     $configmmdvm['Transparent Data']['Enable'] = "1";
-}
-
-//
-// Handle RemoteControl Port collision between NXDNGateway and M17Gateway
-//
-if ($configm17gateway['Remote Commands']['Port'] == $confignxdngateway['Remote Commands']['Port']) {
-    $configm17gateway['Remote Commands']['Port'] = 6076;
-    $confignxdngateway['Remote Commands']['Port'] = 6075;
 }
 
 //
@@ -456,7 +435,6 @@ $MYCALL=strtoupper($callsign);
             }
           });
           $('.ModSel').select2();
-          $('.M17Ref').select2({searchInputPlaceholder: 'Search...',width: '125px'});
         });
 
         // eye icon - toggle password (for all boxes)
@@ -1002,7 +980,6 @@ if (!empty($is_paused)) {
                 $configysf2p25['Info']['Latitude'] = $newConfLatitude;
                 $configdgidgateway['Info']['Latitude'] = $newConfLatitude;
                 $configdmrgateway['Info']['Latitude'] = $newConfLatitude;
-                $configm17gateway['Info']['Latitude'] = $newConfLatitude;
                 $confignxdngateway['Info']['Latitude'] = $newConfLatitude;
                 system($rollConfLat0);
                 system($rollConfLat1);
@@ -1020,7 +997,6 @@ if (!empty($is_paused)) {
                 $configysf2p25['Info']['Longitude'] = $newConfLongitude;
                 $configdgidgateway['Info']['Longitude'] = $newConfLongitude;
                 $configdmrgateway['Info']['Longitude'] = $newConfLongitude;
-                $configm17gateway['Info']['Longitude'] = $newConfLongitude;
                 $confignxdngateway['Info']['Longitude'] = $newConfLongitude;
                 system($rollConfLon0);
                 system($rollConfLon1);
@@ -1033,7 +1009,6 @@ if (!empty($is_paused)) {
                 $configysfgateway['GPSD']['Enable'] = $gpsdEnabled;
                 $configdgidgateway['GPSD']['Enable'] = $gpsdEnabled;
                 $confignxdngateway['GPSD']['Enable'] = $gpsdEnabled;
-                $configm17gateway['GPSD']['Enable'] = $gpsdEnabled;
                 $rollGpsd = 'sudo sed -i "/gpsdSEnabled=/c\\gpsdSEnabled='.$gpsdEnabled.'" /etc/ircddbgateway';
                 system($rollGpsd);
 
@@ -1049,14 +1024,12 @@ if (!empty($is_paused)) {
                if (escapeshellcmd($_POST['GPSD']) == 'ON') { system('sudo systemctl unmask gpsd.service ; sudo systemctl unmask gpsd.socket ; sudo systemctl enable gpsd.service ; sudo systemctl enable gpsd.socket'); }
                if (escapeshellcmd($_POST['GPSD']) == 'OFF')  { system('sudo systemctl stop gpsd.service ; sudo systemctl stop gpsd gpsd.socket ; sudo systemctl disable gpsd.service ; sudo systemctl disable gpsd.socket ; sudo systemctl mask gpsd.service ; sudo systemctl mask gpsd.socket'); }
 
-                // Port and Address for YSF, DGId, M17 and NXDN gateways
+                // Port and Address for YSF, DGId, and NXDN gateways
                 $configysfgateway['GPSD']['Port'] = $configdmrgateway['GPSD']['Port'];
                 $configysfgateway['GPSD']['Address'] = $configdmrgateway['GPSD']['Address'];
                 $configdgidgateway['GPSD']['Port'] = $configdmrgateway['GPSD']['Port'];
                 $configdgidgateway['GPSD']['Address'] = $configdmrgateway['GPSD']['Address'];
 
-                $configm17gateway['GPSD']['Port'] = $configdmrgateway['GPSD']['Port'];
-                $configm17gateway['GPSD']['Address'] = $configdmrgateway['GPSD']['Address'];
                 $confignxdngateway['GPSD']['Port'] = $configdmrgateway['GPSD']['Port'];
                 $confignxdngateway['GPSD']['Address'] = $configdmrgateway['GPSD']['Address'];
             }
@@ -1084,7 +1057,6 @@ if (!empty($is_paused)) {
                 $rollDesc22 = 'sudo sed -i "/description1_2=/c\\description1_2='.$newConfDesc2.'" /etc/ircddbgateway';
                 $configmmdvm['Info']['Description'] = '"'.$newConfDesc2.'"';
                 $configdmrgateway['Info']['Description'] = '"'.$newConfDesc2.'"';
-                $configm17gateway['Info']['Description'] = '"'.$newConfDesc2.'"';
                 $configysfgateway['Info']['Description'] = '"'.$newConfDesc2.'"';
                 $configdgidgateway['Info']['Description'] = '"'.$newConfDesc2.'"';
                 $confignxdngateway['Info']['Description'] = '"'.$newConfDesc2.'"';
@@ -1104,7 +1076,6 @@ if (!empty($is_paused)) {
                 $configysf2nxdn['Info']['URL'] = $txtURL;
                 $configysf2p25['Info']['URL'] = $txtURL;
                 $configdmrgateway['Info']['URL'] = $txtURL;
-                $configm17gateway['Info']['URL'] = $txtURL;
                 system($rollURL0);
             }
 
@@ -1154,11 +1125,6 @@ if (!empty($is_paused)) {
                 $NXDNGatewayAPRS = "1";
             } else {
                 $NXDNGatewayAPRS = "0";
-            }
-            if (empty($_POST['M17GatewayAPRS']) != TRUE) { // checked!
-                $M17GatewayAPRS = "1";
-            } else {
-                $M17GatewayAPRS = "0";
             }
             if (empty($_POST['DMRBeaconEnable']) != TRUE) { // checked!
                 $DMRBeaconEnable = "1";
@@ -1249,8 +1215,6 @@ if (!empty($is_paused)) {
                 $configmmdvm['Info']['TXFrequency'] = $newFREQtx;
                 $configdmrgateway['Info']['RXFrequency'] = $newFREQrx;
                 $configdmrgateway['Info']['TXFrequency'] = $newFREQtx;
-                $configm17gateway['Info']['RXFrequency'] = $newFREQrx;
-                $configm17gateway['Info']['TXFrequency'] = $newFREQtx;
                 $configysfgateway['Info']['RXFrequency'] = $newFREQrx;
                 $configysfgateway['Info']['TXFrequency'] = $newFREQtx;
                 $configysfgateway['General']['Suffix'] = "Y";
@@ -1352,8 +1316,6 @@ if (!empty($is_paused)) {
                 $configmmdvm['Info']['TXFrequency'] = $newFREQ;
                 $configdmrgateway['Info']['RXFrequency'] = $newFREQ;
                 $configdmrgateway['Info']['TXFrequency'] = $newFREQ;
-                $configm17gateway['Info']['RXFrequency'] = $newFREQ;
-                $configm17gateway['Info']['TXFrequency'] = $newFREQ;
                 $configysfgateway['Info']['RXFrequency'] = $newFREQ;
                 $configysfgateway['Info']['TXFrequency'] = $newFREQ;
                 $configysfgateway['General']['Suffix'] = "Y";
@@ -1488,7 +1450,6 @@ if (!empty($is_paused)) {
                 $configysf2p25['Info']['Description'] = $newCallsignUpper."_WPSD";
                 $configdgidgateway['General']['Callsign'] = $newCallsignUpper;
                 $configdgidgateway['Info']['Description'] = $newCallsignUpper."_WPSD";
-                $configm17gateway['Info']['Description'] = $newCallsignUpper."_WPSD";
                 $rollAPRSGatewayCallsign = 'sudo sed -i "/Callsign=/c\\Callsign='.$newCallsignUpper.'" /etc/aprsgateway';
                 system($rollAPRSGatewayCallsign);
                 $rollAPRSGatewayPassword = 'sudo sed -i "/Password=/c\\Password='.aprspass($newCallsignUpper).'" /etc/aprsgateway';
@@ -1578,56 +1539,6 @@ if (!empty($is_paused)) {
                 $nxdnranNew = preg_replace('/[^0-9]/', '', $nxdnranNew);
                 if (($nxdnranNew >= 1) && ($nxdnranNew <= 64)) {
                     $configmmdvm['NXDN']['RAN'] = $nxdnranNew;
-                }
-            }
-
-            // Set the M17 Startup Reflector
-            if (empty($_POST['m17StartupRef']) != TRUE ) {
-                $newM17StartupReflector = strtoupper(escapeshellcmd($_POST['m17StartupRef']));
-                if ($newM17StartupReflector === "NONE") {
-                    if (isset($configm17gateway['Network']['Startup'])) { unset($configm17gateway['Network']['Startup']); }
-                } else {
-                    $newM17StartupModule = strtoupper(escapeshellcmd($_POST['m17StartupModule']));
-                    $configm17gateway['Network']['Startup'] = "${newM17StartupReflector}_${newM17StartupModule}";
-                }
-            }
-
-            // Set M17 CAN
-            if (isset($_POST['m17can']) && $_POST['m17can'] !== '') {
-                $m17canNew = strtolower(escapeshellcmd($_POST['m17can']));
-                $m17canNew = (int) preg_replace('/[^0-9]/', '', $m17canNew);
-                if (($m17canNew >= 0) && ($m17canNew <= 15)) {
-                    $configmmdvm['M17']['CAN'] = $m17canNew;
-                }
-            }
-
-            // Set M17 Callsign Suffix
-            if (!empty($_POST['m17CallsignSuffix']) && '' !== $_POST['m17CallsignSuffix'] ) {
-                $m17SuffixNew = strtoupper(escapeshellcmd($_POST['m17CallsignSuffix']));
-                $m17SuffixNew = preg_replace('/[^A-Z]/', '', $m17SuffixNew);
-                if (preg_match('/[A-Za-z]/i', $m17SuffixNew)) {
-                    $configm17gateway['General']['Suffix'] = $m17SuffixNew;
-                    $configm17gateway['APRS']['Suffix'] = $m17SuffixNew;
-                }
-            }
-
-            // Set M17 Callsign Station ID
-            if (isset($_POST['m17StationID']) && '' !== $_POST['m17StationID']) {
-                $m17StationIDnew = escapeshellcmd($_POST['m17StationID']);
-                $m17StationIDnew = str_replace(' ', '', $m17StationIDnew);
-                $configm17gateway['General']['Callsign'] = $newCallsignUpper . "-" . $m17StationIDnew;
-            } else {
-                $configm17gateway['General']['Callsign'] = $newCallsignUpper;
-            }
-
-            // Set the DMR2M17 Startup Reflector
-            if (empty($_POST['dmr2m17StartupRef']) != TRUE ) {
-                $newDMR2M17StartupReflector = strtoupper(escapeshellcmd($_POST['dmr2m17StartupRef']));
-                if ($newDMR2M17StartupReflector === "NONE") {
-                    if (isset($configdmr2m17['M17 Network']['DstName'])) { unset($configdmr2m17['M17 Network']['DstName']); }
-                } else {
-                    $newDMR2M17StartupModule = strtoupper(escapeshellcmd($_POST['dmr2m17StartupModule']));
-                    $configdmr2m17['M17 Network']['DstName'] = "${newdmr2M17StartupReflector} ${newdmr2M17StartupModule}";
                 }
             }
 
@@ -2175,15 +2086,6 @@ if (!empty($is_paused)) {
                 $configmmdvm['NXDN Network']['ModeHang'] = preg_replace('/[^0-9]/', '', $_POST['nxdnNetHangTime']);
                 $confignxdngateway['Network']['NetHangTime'] = "0";
             }
-            // Set M17 Hang Timers
-            if (empty($_POST['m17RfHangTime']) != TRUE ) {
-                $configmmdvm['M17']['ModeHang'] = preg_replace('/[^0-9]/', '', $_POST['m17RfHangTime']);
-                $configm17gateway['Network']['RFHangTime'] = "0";
-            }
-            if (empty($_POST['m17NetHangTime']) != TRUE ) {
-                $configmmdvm['M17 Network']['ModeHang'] = preg_replace('/[^0-9]/', '', $_POST['m17NetHangTime']);
-                $configm17gateway['Network']['NetHangTime'] = "0";
-            }
             // Set POCSAG Hang Timer
             if (empty($_POST['POCSAGHangTime']) != TRUE ) {
                 $configmmdvm['POCSAG Network']['ModeHang'] = preg_replace('/[^0-9]/', '', $_POST['POCSAGHangTime']);
@@ -2660,12 +2562,6 @@ if (!empty($is_paused)) {
                 if (escapeshellcmd($_POST['MMDVMModeNXDN']) == 'OFF' ) { $configmmdvm['NXDN']['Enable'] = "0"; $configmmdvm['NXDN Network']['Enable'] = "0"; }
             }
 
-            // Set MMDVMHost M17 Mode
-            if (empty($_POST['MMDVMModeM17']) != TRUE ) {
-                if (escapeshellcmd($_POST['MMDVMModeM17']) == 'ON' )  { $configmmdvm['M17']['Enable'] = "1"; $configmmdvm['M17 Network']['Enable'] = "1"; }
-                if (escapeshellcmd($_POST['MMDVMModeM17']) == 'OFF' ) { $configmmdvm['M17']['Enable'] = "0"; $configmmdvm['M17 Network']['Enable'] = "0"; }
-            }
-
             // Set YSF2DMR Mode
             if (empty($_POST['MMDVMModeYSF2DMR']) != TRUE ) {
                 if (escapeshellcmd($_POST['MMDVMModeYSF2DMR']) == 'ON' )  {
@@ -2735,11 +2631,6 @@ if (!empty($is_paused)) {
                     if (empty($_POST['MMDVMModeYSF2NXDN']) != TRUE ) {
                         if (escapeshellcmd($_POST['MMDVMModeYSF2NXDN']) == 'ON' )  {
                             $configysf2nxdn['Enabled']['Enabled'] = "0";
-                        }
-                    }
-                    if (empty($_POST['MMDVMModeDMR2M17']) != TRUE ) {
-                        if (escapeshellcmd($_POST['MMDVMModeYSFM17']) == 'ON' )  {
-                            $configysf2m17['Enabled']['Enabled'] = "0";
                         }
                     }
                     $configdmr2nxdn['Enabled']['Enabled'] = "1";
@@ -3189,7 +3080,6 @@ if (!empty($is_paused)) {
                     $configmmdvm['System Fusion']['SelfOnly'] = 1;
                     $configmmdvm['P25']['SelfOnly'] = 1;
                     $configmmdvm['NXDN']['SelfOnly'] = 1;
-                    $configmmdvm['M17']['SelfOnly'] = 1;
                     if (empty($_POST['confDMRWhiteList'] == TRUE)) { // user cleared out ACL, so delete them from mmdvm config and force mode to private
                         unset($configmmdvm['DMR']['WhiteList']);
                         $configmmdvm['DMR']['SelfOnly'] = 1;
@@ -3197,7 +3087,6 @@ if (!empty($is_paused)) {
                         $configmmdvm['System Fusion']['SelfOnly'] = 1;
                         $configmmdvm['P25']['SelfOnly'] = 1;
                         $configmmdvm['NXDN']['SelfOnly'] = 1;
-                        $configmmdvm['M17']['SelfOnly'] = 1;
                     }
                 }
                 if (escapeshellcmd($_POST['nodeMode']) == 'pub' ) { // public node
@@ -3207,14 +3096,12 @@ if (!empty($is_paused)) {
                         $configmmdvm['System Fusion']['SelfOnly'] = 1;
                         $configmmdvm['P25']['SelfOnly'] = 1;
                         $configmmdvm['NXDN']['SelfOnly'] = 1;
-                        $configmmdvm['M17']['SelfOnly'] = 1;
                     } else {  // OK we have DMRid(s) in the ACL, open her up...
                         $configmmdvm['DMR']['SelfOnly'] = 0;
                         $configmmdvm['D-Star']['SelfOnly'] = 0;
                         $configmmdvm['System Fusion']['SelfOnly'] = 0;
                         $configmmdvm['P25']['SelfOnly'] = 0;
                         $configmmdvm['NXDN']['SelfOnly'] = 0;
-                        $configmmdvm['M17']['SelfOnly'] = 0;
                     }
                 }
             }
@@ -3324,44 +3211,12 @@ if (!empty($is_paused)) {
             if ( isset($configdmrgateway['DMR Network 5']['Options']) &&  substr($configdmrgateway['DMR Network 5']['Options'], 0, 1) !== '"' ) { $configdmrgateway['DMR Network 5']['Options'] = '"'.$configdmrgateway['DMR Network 5']['Options'].'"'; }
             if ( isset($configdmrgateway['DMR Network Custom']['Password']) && substr($configdmrgateway['DMR Network Custom']['Password'], 0, 1) !== '"' ) { $configdmrgateway['DMR Network Custom']['Password'] = '"'.$configdmrgateway['DMR Network Custom']['Password'].'"'; }
 
-            // Add missing values to M17Gateway
-            $configm17gateway['General']['RptAddress'] = '127.0.0.1';
-            $configm17gateway['General']['RptPort'] = '17011';
-            $configm17gateway['General']['LocalPort'] = '17010';
-            $configm17gateway['General']['Debug'] = '0';
-            $configm17gateway['General']['Daemon'] = '1';
-            if(!isset($configm17gateway['General']['Suffix'])) { $configm17gateway['General']['Suffix'] = 'H'; }
-            $configm17gateway['Info']['Power'] = $configmmdvm['Info']['Power'];
-            $configm17gateway['Info']['Height'] = $configmmdvm['Info']['Height'];
-            $configm17gateway['Network']['HostsFile1'] = "/usr/local/etc/M17Hosts.txt";
-            $configm17gateway['Network']['HostsFile2'] = "/root/M17Hosts.txt";
-            $configm17gateway['Network']['Port'] = "17000";
-            $configm17gateway['Network']['ReloadTime'] = "0";
-            $configm17gateway['Network']['HangTime'] = "240";
-            $configm17gateway['Network']['Revert'] = "1";
-            $configm17gateway['Network']['Debug'] = "0";
-            $configm17gateway['APRS']['Enable'] = $M17GatewayAPRS;
-            $configm17gateway['APRS']['Address'] = "127.0.0.1";
-            $configm17gateway['APRS']['Port'] = "8673";
-            $configm17gateway['APRS']['Description'] = "APRS for M17Gateway";
-            $configm17gateway['APRS']['Symbol'] = "\"$symbol\"";
-            $configm17gateway['Remote Commands']['Enable'] = "1";
-            $configm17gateway['Remote Commands']['Port'] = "6076";
-            $configm17gateway['Log']['DisplayLevel'] = "0";
-            $configm17gateway['Log']['FileLevel'] = "2";
-            $configm17gateway['Log']['FilePath'] = "/var/log/pi-star";
-            $configm17gateway['Log']['FileRoot'] = "M17Gateway";
-            $configm17gateway['Voice']['Enabled'] = "1";
-            $configm17gateway['Voice']['Language'] = "en_US";
-            $configm17gateway['Voice']['Directory'] = "/usr/local/etc/M17_Audio";
-
             // Add missing options to MMDVMHost
             if (!isset($configmmdvm['Modem']['RFLevel'])) { $configmmdvm['Modem']['RFLevel'] = "100"; }
             if (!isset($configmmdvm['Modem']['RXDCOffset'])) { $configmmdvm['Modem']['RXDCOffset'] = "0"; }
             if (!isset($configmmdvm['Modem']['TXDCOffset'])) { $configmmdvm['Modem']['TXDCOffset'] = "0"; }
             if (!isset($configmmdvm['Modem']['CWIdTXLevel'])) { $configmmdvm['Modem']['CWIdTXLevel'] = "50"; }
             if (!isset($configmmdvm['Modem']['NXDNTXLevel'])) { $configmmdvm['Modem']['NXDNTXLevel'] = "50"; }
-            if (!isset($configmmdvm['Modem']['M17TXLevel'])) { $configmmdvm['Modem']['M17TXLevel'] = "50"; }
             if (!isset($configmmdvm['Modem']['POCSAGTXLevel'])) { $configmmdvm['Modem']['POCSAGTXLevel'] = "50"; }
             if (!isset($configmmdvm['Modem']['FMTXLevel'])) { $configmmdvm['Modem']['FMTXLevel'] = "50"; }
             if (!isset($configmmdvm['Modem']['AX25TXLevel'])) { $configmmdvm['Modem']['AX25TXLevel'] = "50"; }
@@ -3381,12 +3236,6 @@ if (!empty($is_paused)) {
             if (!isset($configmmdvm['NXDN']['SelfOnly'])) { $configmmdvm['NXDN']['SelfOnly'] = "1"; }
             if (!isset($configmmdvm['NXDN']['RemoteGateway'])) { $configmmdvm['NXDN']['RemoteGateway'] = "0"; }
             if (!isset($configmmdvm['NXDN']['TXHang'])) { $configmmdvm['NXDN']['TXHang'] = "5"; }
-            if (!isset($configmmdvm['M17']['Enable'])) { $configmmdvm['M17']['Enable'] = "0"; }
-            if (!isset($configmmdvm['M17']['CAN'])) { $configmmdvm['M17']['CAN'] = "0"; }
-            if (!isset($configmmdvm['M17']['SelfOnly'])) { $configmmdvm['M17']['SelfOnly'] = "1"; }
-            if (!isset($configmmdvm['M17']['TXHang'])) { $configmmdvm['M17']['TXHang'] = "5"; }
-            if (!isset($configmmdvm['M17']['Enable'])) { $configmmdvm['M17']['Enable'] = "0"; }
-            if (!isset($configmmdvm['M17']['ModeHang'])) { $configmmdvm['M17']['ModeHang'] = "20"; }
             if (!isset($configmmdvm['AX.25']['Enable'])) { $configmmdvm['AX.25']['Enable'] = "0"; }
             if (!isset($configmmdvm['AX.25']['TXDelay'])) { $configmmdvm['AX.25']['TXDelay'] = "300"; }
             if (!isset($configmmdvm['AX.25']['RXTwist'])) { $configmmdvm['AX.25']['RXTwist'] = "6"; }
@@ -3399,13 +3248,6 @@ if (!empty($is_paused)) {
             if (!isset($configmmdvm['NXDN Network']['GatewayPort'])) { $configmmdvm['NXDN Network']['GatewayPort'] = "4300"; }
             if (!isset($configmmdvm['NXDN Network']['Protocol'])) { $configmmdvm['NXDN Network']['Protocol'] = "Icom"; }
             if (!isset($configmmdvm['NXDN Network']['Debug'])) { $configmmdvm['NXDN Network']['Debug'] = "0"; }
-            if (!isset($configmmdvm['M17 Network']['Enable'])) { $configmmdvm['M17 Network']['Enable'] = "0"; }
-            if (!isset($configmmdvm['M17 Network']['LocalAddress'])) { $configmmdvm['M17 Network']['LocalAddress'] = "127.0.0.1"; }
-            if (!isset($configmmdvm['M17 Network']['LocalPort'])) { $configmmdvm['M17 Network']['LocalPort'] = "17011"; }
-            if (!isset($configmmdvm['M17 Network']['GatewayAddress'])) { $configmmdvm['M17 Network']['GatewayAddress'] = "127.0.0.1"; }
-            if (!isset($configmmdvm['M17 Network']['GatewayPort'])) { $configmmdvm['M17 Network']['GatewayPort'] = "17010"; }
-            if (!isset($configmmdvm['M17 Network']['ModeHang'])) { $configmmdvm['M17 Network']['ModeHang'] = "20"; }
-            if (!isset($configmmdvm['M17 Network']['Debug'])) { $configmmdvm['M17 Network']['Debug'] = "0"; }
             if (!isset($configmmdvm['AX.25 Network']['Enable'])) { $configmmdvm['AX.25 Network']['Enable'] = "0"; }
             if (!isset($configmmdvm['AX.25 Network']['Port'])) { $configmmdvm['AX.25 Network']['Port'] = "/dev/ttyp7"; }
             if (!isset($configmmdvm['AX.25 Network']['Speed'])) { $configmmdvm['AX.25 Network']['Speed'] = "9600"; }
@@ -3770,7 +3612,6 @@ if (!empty($is_paused)) {
             $configdmrgateway['APRS']['Enable'] = $DMRGatewayAPRS;
             $configysfgateway['APRS']['Enable'] = $YSFGatewayAPRS;
             $configdgidgateway['APRS']['Enable'] = $DGIdGatewayAPRS;
-            $configm17gateway['APRS']['Enable'] = $M17GatewayAPRS;
             $confignxdngateway['APRS']['Enable'] = $NXDNGatewayAPRS;
             if (empty($_POST['IRCDDBGatewayAPRS']) != TRUE ) {
                 system('sudo sed -i "/aprsEnabled=/c\\aprsEnabled=1" /etc/ircddbgateway');
@@ -3951,43 +3792,6 @@ if (!empty($is_paused)) {
                     exec('sudo mv /tmp/kXKwkDKy793HF5.tmp /etc/nxdngateway');               // Move the file back
                     exec('sudo chmod 644 /etc/nxdngateway');                                // Set the correct runtime permissions
                     exec('sudo chown root:root /etc/nxdngateway');                          // Set the owner
-                }
-            }
-
-            // M17Gateway config file wrangling
-            $m17gwContent = "";
-            foreach($configm17gateway as $m17gwSection=>$m17gwValues) {
-                // UnBreak special cases
-                $m17gwSection = str_replace("_", " ", $m17gwSection);
-                $m17gwContent .= "[".$m17gwSection."]\n";
-                // append the values
-                foreach($m17gwValues as $m17gwKey=>$m17gwValue) {
-                    $m17gwContent .= $m17gwKey."=".$m17gwValue."\n";
-                }
-                $m17gwContent .= "\n";
-            }
-
-            if (!$handleM17GWconfig = fopen('/tmp/Edr2FxEdr2FxEdr2Fx.tmp', 'w')) {
-                return false;
-            }
-            if (!is_writable('/tmp/Edr2FxEdr2FxEdr2Fx.tmp')) {
-                echo "<br />\n";
-                echo "<table>\n";
-                echo "<tr><th>ERROR</th></tr>\n";
-                echo "<tr><td>Unable to write configuration file(s)...</td><tr>\n";
-                echo "<tr><td>Please wait a few seconds and retry...</td></tr>\n";
-                echo "</table>\n";
-                unset($_POST);
-                echo '<script type="text/javascript">setTimeout(function() { window.location=window.location;},5000);</script>';
-                die();
-            }
-            else {
-                $success = fwrite($handleM17GWconfig, $m17gwContent);
-                fclose($handleM17GWconfig);
-                if ( (intval(exec('cat /tmp/Edr2FxEdr2FxEdr2Fx.tmp | wc -l')) > 30 ) ) {
-                    exec('sudo mv /tmp/Edr2FxEdr2FxEdr2Fx.tmp /etc/m17gateway');            // Move the file back
-                    exec('sudo chmod 644 /etc/m17gateway');                         // Set the correct runtime permissions
-                    exec('sudo chown root:root /etc/m17gateway');                           // Set the owner
                 }
             }
 
@@ -4489,7 +4293,6 @@ if (!empty($is_paused)) {
                 $toggleYSFCheckboxCr                    = 'onclick="toggleYSFCheckbox()"';
                 $toggleP25CheckboxCr                    = 'onclick="toggleP25Checkbox()"';
                 $toggleNXDNCheckboxCr                   = 'onclick="toggleNXDNCheckbox()"';
-                $toggleM17CheckboxCr                    = 'onclick="toggleM17Checkbox()"';
                 $toggleYSF2DMRCheckboxCr                = 'onclick="toggleYSF2DMRCheckbox()"';
                 $toggleYSF2NXDNCheckboxCr               = 'onclick="toggleYSF2NXDNCheckbox()"';
                 $toggleYSF2P25CheckboxCr                = 'onclick="toggleYSF2P25Checkbox()"';
@@ -4519,7 +4322,6 @@ if (!empty($is_paused)) {
                 $toggleYSFCheckboxCr                    = "";
                 $toggleP25CheckboxCr                    = "";
                 $toggleNXDNCheckboxCr                   = "";
-                $toggleM17CheckboxCr                    = "";
                 $toggleYSF2DMRCheckboxCr                = "";
                 $toggleYSF2NXDNCheckboxCr               = "";
                 $toggleYSF2P25CheckboxCr                = "";
@@ -4936,12 +4738,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
                 if ($configmmdvm['NXDN Network']['Enable'] !== "1")  { echo(' disabled="disabled"'); }?> >
                 <label for="aprsgw-service-selection-3">NXDN</label>
             </div>
-            <div style="display: inline-block;vertical-align: middle; margin-left:5px;">
-                <input name="M17GatewayAPRS" id="aprsgw-service-selection-4" value="M17GatewayAPRS" type="checkbox"
-                <?php if($M17GatewayAPRS == "1" && $configmmdvm['M17 Network']['Enable'] == "1") { echo(' checked="checked"'); }
-                if ($configmmdvm['M17 Network']['Enable'] !== "1")  { echo(' disabled="disabled"'); }?> >
-                <label for="aprsgw-service-selection-4">M17</label>
-            </div>
             <?php } // end DVMega Cast logic ?>
             <div style="display: inline-block;vertical-align: middle; margin-left:5px;">
                 <input name="IRCDDBGatewayAPRS" id="aprsgw-service-selection-5" value="IRCDDBGatewayAPRS" type="checkbox"
@@ -4996,7 +4792,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     <input type="hidden" name="MMDVMModeFUSION" value="OFF" />
     <input type="hidden" name="MMDVMModeP25" value="OFF" />
     <input type="hidden" name="MMDVMModeNXDN" value="OFF" />
-    <input type="hidden" name="MMDVMModeM17" value="OFF" />
     <input type="hidden" name="MMDVMModeYSF2DMR" value="OFF" />
     <input type="hidden" name="MMDVMModeYSF2NXDN" value="OFF" />
     <input type="hidden" name="MMDVMModeYSF2P25" value="OFF" />
@@ -5037,24 +4832,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     Net Hangtime: <input type="text" name="ysfNetHangTime" size="7" maxlength="3" value="<?php if (isset($configmmdvm['System Fusion Network']['ModeHang'])) { echo $configmmdvm['System Fusion Network']['ModeHang']; } else { echo "20"; } ?>" />
     </td>
     </tr>
-
-    <?php if (isDVmegaCast() == 0) { // Begin DVMega Cast logic... ?>
-    <tr>
-    <td align="left"><a class="tooltip2" href="#">M17 Mode:<span><b>M17 Mode</b>Turn on M17 Features</span></a></td>
-    <?php
-        if ( $configmmdvm['M17']['Enable'] == 1 ) {
-            echo "<td align=\"left\"><div class=\"switch\"><input id=\"toggle-m17\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"MMDVMModeM17\" value=\"ON\" checked=\"checked\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleM17CheckboxCr." /><label id=\"aria-toggle-m17\" role=\"checkbox\" tabindex=\"0\" aria-label=\"M17 Mode\" aria-checked=\"true\" onKeyPress=\"toggleM17Checkbox()\" onclick=\"toggleM17Checkbox()\" for=\"toggle-m17\"><font style=\"font-size:0px\">M17 Mode</font></label></div></td>\n";
-        }
-        else {
-            echo "<td align=\"left\"><div class=\"switch\"><input id=\"toggle-m17\" class=\"toggle toggle-round-flat\" type=\"checkbox\" name=\"MMDVMModeM17\" value=\"ON\" aria-hidden=\"true\" tabindex=\"-1\" ".$toggleM17CheckboxCr." /><label id=\"aria-toggle-m17\" role=\"checkbox\" tabindex=\"0\" aria-label=\"M17 Mode\" aria-checked=\"false\" onKeyPress=\"toggleM17Checkbox()\" onclick=\"toggleM17Checkbox()\" for=\"toggle-m17\"><font style=\"font-size:0px\">M17 Mode</font></label></div></td>\n";
-        }
-    ?>
-    <td align="left">RF Hangtime: <input type="text" name="m17RfHangTime" size="7" maxlength="3" value="<?php if (isset($configmmdvm['M17']['ModeHang'])) { echo $configmmdvm['M17']['ModeHang']; } else { echo "20"; } ?>" />
-    Net Hangtime: <input type="text" name="m17NetHangTime" size="7" maxlength="3" value="<?php if (isset($configmmdvm['M17 Network']['ModeHang'])) { echo $configmmdvm['M17 Network']['ModeHang']; } else { echo "20"; } ?>" />
-    </td>
-    </tr>
-
-    <?php } // end DVMega Cast logic ?>
 
     <tr>
     <td align="left"><a class="tooltip2" href="#">DMR Mode:<span><b>DMR Mode</b>Turn on DMR Features</span></a></td>
@@ -5927,148 +5704,6 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
     <br /><br />
 
 <?php } ?>
-
-                        <!-- M17 -->
-                        <?php if (file_exists('/etc/dstar-radio.mmdvmhost') && $configmmdvm['M17 Network']['Enable'] == 1 ) { ?>
-                            <h2 class="ConfSec">M17 Configuration</h2>
-                            <table>
-                                <tr>
-                                </tr>
-                                <tr>
-                                    <td align="left"><a class="tooltip2" href="#">M17 Startup Reflector:<span><b>Startup Reflector</b>Set your preferred M17 reflector here</span></a></td>
-                                    <td style="text-align: left;"><select name="m17StartupRef" class="M17Ref">
-                                        <?php
-                                        if ($m17MasterHandle = @fopen("/usr/local/etc/M17Hosts.txt", 'r'))
-                                        {
-                                            $m17StartupHostWithModule = (isset($configm17gateway['Network']['Startup']) ? $configm17gateway['Network']['Startup'] : "");
-                                            $m17StartupHost = "";
-                                            $m17StartupModule = "A";
-                                            if ($m17StartupHostWithModule != "") {
-                                                $m17StartupHost = substr($m17StartupHostWithModule, 0, -2);
-                                                $m17StartupModule = substr($m17StartupHostWithModule, -1);
-                                            }
-
-                                            if ($m17StartupHost == "") {
-                                                echo "      <option value=\"NONE\" selected=\"selected\">None</option>\n";
-                                            }
-                                            else {
-                                                echo "      <option value=\"NONE\">None</option>\n";
-                                            }
-
-                                            while ($m17MasterLine = fgets($m17MasterHandle)) {
-                                                $m17MasterHost = preg_split('/\s+/', $m17MasterLine);
-                                                if ((strpos($m17MasterHost[0], '#') === FALSE) && ($m17MasterHost[0] != '')) {
-                                                    if ($m17MasterHost[0] == $m17StartupHost) {
-                                                        echo "      <option value=\"$m17MasterHost[0]\" selected=\"selected\">$m17MasterHost[0]</option>\n";
-                                                    }
-                                                    else {
-                                                        echo "      <option value=\"$m17MasterHost[0]\">$m17MasterHost[0]</option>\n";
-                                                    }
-                                                }
-                                            }
-                                            fclose($m17MasterHandle);
-                                        }
-                                        ?>
-                                    </select>
-
-                                    &nbsp;Startup Module:<select name="m17StartupModule" class="ModSel">
-                                        <?php
-                                        $m17ModuleList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-                                        foreach ($m17ModuleList as $module) {
-                                            if ($m17StartupModule == $module) {
-                                                echo "  <option value=\"".$module."\" selected=\"selected\">".$module."</option>\n";
-                                            }
-                                            else {
-                                                echo "  <option value=\"".$module."\">".$module."</option>\n";
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-
-                                    </td>
-                                </tr>
-                                <?php if (isset($configm17gateway['General']['Suffix'])) { ?>
-                                        <tr>
-                                        <td align="left"><a class="tooltip2" href="#">M17 Callsign Suffix:<span><b>Callsign Suffix</b>Set your preferred callsign suffix here. Typical values are "H" for Hotspots, "R" for Repeaters.</span></a></td>
-                                        <td align="left">
-                                        <select name="m17CallsignSuffix">
-                                        <?php
-                                        $m17SuffixList = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-                                        foreach ($m17SuffixList as $suffix) {
-                                            if ($configm17gateway['General']['Suffix'] == $suffix) {
-                                                echo "  <option value=\"".$suffix."\" selected=\"selected\">".$suffix."</option>\n";
-                                            }
-                                            else {
-                                                echo "  <option value=\"".$suffix."\">".$suffix."</option>\n";
-                                            }
-                                        }
-                                        ?>
-                                        </td>
-                                        </tr>
-                                <?php } ?>
-                                <?php if (isset($configm17gateway['General']['Callsign'])) {
-                                     $m17SID = substr($configm17gateway['General']['Callsign'], strpos($configm17gateway['General']['Callsign'], '-') + 1);
-                                     if (preg_match('/^\d$/', $m17SID)) {
-                                        $m17SID = $m17SID;
-                                     } else {
-                                        $m17SID = "";
-                                     }
-                                ?>
-                                        <tr>
-                                                <td align="left"><a class="tooltip2" href="#">M17 Station ID:<span><b>Station ID</b>Set your preferred station ID here, if applicable.</span></a></td>
-                                                <td align="left">
-                                                <select name="m17StationID">
-                                                <?php if($m17SID == "") { echo '<option value="" selected="selected">None</option>'; } else { echo "<option value='$m17SID' selected='selected'>$m17SID</option>"; } ?>
-                                                  <?php if($m17SID != "") { ?>
-                                                  <option value="">None</option>
-                                                  <?php } ?>
-                                                  <option value="0">0</option>
-                                                  <option value="1">1</option>
-                                                  <option value="2">2</option>
-                                                  <option value="3">3</option>
-                                                  <option value="4">4</option>
-                                                  <option value="5">5</option>
-                                                  <option value="6">6</option>
-                                                  <option value="7">7</option>
-                                                  <option value="8">8</option>
-                                                  <option value="9">9</option>
-                                                </select>
-                                                </td>
-                                        </tr>
-                                <?php } ?>
-                                <?php if (isset($configmmdvm['M17']['CAN'])) { ?>
-                                        <tr>
-                                                <td align="left"><a class="tooltip2" href="#"><?php echo __( 'M17 CAN' );?>:<span><b>M17 CAN</b>Set your CAN (Channel Access Number) code here, sane values are 0-15</span></a></td>
-                                                <td align="left">
-                                                <select name="m17can">
-                                                  <?php echo "<option value=\"".$configmmdvm['M17']['CAN']."\" 'selected='selected'>".$configmmdvm['M17']['CAN']."</option>"; ?>
-                                                  <option value="0">0</option>
-                                                  <option value="1">1</option>
-                                                  <option value="2">2</option>
-                                                  <option value="3">3</option>
-                                                  <option value="4">4</option>
-                                                  <option value="5">5</option>
-                                                  <option value="6">6</option>
-                                                  <option value="7">7</option>
-                                                  <option value="8">8</option>
-                                                  <option value="9">9</option>
-                                                  <option value="10">10</option>
-                                                  <option value="11">11</option>
-                                                  <option value="12">12</option>
-                                                  <option value="13">13</option>
-                                                  <option value="14">14</option>
-                                                  <option value="15">15</option>
-                                                </select>
-                                                </td>
-                                        </tr>
-                                <?php } ?>
-
-
-                            </table>
-
-                            <br /><br />
-
-                        <?php } ?>
 
     <?php if (file_exists('/etc/dstar-radio.mmdvmhost') && $configmmdvm['DMR']['Enable'] == 1) {
     $dmrMasterFile = fopen("/usr/local/etc/DMR_Hosts.txt", "r");
@@ -7198,7 +6833,6 @@ echo'
         var ysfCheckbox = document.getElementById('aprsgw-service-selection-1');
         var dgIdCheckbox = document.getElementById('aprsgw-service-selection-2');
         var nxdnCheckbox = document.getElementById('aprsgw-service-selection-3');
-        var m17Checkbox = document.getElementById('aprsgw-service-selection-4');
         var ircDDBCheckbox = document.getElementById('aprsgw-service-selection-5');
 
         // Disable or enable GPSD based on the state of APRS Gateway checkbox
@@ -7226,10 +6860,6 @@ echo'
 
         if (nxdnCheckbox) {
             nxdnCheckbox.disabled = nxdnCheckbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
-        }
-
-        if (m17Checkbox) {
-            m17Checkbox.disabled = m17Checkbox.hasAttribute('disabled') || !aprsGatewayCheckbox.checked;
         }
 
         if (ircDDBCheckbox) {

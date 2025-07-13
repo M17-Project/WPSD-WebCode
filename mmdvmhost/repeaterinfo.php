@@ -228,8 +228,8 @@ $numDMRmasters = exec('cd /var/log/pi-star ; /usr/local/bin/RemoteCommand '.$_SE
         <?php if(isPaused("POCSAG")) { echo '<div class="paused-mode-cell" title="Mode Paused">POCSAG Net</div>'; } else { showMode("POCSAG Network", $_SESSION['MMDVMHostConfigs']); } ?>
       </div>
     </div>
-  </div>
 <?php } ?>
+  </div>
 
   <div class="mode_flex row">
     <div class="mode_flex column">

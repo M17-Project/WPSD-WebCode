@@ -15,353 +15,27 @@ checkSessionValidity();
 
 $displayType = getConfigItem("General", "Display", $_SESSION['MMDVMHostConfigs']);
 
-$themes = [
-    'light' => [
-        'Background' => [
-            'PageColor'=>'#F4F6F8', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#D1D5DB',
-            'NavbarColor'=>'#007BFF', 'NavbarHoverColor'=>'#0056b3', 'DropdownColor'=>'#0069D9',
-            'DropdownHoverColor'=>'#0056b3', 'ServiceCellActiveColor'=>'#28A745',
-            'ServiceCellInactiveColor'=>'#DC3545', 'ModeCellDisabledColor'=>'#ADB5BD',
-            'ModeCellActiveColor'=>'#28A745', 'ModeCellInactiveColor'=>'#DC3545',
-            'ModeCellPausedColor'=>'#FFC107', 'NavPanelColor'=>'#FFFFFF',
-            'TableRowBgEvenColor'=>'#EFF2F5', 'TableRowBgOddColor'=>'#E4E7EB'
-        ],
-        'Text' => [
-            'TextColor'=>'#212529', 'TextSectionColor'=>'#495057', 'TextLinkColor'=>'#0056b3',
-            'TableHeaderColor'=>'#212529', 'BannersColor'=>'#212529', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#FFFFFF',
-            'ModeCellDisabledColor'=>'#495057', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#FFFFFF'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#DEE2E6', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'dark' => [
-        'Background' => [
-            'PageColor'=>'#161A22', 'ContentColor'=>'#1D222C', 'BannersColor'=>'#242A36',
-            'NavbarColor'=>'#242A36', 'NavbarHoverColor'=>'#4A90E2', 'DropdownColor'=>'#242A36',
-            'DropdownHoverColor'=>'#4A90E2', 'ServiceCellActiveColor'=>'#33A753',
-            'ServiceCellInactiveColor'=>'#D9534F', 'ModeCellDisabledColor'=>'#2A303B',
-            'ModeCellActiveColor'=>'#33A753', 'ModeCellInactiveColor'=>'#D9534F',
-            'ModeCellPausedColor'=>'#E8950E', 'NavPanelColor'=>'#1D222C',
-            'TableRowBgEvenColor'=>'#202630', 'TableRowBgOddColor'=>'#1D222C'
-        ],
-        'Text' => [
-            'TextColor'=>'#E0E0E0', 'TextSectionColor'=>'#A0A8B4', 'TextLinkColor'=>'#3B82F6',
-            'TableHeaderColor'=>'#E0E0E0', 'BannersColor'=>'#E0E0E0', 'NavbarColor'=>'#E0E0E0',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#E0E0E0', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#E0E0E0',
-            'ModeCellDisabledColor'=>'#8790A0', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#E0E0E0'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#303845', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'classic' => [
-        'Background' => [
-            'PageColor'=>'#212529', 'ContentColor'=>'#212529', 'BannersColor'=>'#2e363f',
-            'NavbarColor'=>'#2e363f', 'NavbarHoverColor'=>'#65737e', 'DropdownColor'=>'#6b6c73',
-            'DropdownHoverColor'=>'#3c3f47', 'ServiceCellActiveColor'=>'#2c7f2c',
-            'ServiceCellInactiveColor'=>'#8C0C26', 'ModeCellDisabledColor'=>'#535353',
-            'ModeCellActiveColor'=>'#2c7f2c', 'ModeCellInactiveColor'=>'#8C0C26',
-            'ModeCellPausedColor'=>'#a65d14', 'NavPanelColor'=>'#212529',
-            'TableRowBgEvenColor'=>'#949494', 'TableRowBgOddColor'=>'#7a7c80'
-        ],
-        'Text' => [
-            'TextColor'=>'#000000', 'TextSectionColor'=>'#bebebe', 'TextLinkColor'=>'#1a2573',
-            'TableHeaderColor'=>'#bebebe', 'BannersColor'=>'#bebebe', 'NavbarColor'=>'#bebebe',
-            'NavbarHoverColor'=>'#ffffff', 'DropdownColor'=>'#ffffff', 'DropdownHoverColor'=>'#ffffff',
-            'ServiceCellActiveColor'=>'#ffffff', 'ServiceCellInactiveColor'=>'#bebebe',
-            'ModeCellDisabledColor'=>'#b3b3af', 'ModeCellActiveColor'=>'#ffffff',
-            'ModeCellInactiveColor'=>'#bebebe'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#3c3f47', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'colorblind_focus' => [
-        'Background' => [
-            'PageColor'=>'#EAEAEA', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#B0C4DE',
-            'NavbarColor'=>'#003366', 'NavbarHoverColor'=>'#0055A4', 'DropdownColor'=>'#004488',
-            'DropdownHoverColor'=>'#0066CC', 'ServiceCellActiveColor'=>'#FFA500',
-            'ServiceCellInactiveColor'=>'#778899', 'ModeCellDisabledColor'=>'#C0C0C0',
-            'ModeCellActiveColor'=>'#FFA500', 'ModeCellInactiveColor'=>'#778899',
-            'ModeCellPausedColor'=>'#FFD700', 'NavPanelColor'=>'#F0F0F0',
-            'TableRowBgEvenColor'=>'#F5F5F5', 'TableRowBgOddColor'=>'#E8E8E8'
-        ],
-        'Text' => [
-            'TextColor'=>'#1A1A1A', 'TextSectionColor'=>'#333333', 'TextLinkColor'=>'#0033A0',
-            'TableHeaderColor'=>'#1A1A1A', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#000000', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#555555', 'ModeCellActiveColor'=>'#000000',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#AAAAAA', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'high_contrast' => [
-        'Background' => [
-            'PageColor'=>'#000000', 'ContentColor'=>'#111111', 'BannersColor'=>'#222222',
-            'NavbarColor'=>'#000000', 'NavbarHoverColor'=>'#333333', 'DropdownColor'=>'#1C1C1C',
-            'DropdownHoverColor'=>'#444444', 'ServiceCellActiveColor'=>'#00FF00',
-            'ServiceCellInactiveColor'=>'#FF0000', 'ModeCellDisabledColor'=>'#555555',
-            'ModeCellActiveColor'=>'#00FF00', 'ModeCellInactiveColor'=>'#FF0000',
-            'ModeCellPausedColor'=>'#FFFF00', 'NavPanelColor'=>'#0A0A0A',
-            'TableRowBgEvenColor'=>'#1A1A1A', 'TableRowBgOddColor'=>'#101010'
-        ],
-        'Text' => [
-            'TextColor'=>'#FFFFFF', 'TextSectionColor'=>'#DDDDDD', 'TextLinkColor'=>'#00FFFF',
-            'TableHeaderColor'=>'#FFFFFF', 'BannersColor'=>'#FFFFFF', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#000000', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#AAAAAA', 'ModeCellActiveColor'=>'#000000',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#666666', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'aqua_marine' => [
-        'Background' => [
-            'PageColor'=>'#E0F7FA', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#B2EBF2',
-            'NavbarColor'=>'#00796B', 'NavbarHoverColor'=>'#004D40', 'DropdownColor'=>'#00897B',
-            'DropdownHoverColor'=>'#00695C', 'ServiceCellActiveColor'=>'#4CAF50',
-            'ServiceCellInactiveColor'=>'#EF5350', 'ModeCellDisabledColor'=>'#BDBDBD',
-            'ModeCellActiveColor'=>'#4CAF50', 'ModeCellInactiveColor'=>'#EF5350',
-            'ModeCellPausedColor'=>'#FFC107', 'NavPanelColor'=>'#F0FEFF',
-            'TableRowBgEvenColor'=>'#E0F2F1', 'TableRowBgOddColor'=>'#C8E6C9'
-        ],
-        'Text' => [
-            'TextColor'=>'#263238', 'TextSectionColor'=>'#004D40', 'TextLinkColor'=>'#006064',
-            'TableHeaderColor'=>'#004D40', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#FFFFFF',
-            'ModeCellDisabledColor'=>'#424242', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#FFFFFF'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#B2DFDB', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'warm_ember' => [
-        'Background' => [
-            'PageColor'=>'#FFF3E0', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#FFCCBC',
-            'NavbarColor'=>'#E65100', 'NavbarHoverColor'=>'#BF360C', 'DropdownColor'=>'#F57C00',
-            'DropdownHoverColor'=>'#D84315', 'ServiceCellActiveColor'=>'#43A047',
-            'ServiceCellInactiveColor'=>'#D32F2F', 'ModeCellDisabledColor'=>'#BCAAA4',
-            'ModeCellActiveColor'=>'#43A047', 'ModeCellInactiveColor'=>'#D32F2F',
-            'ModeCellPausedColor'=>'#FFB300', 'NavPanelColor'=>'#FFF8E1',
-            'TableRowBgEvenColor'=>'#FFE0B2', 'TableRowBgOddColor'=>'#FFCC80'
-        ],
-        'Text' => [
-            'TextColor'=>'#4E342E', 'TextSectionColor'=>'#BF360C', 'TextLinkColor'=>'#D84315',
-            'TableHeaderColor'=>'#4E342E', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#FFFFFF',
-            'ModeCellDisabledColor'=>'#5D4037', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#FFFFFF'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#D7CCC8', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'earthy_canopy' => [
-        'Background' => [
-            'PageColor'=>'#E8F5E9', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#C8E6C9',
-            'NavbarColor'=>'#38761D', 'NavbarHoverColor'=>'#274E13', 'DropdownColor'=>'#558B2F',
-            'DropdownHoverColor'=>'#33691E', 'ServiceCellActiveColor'=>'#689F38',
-            'ServiceCellInactiveColor'=>'#A1887F', 'ModeCellDisabledColor'=>'#A5D6A7',
-            'ModeCellActiveColor'=>'#689F38', 'ModeCellInactiveColor'=>'#A1887F',
-            'ModeCellPausedColor'=>'#FBC02D', 'NavPanelColor'=>'#F1F8E9',
-            'TableRowBgEvenColor'=>'#DCEDC8', 'TableRowBgOddColor'=>'#C5E1A5'
-        ],
-        'Text' => [
-            'TextColor'=>'#3E2723', 'TextSectionColor'=>'#274E13', 'TextLinkColor'=>'#33691E',
-            'TableHeaderColor'=>'#3E2723', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#FFFFFF',
-            'ModeCellDisabledColor'=>'#556B2F', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#FFFFFF'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#C8E6C9', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'monochrome_accent' => [
-        'Background' => [
-            'PageColor'=>'#ECEFF1', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#CFD8DC',
-            'NavbarColor'=>'#37474F', 'NavbarHoverColor'=>'#263238', 'DropdownColor'=>'#455A64',
-            'DropdownHoverColor'=>'#263238', 'ServiceCellActiveColor'=>'#00ACC1',
-            'ServiceCellInactiveColor'=>'#78909C', 'ModeCellDisabledColor'=>'#B0BEC5',
-            'ModeCellActiveColor'=>'#00ACC1', 'ModeCellInactiveColor'=>'#78909C',
-            'ModeCellPausedColor'=>'#FFB300', 'NavPanelColor'=>'#FAFAFA',
-            'TableRowBgEvenColor'=>'#F5F5F5', 'TableRowBgOddColor'=>'#EEEEEE'
-        ],
-        'Text' => [
-            'TextColor'=>'#212121', 'TextSectionColor'=>'#546E7A', 'TextLinkColor'=>'#00838F',
-            'TableHeaderColor'=>'#212121', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#FFFFFF',
-            'ModeCellDisabledColor'=>'#424242', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#FFFFFF'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#CFD8DC', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'vintage_vibes' => [
-        'Background' => [
-            'PageColor'=>'#FDF5E6', 'ContentColor'=>'#FAF0E6', 'BannersColor'=>'#D2B48C',
-            'NavbarColor'=>'#800000', 'NavbarHoverColor'=>'#A52A2A', 'DropdownColor'=>'#BC8F8F',
-            'DropdownHoverColor'=>'#8B4513', 'ServiceCellActiveColor'=>'#2E8B57',
-            'ServiceCellInactiveColor'=>'#CD5C5C', 'ModeCellDisabledColor'=>'#A9A9A9',
-            'ModeCellActiveColor'=>'#2E8B57', 'ModeCellInactiveColor'=>'#CD5C5C',
-            'ModeCellPausedColor'=>'#FFA500', 'NavPanelColor'=>'#F5F5DC',
-            'TableRowBgEvenColor'=>'#F0E68C', 'TableRowBgOddColor'=>'#E6E6FA'
-        ],
-        'Text' => [
-            'TextColor'=>'#553100', 'TextSectionColor'=>'#8B4513', 'TextLinkColor'=>'#800000',
-            'TableHeaderColor'=>'#553100', 'BannersColor'=>'#FFFFFF', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#000000', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#FFFFFF',
-            'ModeCellDisabledColor'=>'#FFFFFF', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#FFFFFF'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#D2B48C', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'ocean_breeze' => [
-        'Background' => [
-            'PageColor'=>'#CAF0F8', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#ADE8F4',
-            'NavbarColor'=>'#0077B6', 'NavbarHoverColor'=>'#005A8E', 'DropdownColor'=>'#0096C7',
-            'DropdownHoverColor'=>'#0077B6', 'ServiceCellActiveColor'=>'#48CAE4',
-            'ServiceCellInactiveColor'=>'#90E0EF', 'ModeCellDisabledColor'=>'#BDC3C7',
-            'ModeCellActiveColor'=>'#48CAE4', 'ModeCellInactiveColor'=>'#90E0EF',
-            'ModeCellPausedColor'=>'#00B4D8', 'NavPanelColor'=>'#FFFFFF',
-            'TableRowBgEvenColor'=>'#E0F7FA', 'TableRowBgOddColor'=>'#CAF0F8'
-        ],
-        'Text' => [
-            'TextColor'=>'#2C3E50', 'TextSectionColor'=>'#0077B6', 'TextLinkColor'=>'#005A8E',
-            'TableHeaderColor'=>'#2C3E50', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#000000', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#FFFFFF', 'ModeCellActiveColor'=>'#000000',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#90E0EF', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'sunset_glow' => [
-        'Background' => [
-            'PageColor'=>'#FFF1E6', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#FFDAB9',
-            'NavbarColor'=>'#FF6B6B', 'NavbarHoverColor'=>'#E64A4A', 'DropdownColor'=>'#FF8C42',
-            'DropdownHoverColor'=>'#FF6B6B', 'ServiceCellActiveColor'=>'#FFAD60',
-            'ServiceCellInactiveColor'=>'#FFD166', 'ModeCellDisabledColor'=>'#FFE4B5',
-            'ModeCellActiveColor'=>'#FFAD60', 'ModeCellInactiveColor'=>'#FFD166',
-            'ModeCellPausedColor'=>'#FFA500', 'NavPanelColor'=>'#FFFFFF',
-            'TableRowBgEvenColor'=>'#FFF8DC', 'TableRowBgOddColor'=>'#FFF1E6'
-        ],
-        'Text' => [
-            'TextColor'=>'#5D4037', 'TextSectionColor'=>'#E65100', 'TextLinkColor'=>'#BF360C',
-            'TableHeaderColor'=>'#5D4037', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#000000', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#000000', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#5D4037', 'ModeCellActiveColor'=>'#000000',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#FFCCBC', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'forest_whisper' => [
-        'Background' => [
-            'PageColor'=>'#D8F3DC', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#B7E4C7',
-            'NavbarColor'=>'#2D6A4F', 'NavbarHoverColor'=>'#1B4332', 'DropdownColor'=>'#40916C',
-            'DropdownHoverColor'=>'#2D6A4F', 'ServiceCellActiveColor'=>'#52B788',
-            'ServiceCellInactiveColor'=>'#95D5B2', 'ModeCellDisabledColor'=>'#D2B48C',
-            'ModeCellActiveColor'=>'#52B788', 'ModeCellInactiveColor'=>'#95D5B2',
-            'ModeCellPausedColor'=>'#74C69D', 'NavPanelColor'=>'#FFFFFF',
-            'TableRowBgEvenColor'=>'#EDF7ED', 'TableRowBgOddColor'=>'#D8F3DC'
-        ],
-        'Text' => [
-            'TextColor'=>'#3E2723', 'TextSectionColor'=>'#2D6A4F', 'TextLinkColor'=>'#1B4332',
-            'TableHeaderColor'=>'#3E2723', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#000000', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#3E2723', 'ModeCellActiveColor'=>'#000000',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#B7E4C7', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'lavender_dream' => [
-        'Background' => [
-            'PageColor'=>'#E6E6FA', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#D8BFD8',
-            'NavbarColor'=>'#6A0DAD', 'NavbarHoverColor'=>'#4B0082', 'DropdownColor'=>'#9370DB',
-            'DropdownHoverColor'=>'#6A0DAD', 'ServiceCellActiveColor'=>'#BA55D3',
-            'ServiceCellInactiveColor'=>'#DDA0DD', 'ModeCellDisabledColor'=>'#D3D3D3',
-            'ModeCellActiveColor'=>'#BA55D3', 'ModeCellInactiveColor'=>'#DDA0DD',
-            'ModeCellPausedColor'=>'#B19CD9', 'NavPanelColor'=>'#FFFFFF',
-            'TableRowBgEvenColor'=>'#F8F0FC', 'TableRowBgOddColor'=>'#E6E6FA'
-        ],
-        'Text' => [
-            'TextColor'=>'#483D8B', 'TextSectionColor'=>'#6A0DAD', 'TextLinkColor'=>'#4B0082',
-            'TableHeaderColor'=>'#483D8B', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#483D8B', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#D8BFD8', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ],
-    'steel_sky' => [
-        'Background' => [
-            'PageColor'=>'#ECF0F1', 'ContentColor'=>'#FFFFFF', 'BannersColor'=>'#BDC3C7',
-            'NavbarColor'=>'#2C3E50', 'NavbarHoverColor'=>'#1A252F', 'DropdownColor'=>'#34495E',
-            'DropdownHoverColor'=>'#2C3E50', 'ServiceCellActiveColor'=>'#2980B9',
-            'ServiceCellInactiveColor'=>'#95A5A6', 'ModeCellDisabledColor'=>'#B0BEC5',
-            'ModeCellActiveColor'=>'#2980B9', 'ModeCellInactiveColor'=>'#95A5A6',
-            'ModeCellPausedColor'=>'#F39C12', 'NavPanelColor'=>'#FFFFFF',
-            'TableRowBgEvenColor'=>'#F5F7F8', 'TableRowBgOddColor'=>'#ECF0F1'
-        ],
-        'Text' => [
-            'TextColor'=>'#34495E', 'TextSectionColor'=>'#2C3E50', 'TextLinkColor'=>'#1A252F',
-            'TableHeaderColor'=>'#34495E', 'BannersColor'=>'#000000', 'NavbarColor'=>'#FFFFFF',
-            'NavbarHoverColor'=>'#FFFFFF', 'DropdownColor'=>'#FFFFFF', 'DropdownHoverColor'=>'#FFFFFF',
-            'ServiceCellActiveColor'=>'#FFFFFF', 'ServiceCellInactiveColor'=>'#000000',
-            'ModeCellDisabledColor'=>'#2C3E50', 'ModeCellActiveColor'=>'#FFFFFF',
-            'ModeCellInactiveColor'=>'#000000'
-        ],
-        'ExtraSettings' => [
-            'TableBorderColor'=>'#BDC3C7', 'LastHeardRows'=>'40', 'MainFontSize'=>'18',
-            'HeaderFontSize'=>'34', 'BodyFontSize'=>'17'
-        ]
-    ]
-];
+$themes_filepath = $_SERVER['DOCUMENT_ROOT'].'/includes/wpsd-themes.json';
+$themes = [];
+
+if (file_exists($themes_filepath)) {
+    $json_content = file_get_contents($themes_filepath);
+    $decoded_themes = json_decode($json_content, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_themes)) {
+        $themes = $decoded_themes;
+    } else {
+        error_log("WPSD Dashboard: Error decoding wpsd-themes.json or it's not a valid array.");
+        // Fallback to an empty array if JSON is invalid
+        $themes = [];
+    }
+} else {
+    error_log("WPSD Dashboard: wpsd-themes.json not found at " . $themes_filepath);
+    // Fallback to an empty array if file doesn't exist
+    $themes = [];
+}
+
+// Define the classic theme key as it's used for reset functionality
+$classic_theme_key = 'WPSD Classic';
 
 $filepath_ini = '/etc/wpsd-css.ini';
 $parsed_ini = null;
@@ -381,11 +55,11 @@ if (file_exists($filepath_ini)) {
 }
 
 if ($use_classic_default_for_ini_file) {
-    if (isset($themes['classic'])) {
-        $parsed_ini = $themes['classic'];
+    if (isset($themes[$classic_theme_key])) { // Use the friendly classic theme key
+        $parsed_ini = $themes[$classic_theme_key];
 
         $content = "";
-        foreach ($themes['classic'] as $section => $values) {
+        foreach ($themes[$classic_theme_key] as $section => $values) {
             if (!is_array($values)) continue;
             $content .= "[" . $section . "]\n";
             foreach ($values as $key => $value) {
@@ -404,15 +78,15 @@ if ($use_classic_default_for_ini_file) {
             error_log("WPSD Dashboard: Failed to write temporary INI file for classic default at " . $temp_ini_path);
         }
     } else {
-        error_log("WPSD Dashboard: CRITICAL - 'classic' theme is not defined in \$themes array. Cannot set default INI.");
+        error_log("WPSD Dashboard: CRITICAL - '{$classic_theme_key}' theme is not defined in \$themes array. Cannot set default INI.");
         $parsed_ini = [];
     }
 }
 
 if (!is_array($parsed_ini)) {
     error_log("WPSD Dashboard: \$parsed_ini could not be initialized from file or classic theme. Defaulting to empty array.");
-    if(isset($themes['classic'])) {
-        $parsed_ini = $themes['classic'];
+    if(isset($themes[$classic_theme_key])) { // Use the friendly classic theme key
+        $parsed_ini = $themes[$classic_theme_key];
     } else {
         $parsed_ini = [];
     }
@@ -493,8 +167,9 @@ foreach ($themes as $theme_key => $theme_data) {
             }
 
             function cssReset() {
-                if (confirm('WARNING: This will reset all appearance settings to the "Classic" theme and apply them. Your current unsaved customizations will be lost.\n\nAre you SURE you want to do this?\n\nPress OK to restore and apply the Classic theme.\nPress Cancel to go back.')) {
-                    $('#themeSelector').val('classic').triggerHandler('change');
+                // Use the friendly name for the classic theme for reset
+                if (confirm('WARNING: This will reset all appearance settings to the "WPSD Classic" theme and apply them. Your current unsaved customizations will be lost.\n\nAre you SURE you want to do this?\n\nPress OK to restore and apply the Classic theme.\nPress Cancel to go back.')) {
+                    $('#themeSelector').val('WPSD Classic').triggerHandler('change'); // Use the friendly name
                     setTimeout(function() {
                         document.forms['edit-css'].submit();
                     }, 100);
@@ -718,8 +393,9 @@ foreach ($themes as $theme_key => $theme_data) {
                     $content = "";
                     foreach($data as $section=>$values) {
                         if (!is_array($values)) continue;
-                        $section = str_replace("_", " ", $section);
-                        $content .= "[".$section."]\n";
+                        // Replace spaces with underscores for INI section names if needed for consistency with form input names
+                        $section_for_ini = str_replace(" ", "_", $section);
+                        $content .= "[".$section_for_ini."]\n";
                         foreach($values as $key=>$value) {
                             if ($value == '') {
                                 $content .= $key."=none\n";
@@ -808,32 +484,14 @@ foreach ($themes as $theme_key => $theme_data) {
                             <select id="themeSelector">
                                 <option value="" disabled>-- Select a Theme --</option>
                                 <?php
-                                $theme_display_names = [
-                                    'light' => 'WPSD Light',
-                                    'dark' => 'WPSD Dark',
-                                    'classic' => 'WPSD Classic',
-                                    'colorblind_focus' => 'Blue &amp; Yellow Focus (Color Blind Friendly)',
-                                    'high_contrast' => 'Midnight &amp; Snow (High Contrast)',
-                                    'aqua_marine' => 'Aqua Marine',
-                                    'warm_ember' => 'Warm Ember',
-                                    'earthy_canopy' => 'Earthy Canopy',
-                                    'monochrome_accent' => 'Monochrome Accent',
-                                    'vintage_vibes' => 'Vintage Vibes',
-                                    'ocean_breeze' => 'Ocean Breeze',
-                                    'sunset_glow' => 'Sunset Glow',
-                                    'forest_whisper' => 'Forest Whisper',
-                                    'lavender_dream' => 'Lavender Dream',
-                                    'steel_sky' => 'Steel &amp; Sky'
-                                ];
-
+                                // Populate options directly from $themes array keys (which are friendly names)
                                 if ($selected_theme_on_load === 'custom') {
                                     echo '<option value="custom" selected>Custom Configuration</option>';
                                 }
 
                                 foreach ($themes as $key => $theme_data_loop):
-                                    $display_name = isset($theme_display_names[$key]) ? $theme_display_names[$key] : ucwords(str_replace('_', ' ', $key));
                                     $selected_attr = ($selected_theme_on_load === $key) ? 'selected' : '';
-                                    echo '<option value="' . htmlspecialchars($key) . '" ' . $selected_attr . '>' . $display_name . '</option>';
+                                    echo '<option value="' . htmlspecialchars($key) . '" ' . $selected_attr . '>' . htmlspecialchars($key) . '</option>';
                                 endforeach;
                                 ?>
                             </select>
@@ -862,7 +520,8 @@ foreach ($themes as $theme_key => $theme_data) {
                         foreach($values_in_section as $key=>$value) {
                             $key_display = htmlspecialchars($key);
                             $value_display = htmlspecialchars($value);
-                            $section_name_for_input = htmlspecialchars($section);
+                            // Ensure section name for input matches the INI format (underscores for spaces)
+                            $section_name_for_input = htmlspecialchars(str_replace(" ", "_", $section));
                             $key_name_for_input = htmlspecialchars($key);
 
                             if (endsWith($key, 'SectionColor')) {
@@ -911,3 +570,4 @@ foreach ($themes as $theme_key => $theme_data) {
         </div>
     </body>
 </html>
+

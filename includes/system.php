@@ -27,6 +27,7 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
   <?php } ?>
   <div class="grid-item <?php getServiceStatusClass(isSystemdServiceRunning("wpsd-nightly-tasks.timer")); ?>">WPSD Nightly Task Processor</div>
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('NXDNGateway')); ?>">NXDNGateway</div> 
+  <div class="grid-item <?php getServiceStatusClass(isSystemdServiceRunning('wpsd-running-tasks.timer')); ?>">WPSD Maintenance &amp; Diagnostics Service</div>
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('NXDNParrot')); ?>">NXDNParrot</div> 
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('usr/sbin/vnstatd',true)); ?>">Network Metrics (vnstat)</div> 
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('APRSGateway')); ?>">APRSGateway</div>

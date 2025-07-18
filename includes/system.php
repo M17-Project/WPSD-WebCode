@@ -58,9 +58,6 @@ if (!isset($_SESSION) || !is_array($_SESSION)) {
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('YSF2P25')); ?>">YSF2P25</div>
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('YSF2NXDN')); ?>">YSF2NXDN</div>
   <div class="grid-item <?php getServiceStatusClass(isProcessRunning('DMR2NXDN')); ?>">DMR2NXDN</div>
-  <?php if (isDVmegaCast() == 1) { ?>
-  <div class="grid-item <?php getServiceStatusClass(isProcessRunning('castserial'));  ?>">DVMega Cast Serial Service</div>  
-  <?php } ?>
 </div>
 
 <br />

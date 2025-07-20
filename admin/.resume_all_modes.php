@@ -5,7 +5,7 @@
 if (isset($_POST['unpause_modes'])) {
     $paused_modes = explode(',', $_POST['paused_modes']);
     foreach ($paused_modes as $mode) {
-        $command = "sudo /usr/local/sbin/wpsd-mode-manager $mode Enable";
+        $command = "sudo /usr/local/sbin/wpsd-mode-manager " . escapeshellarg($mode) . " Enable";
         exec($command);
     }
     if(isset($_GET['imm'])) {

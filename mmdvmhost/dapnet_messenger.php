@@ -42,14 +42,14 @@ if (isset($_SESSION['DAPNETAPIKeyConfigs']['DAPNETAPI']['USER']) && (empty($_SES
 	
         // if trx area is different that the one in api.key file, override it using DAPNET_TRXAREA envvar 
         if (strlen($dapnetTrx) > 0 && (strcmp($dapnetTrx, $_SESSION['DAPNETAPIKeyConfigs']['DAPNETAPI']['TRXAREA']) != 0)) {
-            $dapnetTrx = 'DAPNET_TRXAREA="'.$dapnetTrx.'"';
+            $dapnetTrx = 'DAPNET_TRXAREA='.escapeshellarg($dapnetTrx);
         }
         else {
             $dapnetTrx = "";
         }
 	
         // Build command line
-        $dapnetCmd = 'sudo '.$dapnetTrx.' /usr/local/sbin/wpsd-dapnetapi '.$dapnetTo.' "'.$dapnetContent.'" nohost 2>&1';
+        $dapnetCmd = 'sudo '.$dapnetTrx.' /usr/local/sbin/wpsd-dapnetapi '.escapeshellarg($dapnetTo).' '.escapeshellarg($dapnetContent).' nohost 2>&1';
         
         unset($dummy);
         

@@ -207,7 +207,7 @@ $isNewZumInstall = isset($iniData[$section][$key]) && $iniData[$section][$key] =
 		</div><br />
 		</div>
 
-		<h1>WPSD <?php echo __( 'Dashboard for' )." <code style='font-weight:550;'>".$_SESSION['MYCALL']."</code>"; ?></h1>
+		<h1>WPSD (M17 Edition) <?php echo __( 'Dashboard for' )." <code style='font-weight:550;'>".$_SESSION['MYCALL']."</code>"; ?></h1>
 		<div id="CheckMessage">
 		<?php
 		    include('includes/messages.php');

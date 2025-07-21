@@ -168,7 +168,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/index.php") { // Stop this working outside o
 			</tr>
                         <tr>
                           <td colspan="4" style="white-space:normal;padding: 3px;">
-                            <a href="https://w0chp.radio/m17-reflectors/" target="_blank">List of M17 Reflectors (searchable)</a>
+                            <a href="https://dvref.com/mrefd/" target="_blank">List of M17 Reflectors (searchable)</a>
                           </td>
                         </tr>
 		    </table>

@@ -8,7 +8,7 @@ if (!file_exists('/etc/wpsd-css.ini')) {
                                                            "timeout" => 10,
                                                            "header"  => "User-agent: WPSD-CSS-Default - v.$versionCmd - $callsign - $UUID",
                                                            'request_fulluri' => True )));
-    $fileContent = @file_get_contents("https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/WPSD-CSS.ini", false, $headers);
+    $fileContent = @file_get_contents("https://raw.githubusercontent.com/M17-Project/WPSD-Helpers/refs/heads/master/supporting-files/WPSD-CSS.ini", false, $headers);
     fwrite($outFile, $fileContent);
     fclose($outFile);
                     

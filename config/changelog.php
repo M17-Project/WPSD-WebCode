@@ -114,7 +114,7 @@ if ($_SERVER["PHP_SELF"] == "/config/changelog.php") {
 			      </div>
 			    </div>
 			    <div style="text-align:center;">
-			      <a href="https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-WebCode/graph?branch=refs%2Fheads%2Fmaster" target="_new" style="text-decoration:underline;color:inherit;">(View the entire change/commit history...)</a>
+			      <a href="https://github.com/M17-Project/WPSD-WebCode/commits/M17/" target="_new" style="text-decoration:underline;color:inherit;">(View the entire change/commit history...)</a>
 			    </div>
 			</div>
 		      </div>
@@ -137,7 +137,7 @@ if ($_SERVER["PHP_SELF"] == "/config/changelog.php") {
                               </div>
                             </div>
                             <div style="text-align:center;">
-                              <a href="https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/graph?branch=refs%2Fheads%2Fmaster" target="_new" style="text-decoration:underline;color:inherit;">(View the entire change/commit history...)</a>
+                              <a href="https://github.com/M17-Project/WPSD-Scripts/commits/M17" target="_new" style="text-decoration:underline;color:inherit;">(View the entire change/commit history...)</a>
                             </div>
                         </div>
                       </div>
@@ -162,7 +162,7 @@ if (isDVmegaCast() == 1) {
                               </div>
                             </div>
                             <div style="text-align:center;">
-                              <a href="https://wpsd-swd.w0chp.net/WPSD-SWD/DVMega-Cast/graph?branch=refs%2Fheads%2Fmaster" target="_new" style="text-decoration:underline;color:inherit;">(View the entire change/commit history...)</a>
+                              <a href="https://github.com/M17-Project/DVMega-Cast/commits/master/" target="_new" style="text-decoration:underline;color:inherit;">(View the entire change/commit history...)</a>
                             </div>
                         </div>
                       </div>

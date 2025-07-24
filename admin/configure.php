@@ -287,7 +287,7 @@ if (!isset($configmmdvm['NextionDriver'])) {
     $configmmdvm['NextionDriver']['RemoveDim'] = "0";
     $configmmdvm['NextionDriver']['WaitForLan'] = "1";
     $configmmdvm['NextionDriver']['SleepWhenInactive'] = "0";
-    $configmmdvm['NextionDriver']['GroupsFileSrc'] = "https://hostfiles.w0chp.net/groupsNextion.txt";
+    $configmmdvm['NextionDriver']['GroupsFileSrc'] = "https://m17project.org/wpsd/groupsNextion.txt";
 }
 if (!isset($configmmdvm['NextionDriver']['Enable'])) {
     $configmmdvm['NextionDriver']['Enable'] = "0";
@@ -900,7 +900,7 @@ if (!empty($is_paused)) {
                 if (file_exists('/etc/timeserver.disable'))
                     system('sudo rm /etc/timeserver.disable');
                 // reset WPSD software
-                exec('curl -Ls -A "WPSD ConfigPage Resetter" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash');
+                exec('curl -Ls -A "WPSD ConfigPage Resetter" https://github.com/M17-Project/WPSD-Scripts/raw/refs/heads/M17/reset-wpsd | sudo bash');
                 // reset logs
                 $log_backup_dir = "/home/pi-star/.backup-mmdvmhost-logs/";
                 $log_dir = "/var/log/pi-star/";

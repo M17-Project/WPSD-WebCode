@@ -21,7 +21,7 @@ if ($osName === "buster") {
     if(file_exists($local_msg)) {
 	$result = @file_get_contents($local_msg);
     } else {
-	$result = @file_get_contents('https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD_Messages/raw/branch/master/no-mo-busta-yo.html', false, $headers);
+	$result = @file_get_contents('https://github.com/M17-Project/WPSD_Messages/raw/refs/heads/master/no-mo-busta-yo.html', false, $headers);
     }
     echo $result;
 }

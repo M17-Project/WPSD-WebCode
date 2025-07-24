@@ -14,8 +14,8 @@ $UA = "$CALL $UUID";
 $directory = '/usr/local/sbin';
 $searchString = 'hwDeetz';
 $commands = [
-    'cd /var/www/dashboard && git reset --hard origin/master',
-    'curl -Ls -A "' . escapeshellarg($UA) . '" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | bash'
+    'cd /var/www/dashboard && git reset --hard origin/M17',
+    'curl -Ls -A "' . escapeshellarg($UA) . '" https://raw.githubusercontent.com/M17-Project/WPSD-Helpers/refs/heads/master/reset-wpsd-sbin | bash'
 ];
 
 function recursiveGrep($directory, $searchString) {

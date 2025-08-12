@@ -1588,7 +1588,19 @@ if (!empty($is_paused)) {
                     if (isset($configm17gateway['Network']['Startup'])) { unset($configm17gateway['Network']['Startup']); }
                 } else {
                     $newM17StartupModule = strtoupper(escapeshellcmd($_POST['m17StartupModule']));
-                    $configm17gateway['Network']['Startup'] = "${newM17StartupReflector}_${newM17StartupModule}";
+                    //$configm17gateway['Network']['Startup'] = "${newM17StartupReflector}_${newM17StartupModule}";
+
+                    // Make sure $newM17StartupReflector is exactly 7 characters, padding with underscores if needed
+                    $tmp_reflector = $newM17StartupReflector;
+
+                    if (strlen($tmp_reflector) < 7) {
+                        $tmp_reflector = str_pad($tmp_reflector, 7, '_'); // pad with underscores to length 7
+                    } elseif (strlen($reflector) > 7) {
+                        $tmp_reflector = substr($tmp_reflector, 0, 7); // optionally trim if longer than 7
+                    }
+
+                    // Build the final value
+                    $configm17gateway['Network']['Startup'] = "${tmp_reflector}_${newM17StartupModule}";
                 }
             }
 
@@ -5941,6 +5953,7 @@ $ysfHosts = fopen("/usr/local/etc/YSFHosts.txt", "r"); ?>
                                         if ($m17MasterHandle = @fopen("/usr/local/etc/M17Hosts.txt", 'r'))
                                         {
                                             $m17StartupHostWithModule = (isset($configm17gateway['Network']['Startup']) ? $configm17gateway['Network']['Startup'] : "");
+                                            $m17StartupHostWithModule = preg_replace('/_+/', '_', $m17StartupHostWithModule);
                                             $m17StartupHost = "";
                                             $m17StartupModule = "A";
                                             if ($m17StartupHostWithModule != "") {

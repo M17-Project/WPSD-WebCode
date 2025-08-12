@@ -39,6 +39,9 @@ if ($_SERVER["PHP_SELF"] == "/admin/index.php") { // Stop this working outside o
 		    $m17LinkHost = $_POST['m17LinkHost'];
 		    $m17LinkToHost = "";
 		    if ($m17LinkHost != "none") { // Unlinking
+			if (strlen($m17LinkHost) < 7) {
+                            $m17LinkHost = str_pad($m17LinkHost, 7, '_'); // pad with _ for hosts like URFxxx
+			}
 			$m17LinkToHost = "".$m17LinkHost."_".$_POST['m17LinkModule']."";
 		    }
 		    $remoteCommand = "cd /var/log/pi-star && sudo /usr/local/bin/RemoteCommand ".$remotePort." Reflector ".$m17LinkToHost."";
@@ -111,6 +114,7 @@ if ($_SERVER["PHP_SELF"] == "/admin/index.php") { // Stop this working outside o
 					$m17gatewayConfigFile = '/etc/m17gateway';
 					$configm17gateway = $configm17gateway = parse_ini_file($m17gatewayConfigFile, true);
 					$m17StartupHostWithModule = (isset($configm17gateway['Network']['Startup']) ? $configm17gateway['Network']['Startup'] : "");
+					$m17StartupHostWithModule = preg_replace('/_+/', '_', $m17StartupHostWithModule);
 					$m17StartupHost = "";
 					$m17StartupModule = "A";
 					if ($m17StartupHostWithModule != "") {

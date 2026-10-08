@@ -252,7 +252,12 @@ for ($i = 0;  ($i <= $lastHeardRows - 1); $i++) {
 		} else if ($listElem[6] == "POCSAG") {
 			echo "<td class='noMob' colspan=\"3\" style=\"background:#00718F;color:#fff;\">POCSAG Data</td>";
 		} else {
-		    echo "<td class='activity-duration'>$listElem[6]</td>";
+		    if (isset($listElem[12])) {
+			// M17 packet: the message text (escaped, it comes from the sender) is shown on hover
+			echo "<td class='activity-duration' style='cursor:help;' title=\"".htmlspecialchars($listElem[12] ?? "", ENT_QUOTES)."\">M17 $listElem[6]</td>";
+		    } else {
+			echo "<td class='activity-duration'>$listElem[6]</td>";
+		    }
 
 		    // Color the Loss Field
 		    if (floatval($listElem[7]) < 1) { echo "<td class='noMob'>$listElem[7]</td>"; }

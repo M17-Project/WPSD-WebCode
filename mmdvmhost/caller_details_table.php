@@ -100,7 +100,12 @@ for ($i = 0;  ($i <= 0); $i++) { //Last 20  calls
 		$now = new DateTime("now", $utc_tz);
  		$dt = new DateTime($utc_time, $utc_tz);
 		$TA = timeago( $dt->getTimestamp(), $now->getTimestamp() );
-		$duration = "<td style='font-size:1.3em;'>$listElem[6]s <span class='noMob'>($TA)</span></td>";
+		if (isset($listElem[12])) {
+		    // M17 packet: the message text (escaped, it comes from the sender) is shown on hover
+		    $duration = "<td style='font-size:1.3em;cursor:help;' title=\"".htmlspecialchars($listElem[12] ?? "", ENT_QUOTES)."\">M17 $listElem[6] <span class='noMob'>($TA)</span></td>";
+		} else {
+		    $duration = "<td style='font-size:1.3em;'>$listElem[6]s <span class='noMob'>($TA)</span></td>";
+		}
 		// dynamic <title> reset
 		echo "<script>if(typeof window.original_title !== 'undefined'){jQuery('title').text(window.original_title)}</script>";
 		echo "<script>jQuery('link[rel=\"shortcut icon\"').attr('href', '/images/favicon.ico?version=$versionCmd');</script>";

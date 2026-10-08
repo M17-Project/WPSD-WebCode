@@ -141,7 +141,12 @@ if ($listElem[6] == null) {
   $utc_tz =  new DateTimeZone('UTC');
   $now = new DateTime("now", $utc_tz);
   $dt = new DateTime($utc_time, $utc_tz);
-  $duration = $listElem[6].'s (' . timeago( $dt->getTimestamp(), $now->getTimestamp() ) . ')';
+  if (isset($listElem[12])) {
+    // M17 packet: the message text (escaped, it comes from the sender) is shown on hover
+    $duration = "<span style='cursor:help;' title=\"".htmlspecialchars($listElem[12] ?? "", ENT_QUOTES)."\">M17 $listElem[6]</span> (" . timeago( $dt->getTimestamp(), $now->getTimestamp() ) . ')';
+  } else {
+    $duration = $listElem[6].'s (' . timeago( $dt->getTimestamp(), $now->getTimestamp() ) . ')';
+  }
   // dynamic <title> reset
   echo "<script>if(typeof window.original_title !== 'undefined'){jQuery('title').text(window.original_title)};jQuery('.last-caller').hide();</script>";
   echo "<script>jQuery('link[rel=\"shortcut icon\"').attr('href', '/images/favicon.ico?version=$versionCmd');</script>";

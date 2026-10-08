@@ -1016,6 +1016,7 @@ function getHeardList($logLines) {
     $ts1alias       = "---";
     $ts2alias       = "---";
     $alias          = "";
+    $m17packetber   = "---";
     foreach ($logLines as $logLine) {
         $duration       = "";
         $loss           = "";
@@ -1068,6 +1069,35 @@ function getHeardList($logLines) {
             continue;
         }
         else if(strpos($logLine,"Preamble CSBK")) {
+            continue;
+        }
+
+        // M17 packet mode: each packet gets one entry, from the line with its contents. The
+        // lines are newest first, so the end of a packet transmission comes before its contents.
+        if (strpos($logLine, "M17, ") !== false && strpos($logLine, "packet transmission") !== false) {
+            $m17packetber = "---";
+            if (preg_match('/end of packet transmission from .*, BER: ([0-9.]+%)/', $logLine, $pktMatch)) {
+                $m17packetber = $pktMatch[1];
+            }
+            continue;
+        }
+        if (preg_match('/^M: .{23} M17, (RF|network) (SMS|packet) from (.+?) to (.+?)(?:: "(.*)"|, protocol: (0x[0-9A-F]+), ([0-9]+) bytes)$/', $logLine, $pktMatch)) {
+            $pktSource = ($pktMatch[1] == "RF") ? "RF" : "Net";
+            if ($pktMatch[2] == "SMS") {
+                $pktDuration = "SMS";
+                $pktText     = $pktMatch[5];
+            } else {
+                $pktDuration = "Packet";
+                $pktText     = "Protocol ".$pktMatch[6].", ".$pktMatch[7]." bytes";
+            }
+            $pktCallsign = trim(preg_replace('/.*\//', '', $pktMatch[3]));
+            $pktBer      = ($pktSource == "RF") ? $m17packetber : "---";
+            $m17packetber = "---";
+            array_push($heardList, array(substr($logLine, 3, 19), "M17", $pktCallsign, "", trim($pktMatch[4]), $pktSource, $pktDuration, "---", $pktBer, "---", "", "", $pktText));
+            continue;
+        }
+        // Packets that were bad, incomplete or dropped
+        if (preg_match('/M17, (RF|network) packet from .* to .*, /', $logLine)) {
             continue;
         }
 

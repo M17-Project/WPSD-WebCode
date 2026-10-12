@@ -179,7 +179,12 @@ for ($i = 0; $i < $TXListLim; $i++) {
 		$now = new DateTime("now", $utc_tz);
  		$dt = new DateTime($utc_time, $utc_tz);
 		$TA = timeago( $dt->getTimestamp(), $now->getTimestamp() );
-		$duration = "<td>$listElem[6]s <span class='noMob'>($TA)</span></td>";
+		if (isset($listElem[12])) {
+		    // M17 packet: the message text (escaped, it comes from the sender) is shown on hover
+		    $duration = "<td style='cursor:help;' title=\"".htmlspecialchars($listElem[12] ?? "", ENT_QUOTES)."\">M17 $listElem[6] <span class='noMob'>($TA)</span></td>";
+		} else {
+		    $duration = "<td>$listElem[6]s <span class='noMob'>($TA)</span></td>";
+		}
 		echo "$duration"; //duration
 
 		if ($listElem[6] >= 10) { // BER is useless < 10 sec. TX

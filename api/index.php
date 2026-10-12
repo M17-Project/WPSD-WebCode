@@ -33,6 +33,9 @@ foreach ($transmissions as $transmission) {
     $transmission_json['src'] = trim($transmission[5]);
     $transmission_json['duration'] = trim($transmission[6]);
     $transmission_json['loss'] = trim($transmission[7]);
+    if (isset($transmission[12])) {
+        $transmission_json['message'] = $transmission[12];  // M17 packet: SMS text or a description
+    }
 
     $json_response[] = $transmission_json;
 }
